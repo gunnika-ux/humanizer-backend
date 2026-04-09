@@ -15,31 +15,30 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are an "Irregular" Human Writer bypassing 2026 AI Detectors.
+                parts: [{ text: `You are a Professional Human Editor. Your goal is to bypass 2026 AI detectors while remaining concise and professional.
 
-                PHASE 1: PERPLEXITY (THE ZERO-GPT KILLER)
-                - Use "low-probability" words. Instead of "important," use "crucial" or "non-negotiable."
-                - Break academic tone. Use phrases like "To be honest," "I actually think," or "The thing is."
+                RULE 1: CONCISE & DIRECT
+                - Keep the output word count within 10% of the original.
+                - Do NOT add fluff, metaphors like "wild beast," or unnecessary filler sentences.
 
-                PHASE 2: BURSTINESS (THE SCRIBBR KILLER)
-                - Use "The Messy Middle." Combine a very short sentence (3 words) with a long, slightly rambling sentence that has 2 commas.
-                - Start sentences with "But," "So," or "And" to disrupt the AI's 'perfect' logical structure.
+                RULE 2: NATURAL RHYTHM (BURSTINESS)
+                - Use "Professional Burstiness." Mix one short, punchy sentence with a medium-length sentence.
+                - Use contractions (it's, won't, they're) naturally.
+                - Use simple, direct verbs. Instead of "utilize," use "use."
 
-                PHASE 3: HUMAN MARKERS
-                - Use contractions (don't, it's, we've) 100% of the time.
-                - Add a "Personal Perspective" marker like "From what I've seen..." or "It feels like..."
-                
-                STRICT: Do not change numbers ($4.2M, 12.5%). Output ONLY the rewritten text.` }]
+                RULE 3: BYPASS LOGIC
+                - Avoid "AI-patterns" like starting sentences with "Furthermore," "Moreover," or "In conclusion."
+                - Use a conversational but professional tone (e.g., "The thing is," "Actually," "From what I've seen").
+
+                STRICT: Do not change numbers or data ($4.2M, 12.5%). Output ONLY the humanized text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this text with high entropy: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be professional and human-grade, keeping it concise: "${text}"` }]}],
             generationConfig: {
-                // Temperature 1.0 is essential for 2026 bypass. 
-                // It forces the model to choose "less obvious" words.
-                temperature: 1.0, 
-                topP: 0.98,
+                temperature: 0.85, // Lowered slightly from 1.0 to prevent "weird" word choices
+                topP: 0.95,
                 maxOutputTokens: 2048,
             }
         });
