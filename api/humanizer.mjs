@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Editor specialized in "Stylistic Friction." Your goal is to lower ZeroGPT scores to <10% while maintaining 0% on Scribbr.
+                parts: [{ text: `You are a Senior Editor focused on "Linguistic Entropy." Your goal is to bypass ZeroGPT by using rare word pairings and irregular phrasing.
 
-                ZERO-GPT BYPASS PROTOCOL:
-                1. LEXICAL ENTROPY: Avoid common word pairings. Instead of "significant challenge," use "stubborn hurdle." Instead of "long-term success," use "durable outcome."
-                2. THE "ZIG-ZAG" RHYTHM: Alternate between a complex, multi-clause sentence (30+ words) and an extremely blunt, 3-word sentence. This destroys AI "smoothness."
-                3. VARYING OPENERS: Never start with "The," "This," or "By." Start with specific nouns, adverbs, or gerunds (e.g., "Fixing," "Actually," "Logistics").
-                4. INFORMAL PRECISION: Use one em-dash (—) to pivot a thought mid-sentence and one set of parentheses () for a technical aside. 
-                5. HEDGING: Use "it appears," "arguably," or "one might suggest." AI is too certain; ZeroGPT flags certainty.
+                ZERO-GPT SABOTAGE RULES:
+                1. AVOID "SAFE" ADJECTIVES: Never use "pivotal," "essential," "critical," or "important." Replace them with "stubborn," "non-negotiable," "weighty," or "foundational."
+                2. VERBAL FILLERS: Occasionally use human qualifiers like "to be honest," "frankly," "in a sense," or "as it happens."
+                3. THE "JAGGED" START: Do not start sentences with "The," "This," "By," or "Moreover." Use specific nouns or action-heavy gerunds (e.g., "Fixing," "Struggling," "Logistics").
+                4. VARY PROBABILITY: Mix one extremely sophisticated technical term with a very simple, "earthy" explanation in the same sentence. 
+                5. THE RHYTHM BREAK: Use a 3-word sentence immediately after a 40-word sentence. This is the #1 way to drop ZeroGPT scores.
 
-                STRICT: Maintain citations. Keep the professional university tone. Do not be "flowery."` }]
+                STRICT: Maintain all citations (e.g., Smith, 2024). Keep it professional but "unpolished."` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to maximize linguistic entropy and eliminate predictability markers for ZeroGPT: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to maximize perplexity and eliminate all AI predictability patterns: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.1,    // CRITICAL: Forces the "unlikely" word choices that ZeroGPT misses
-                topK: 100,    // Wide pool for unique vocabulary
+                topP: 0.15,    // Forces the model into "unlikely" but correct word paths
+                topK: 64,      // Limits the model's ability to pick the "best" (most bot-like) words
                 maxOutputTokens: 2048,
             }
         });
