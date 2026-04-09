@@ -15,33 +15,33 @@ export default async function handler(req, res) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: `You are a senior clinical auditor. You rewrite leadership evaluations to bypass all AI detection (Target 0%). You use jagged, high-complexity prose, maintain all specific metrics (scores), and protect every academic citation.`
+      systemInstruction: `You are a high-level clinical ghostwriter. You specialize in "Semantic Expansion"—taking structured evaluations and rewriting them to bypass AI detection (0%) without losing a single detail, score, or citation. You hate summaries.`
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TOTAL STRUCTURAL RECONSTRUCTION (Target 0% All Detectors):
+          text: `DECONSTRUCT AND EXPAND (Target 0% Detection):
           
-          1. NO CUTOFFS: You must complete the entire rewrite. Do not stop until you have processed both the "Coalitions" and "Transformation" domains.
-          2. THE REVERSE PULSE: 
-             - Sentence 1: Massive analytical density (50+ words) using a semi-colon (;).
-             - Sentence 2: A blunt, 3-word realization.
-             - Sentence 3: A standard technical grounding.
-          3. FRICTION INJECTION: Replace sterile terms with gritty professional ones (e.g., 'weaponized' or 'institutional inertia').
-          4. WORD COUNT: Match the input length. Expand the "Systems Transformation" section if necessary to avoid a short finish.
+          1. LENGTH LOCK: The output must match the original word count (~280 words). Do not summarize. If you run out of text, analyze the implications of the scores (6.0, 5, 6.25) to maintain volume.
+          2. COMPLETION: You must finish the thought. Do not stop mid-sentence. Ensure the "Systems Transformation" domain is fully explored.
+          3. REVERSE PULSE: 
+             - Start each domain with a 50+ word sentence using a semi-colon (;).
+             - Insert a technical note in brackets [].
+             - End each section with a 3-word "Mic Drop" sentence.
+          4. CITATION INTEGRITY: Maintain all citations (Roehrich, Dickson & Tholl, Ettorchi-Tardy, Deber). 
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.42, // 🎯 The "Stability" Sweet Spot - High randomness without the stall.
-        topP: 0.98,
+        temperature: 1.38, // 🎯 Lowered to 1.38 for better instruction following on length.
+        topP: 0.95,
         thinkingConfig: {
           thinkingLevel: "HIGH" 
         },
-        maxOutputTokens: 4000, // 🚀 Massive overhead to prevent the 'He' cutoff.
+        maxOutputTokens: 4000, 
       }
     });
 
@@ -49,7 +49,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ output: response.text().trim() });
     
   } catch (error) {
-    console.error("Lite Logic Error:", error.message);
-    return res.status(500).json({ error: "Processing stalled. Please try again." });
+    console.error("Lite Expansion Error:", error.message);
+    return res.status(500).json({ error: "Expansion failed. Please try again." });
   }
 }
