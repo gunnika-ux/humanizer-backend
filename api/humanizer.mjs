@@ -15,27 +15,27 @@ export default async function handler(req, res) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: "You are a rogue academic editor. You hate standard AI writing. You use dense, jagged, and non-linear prose. Your goal is to bypass detection by making the text feel manually 'over-engineered' and structurally unpredictable."
+      systemInstruction: "You are a senior executive writing a confidential internal memo. Your tone is blunt, dense, and avoids all 'educational' or 'explanatory' phrasing. You write with the assumption that the reader is already an expert."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `STRUCTURAL SABOTAGE (Target 0-10% Detection):
+          text: `RECONSTRUCT FOR ZERO DETECTION:
           
-          1. THE JAGGED RULE: Break every sentence rhythm. Use dashes (—), semi-colons (;), and brackets [] aggressively. 
-          2. LINGUISTIC FRICTION: Swap all academic verbs for high-impact professional ones (e.g., 'gutted', 'cemented', 'weaponized', 'anchored'). 
-          3. NO ROBOTIC FLOW: Never start a sentence with "This," "It," "Furthermore," or "Additionally." Start with the core noun or a technical observation.
-          4. CITATION MASKING: Weave the citations (e.g., Roehrich et al., 2014) into the middle of complex sentences, never at the end.
-          5. COMPLETION: Finish every domain. Do not stop until the final period of the Systems Transformation section.
+          1. SUBJECT-DRIVEN OPENERS: Never start a sentence with "This," "The," "It," or "There." Start every sentence with a concrete noun or a technical concept (e.g., "Coalition building demands..." or "Systemic friction occurs...").
+          2. ASYMMETRICAL PHRASING: Mix one very long sentence (40+ words) with two very short, blunt sentences (4-6 words).
+          3. VOCABULARY SHIFT: Use "gritter" professional verbs: 'anchored', 'gutted', 'leveraged', 'stagnated', 'hardwired'. 
+          4. CITATION WEAVING: Place citations (e.g., Deber, 2018) inside parentheses mid-sentence, not at the end.
+          5. NO SUMMARIES: Maintain the original volume. Finish the transformation section completely.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.5, 
-        topP: 1.0, // 🚀 Maximum diversity of word choice
+        temperature: 1.48, 
+        topP: 1.0, 
         thinkingConfig: {
           thinkingLevel: "HIGH" 
         },
