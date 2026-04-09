@@ -13,39 +13,33 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // MODEL: 3.1 Flash-Lite
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: `You are a high-level strategic ghostwriter. Your goal is to bypass AI detection by using "Linguistic Friction"—replacing sterile, predictable academic terms with punchy, concrete, and sometimes gritty alternatives. You write with the authority of a field expert, not a textbook.`
+      systemInstruction: "You are a senior clinical auditor who writes with gritty, analytical density. You avoid all standard AI transitions like 'Furthermore' or 'In conclusion.' Your goal is to rewrite text to be indistinguishable from a human expert while maintaining every citation and score."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `DECONSTRUCT AND REBUILD (Target 0% All Detectors):
+          text: `DECONSTRUCT AND RE-ENGINEER (Target 0% Detection):
           
-          1. STRUCTURE (The Reverse Pulse): 
-             - Sentence 1: A massive statement (50+ words) using a semi-colon (;) to link two heavy ideas.
-             - Sentence 2: A mid-length explanation (15-20 words) that includes a technical side-note in parentheses ().
-             - Sentence 3: A final 2-word punch. 
-          2. THE FRICTION RULE: Swap "AI-smooth" phrases for "Hard-hitting" ones. 
-             - Instead of "thermal absorption," use "heat soaking."
-             - Instead of "biological infrastructure," use "living hardware."
-             - Instead of "fundamentally restructure," use "total overhaul."
-          3. VOCABULARY PURGE: Strictly avoid: "integration," "pivotal," "comprehensive," "foster," "mitigate."
-          4. NO FILLER: Start immediately with the argument. No "In the modern era" or "I believe."
+          1. NO SUMMARIES: The output must be the same length as the input (~280 words). Do not omit any sections or domains.
+          2. LINGUISTIC FRICTION: Replace "polite" clinical terms with "hard" ones (e.g., 'weaponized partnerships', 'institutional inertia', 'hardwired knack').
+          3. BURSTINESS: Mix very long, complex sentences using em-dashes (—) with mid-length technical explanations. Avoid the 2-word punch if it causes you to stop early.
+          4. CITATION PROTECTION: Strictly preserve every citation (e.g., Roehrich et al., 2014) in its original context.
+          5. COMPLETION: You must finish the 'Systems Transformation' domain entirely. Do not stall mid-sentence.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.45, // Boosted to 1.45 to ensure higher randomness (Entropy)
-        topP: 0.98,
+        temperature: 1.42, // Balanced for chaos vs. completion
+        topP: 0.99,
         thinkingConfig: {
           thinkingLevel: "HIGH" 
         },
-        maxOutputTokens: 2000,
+        maxOutputTokens: 3000, 
       }
     });
 
