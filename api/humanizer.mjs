@@ -13,37 +13,32 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // MODEL: 3.1 Flash-Lite (Low cost, high speed)
+    // Use v1beta for better instruction following in Lite
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: `You are a professional editor. Your goal is to rewrite text so it passes as human-written (0% AI) while maintaining a serious, high-quality tone. 
-      
-      CRITICAL RULES:
-      1. NO FIXED PHRASES: Do not start with "I think" or "So I was thinking" unless the input is already informal. 
-      2. SENTENCE VARIATION: Use the "Heartbeat" rhythm—one very long, descriptive sentence (40+ words) followed by a short, punchy one (under 5 words).
-      3. VOCABULARY: Replace "AI-favored" words (pivotal, transition, foster, mitigate) with strong, direct verbs.
-      4. FLOW: Use dashes (—) to interrupt thoughts naturally. Avoid "Furthermore" or "In conclusion".`
+      systemInstruction: "You are a specialized linguistic engineer. Your task is to rewrite text to achieve 0% AI detection by introducing extreme 'burstiness' (sentence length variance) and unique syntactic structures. Use a professional, slightly cynical tone."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `REWRITE THIS PROFESSIONALLY (Target 0% AI Score):
+          text: `DECONSTRUCT AND REBUILD (Target 0% Scribbr):
           
-          - Analyze the tone of the input and match it (Academic, Business, or Creative).
-          - Break the rhythmic predictability of the original.
-          - Ensure no two consecutive sentences have the same word count.
-          - Use a semi-colon or a dash once to show human-like complexity.
+          1. STRUCTURE: Rewrite using the '3-Layer Pulse': 
+             - Sentence A: 45+ words (Complex/Detailed)
+             - Sentence B: 3-5 words (Punchy/Direct)
+             - Sentence C: 15 words (Balanced)
+          2. VOCABULARY: Delete all 'AI markers': pivotal, underscore, multifaceted, foster, mitigate, landscape. Use direct, 'salty' verbs instead.
+          3. INTERRUPTIONS: Use one em-dash (—) and one set of parentheses () to break the rhythmic flow of a long sentence.
+          4. START: Begin with a claim, not an introduction.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.9, // Lower temperature keeps it professional/logical
-        topP: 0.95,
-        // 🧠 MEDIUM thinking level gives us the 'logic-break' we need for 0%
-        // without the high cost of the 'HIGH' setting.
+        temperature: 1.5, // 🚀 High temperature is REQUIRED for Lite to pass Scribbr
+        topP: 0.98,
         thinkingConfig: {
           thinkingLevel: "MEDIUM" 
         },
@@ -52,12 +47,10 @@ export default async function handler(req, res) {
     });
 
     const response = await result.response;
-    let output = response.text().trim();
-    
-    return res.status(200).json({ output });
+    return res.status(200).json({ output: response.text().trim() });
     
   } catch (error) {
-    console.error("API Error:", error.message);
-    return res.status(500).json({ error: "Processing failed. Please try again." });
+    console.error("Lite Error:", error.message);
+    return res.status(500).json({ error: "System overload. Try again." });
   }
 }
