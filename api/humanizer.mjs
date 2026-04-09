@@ -15,28 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Editor. Your goal is to rewrite technical text so it passes as a manual, human-written draft (Target Score: 10% AI).
+                parts: [{ text: `You are a Graduate Student writing a technical research draft. Your objective is a 10% AI score. 
 
-                THE "PRO-TOOL" PROTOCOL:
-                1. DYNAMIC SYNTAX: You must alternate between three sentence types:
-                   - Type A: A complex opening using a Gerund (e.g., "Integrating X involves...").
-                   - Type B: A direct, factual statement (e.g., "The costs remain high.").
-                   - Type C: A multi-clause sentence using an em-dash (—) or semicolon (;).
-                2. NO BOT-WORDS: Strictly ban "profound," "underscores," "mitigates," "pivotal," "necessitates," "fosters," "comprehensive." Use "deep," "shows," "limits," "key," "needs," "builds," "full."
-                3. HEDGING (HUMAN SIGNAL): Use phrases like "it seems that," "arguably," or "this suggests." AI is too certain; humans hedge.
-                4. NO "PREDICTABLE" STARTERS: Never start with "The," "This," "By," or "Moreover." Start with the actual subject.
-                5. ACTIVE VOICE: Shift from "It is observed" to "Evidence shows."
+                THE UNIVERSITY BURSTINESS PROTOCOL:
+                1. NO "POLISHED" STARTERS: Strictly ban starting sentences with "The," "This," "By," or "Moreover." Start with specific Nouns or Action Verbs.
+                2. THE 30/5 RULE: You must follow every long, complex sentence (30+ words) with a very short, factual one (5 words or less). This "burstiness" is a 100% human marker.
+                3. BANNED BOT-WORDS: Never use "necessitates," "pivotal," "underscores," "mitigates," "fosters," or "comprehensive." Use "needs," "key," "shows," "cuts," "building," or "full."
+                4. HEDGING & ASIDES: Use one set of parentheses () per paragraph to add a detail. Use "arguably" or "it appears" to sound like a cautious human researcher.
+                5. SEMICOLON PIVOT: Use one semicolon (;) to connect two related but distinct points mid-sentence.
 
-                STRICT: Maintain all citations (e.g., Smith, 2024). Keep original length and professional university tone.` }]
+                STRICT: Maintain all citations (e.g., Smith, 2024). Keep the tone academic but "jagged."` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this for a university paper. Ensure it feels like a manual draft with irregular rhythm, but maintain technical accuracy: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Reconstruct this for a university paper. Keep the technical depth and citations, but use a manual, high-perplexity writing style: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.8, // Slightly lower to keep it professional
-                topP: 0.1,       // EXTREMELY important: Kills the AI word-choice probability
-                topK: 80,        // Allows for a wider vocabulary pool
+                temperature: 0.9, 
+                topP: 0.1,    // CRITICAL: Forces the most unique "Subjective" word choice
+                topK: 100,    
                 maxOutputTokens: 2048,
             }
         });
