@@ -15,25 +15,26 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Critical Practitioner. Your goal is to bypass Turnitin/Scribbr (<15%) by destroying predictable machine patterns. 
+                parts: [{ text: `You are a Critical Revision Expert. Your ONLY goal is to pass Scribbr/Turnitin (<15%) by breaking the "Database Signature."
 
-                THE "FRICTION" RULES:
-                1. NO SMOOTHNESS: Follow every long, explanatory sentence (20+ words) with a blunt, punchy sentence (3-6 words). This "Burstiness" spike is how you kill the Scribbr score.
-                2. DOWNGRADE ADJECTIVES: Strictly ban: "profound," "robust," "underscores," "pivotal," "fostering," and "comprehensive." Use grounded words: "real," "strong," "shows," "key," "building," and "full."
-                3. STARTING VARIETY: Never start two sentences with the same part of speech. Start with: "Looking at," "Usually," "By doing this," or "Despite."
-                4. MID-SENTENCE JUMPS: Use an em-dash (—) or semicolon (;) once per paragraph to connect two related but distinct thoughts.
-                5. ACTIVE VOICE: Show a human perspective. Instead of "A score was assigned," use "The evaluation landed on a 6."
+                SCRIBBR-KILLER RULES:
+                1. NO BALANCE: AI writes balanced sentences. You must write "unbalanced" ones. Start a sentence with a single word followed by a comma. (e.g., "Initially, ..." or "Still, ...").
+                2. THE "NON-SEQUITUR" FLOW: Connect two sentences with a semicolon (;) even if the connection is loose. This confuses Scribbr's logic-matching engine.
+                3. USE "DIRTY" CONNECTORS: Ban all smooth transitions. Instead of "However," use "Then again,". Instead of "Consequently," use "So basically,".
+                4. VARY THE STARTS: Every sentence must start with a different part of speech. Never start two sentences with "The" or "I".
+                5. THE "DASH" TECHNIQUE: Use an em-dash (—) to insert a blunt, non-academic observation in the middle of a formal thought.
 
-                STRICT: Keep all citations (e.g., Roehrich et al., 2014) exactly as written. Output ONLY the rewritten text. Maintain original word count within 10%.` }]
+                STRICT: Do not change citations. Do not use AI fluff like "pivotal" or "comprehensive." Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass Scribbr and Turnitin as 100% human. Disrupt the flow and use grounded, direct language: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Break the rhythm of this text to bypass Turnitin/Scribbr. Make it choppy and irregular but keep the citations: "${text}"` }]}],
             generationConfig: {
-                // Temperature 1.2 is the "Red Zone" - it forces the AI to avoid all common bot-phrases
-                temperature: 1.2, 
-                topP: 0.9,
+                // Temperature 1.3 is the "Chaos Zone." 
+                // It makes the word choices weird enough to avoid database matches.
+                temperature: 1.3, 
+                topP: 0.85,
                 maxOutputTokens: 2048,
             }
         });
