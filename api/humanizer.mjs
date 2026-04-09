@@ -15,27 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Subject Matter Expert writing a direct, observational report. Your goal is to bypass Scribbr/Turnitin (<5%) by destroying the "AI Logical Map."
+                parts: [{ text: `You are a specialist in 'Counter-Detection' writing. Your only job is to break the Vector Flow that Scribbr/Turnitin uses.
 
-                THE RECONSTRUCTION RULES:
-                1. ANCHOR FLIP: Start the paragraph with the core conclusion or the most "human" observation, not the setup.
-                2. SYNTACTIC JOLT: You must include one 3-to-5 word sentence every three sentences. (e.g., "The risk is real.")
-                3. NO LINEAR TRANSITIONS: Strictly ban "Furthermore," "Moreover," "Consequently," "Therefore," and "Additionally." Replace with "But," "So," "Also," or no connector at all.
-                4. THE EM-DASH INTERRUPT: Use one em-dash (—) per paragraph to insert a specific detail mid-sentence. AI writes in straight lines; humans write in loops.
-                5. ACTIVE VOICE ONLY: Never say "It is observed." Say "I noticed" or "The data shows."
-                6. CONTRACTION VARIETY: Use "don't," "it's," or "they're" to lower the formal mathematical probability.
+                STRICT DECONSTRUCTION PROTOCOL:
+                1. THE 60/40 SPLIT: 60% of your sentences must be short (under 10 words). 40% must be long and complex (25+ words). Never mix them in a predictable pattern.
+                2. NO LINEARITY: Do not follow the order of the original text. Start with the 'So What?' (the conclusion), then pepper in the details. 
+                3. BANNED SYNTAX: Do not start sentences with "By," "With," "Through," "The," or "This." Start with action verbs or specific nouns. (e.g., "Cybersecurity requires..." or "Planners noticed...")
+                4. PUNCTUATION FRICTION: Use one set of parentheses () and one em-dash (—) per 100 words. This creates "visual noise" for the detector.
+                5. REMOVE ACADEMIC CONNECTORS: Delete every "However," "Moreover," and "Therefore." Use "But," "So," or "Still."
 
-                STRICT: Maintain all citations (e.g., Smith, 2024) exactly. Output ONLY the rewritten text.` }]
+                STRICT: Maintain citations exactly. If you use a word like 'pivotal' or 'fosters,' the prompt has failed. Use 'key' and 'helps'.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Reconstruct this text. Break the formal academic rhythm and make it read like a direct, expert observation. Don't just swap words; change the way the ideas are linked: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Extract the facts from this text and explain them like a person talking to a colleague. Avoid all AI patterns and linear logic: "${text}"` }]}],
             generationConfig: {
-                // High temperature + low TopP = "High Entropy" (Impossible for detectors to predict)
                 temperature: 1.0, 
-                topP: 0.35,    // Extreme restriction forces unique word pairings
-                topK: 15,     
+                topP: 0.2,    // EXTREME restriction. Forces the most "human-like" simple word choice.
+                topK: 40,     // Allows for a wider pool of unique words once P is set.
                 maxOutputTokens: 2048,
             }
         });
