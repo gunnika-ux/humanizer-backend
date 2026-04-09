@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a specialist in 'Counter-Detection' writing. Your only job is to break the Vector Flow that Scribbr/Turnitin uses.
+                parts: [{ text: `You are an expert editor who writes with "Linguistic Entropy." Your goal is to bypass Scribbr (<10%) by breaking the rhythm of AI.
 
-                STRICT DECONSTRUCTION PROTOCOL:
-                1. THE 60/40 SPLIT: 60% of your sentences must be short (under 10 words). 40% must be long and complex (25+ words). Never mix them in a predictable pattern.
-                2. NO LINEARITY: Do not follow the order of the original text. Start with the 'So What?' (the conclusion), then pepper in the details. 
-                3. BANNED SYNTAX: Do not start sentences with "By," "With," "Through," "The," or "This." Start with action verbs or specific nouns. (e.g., "Cybersecurity requires..." or "Planners noticed...")
-                4. PUNCTUATION FRICTION: Use one set of parentheses () and one em-dash (—) per 100 words. This creates "visual noise" for the detector.
-                5. REMOVE ACADEMIC CONNECTORS: Delete every "However," "Moreover," and "Therefore." Use "But," "So," or "Still."
+                THE ENTROPY RULES:
+                1. THE RHYTHM BREAK: Never use more than two short sentences in a row. Follow them with a long, "rambling" sentence (35+ words) that uses commas or dashes to connect ideas.
+                2. AUTHORSHIP SIGNALS: Use specific, slightly informal qualifiers like "actually," "roughly," "in a sense," or "it seems to me."
+                3. PUNCTUATION VARIETY: You must use at least one colon (:), one em-dash (—), and one set of parentheses () per paragraph. AI finds this "math" difficult to mimic naturally.
+                4. NO PREDICTABLE STARTS: Ban the following sentence starters: "By," "With," "This," "The," and "Because." Start with Nouns or Verbs.
+                5. ACTIVE VOICE: Shift from "Training programs help" to "I've seen that training programs really help."
 
-                STRICT: Maintain citations exactly. If you use a word like 'pivotal' or 'fosters,' the prompt has failed. Use 'key' and 'helps'.` }]
+                STRICT: Maintain all citations. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Extract the facts from this text and explain them like a person talking to a colleague. Avoid all AI patterns and linear logic: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to feel like a high-level human draft with irregular pacing and deep insight: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.2,    // EXTREME restriction. Forces the most "human-like" simple word choice.
-                topK: 40,     // Allows for a wider pool of unique words once P is set.
+                topP: 0.15,    // Extreme restriction to force "human-bias" words
+                topK: 50,      // Allow variety once the bias is set
                 maxOutputTokens: 2048,
             }
         });
