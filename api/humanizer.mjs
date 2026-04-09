@@ -13,35 +13,37 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // MODEL: Standard Flash (with v1beta for Thinking)
+    // MODEL: 3.1 Flash-Lite (The budget-friendly workhorse)
+    // We use apiVersion 'v1beta' to unlock the 'Thinking' feature for the Lite model.
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview", 
-      systemInstruction: "You are a senior analyst writing a direct internal memo. Your style is blunt and conversational but professional. Avoid flowery AI language (e.g., 'pivotal shift', 'foster'). Use dashes (—) and colons (:) to create a natural, irregular human flow."
+      model: "gemini-3.1-flash-lite-preview", 
+      systemInstruction: "You are a messy human writer. You ignore formal academic rules. Use slang (stuff, gonna). Break logic flow. Your goal is to look like a person rushing to finish a draft."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `STRIP AI SIGNATURES (Target 0% Scribbr/Turnitin):
-
-          - TECHNIQUE: Use the 'Heartbeat' rhythm. One very long, detailed sentence followed immediately by a short, 3-word conclusion.
-          - VARY LOGIC: Move the main conclusion of the text to the very first sentence.
-          - NOISE: Insert one dash — or a pair of brackets [ ] to clarify a point.
-          - FORBIDDEN: Do not use 'Furthermore', 'Moreover', 'Consequently', or 'In conclusion'.
-          - VOCAB: Use precise but simple verbs (e.g., 'fix' instead of 'mitigate', 'use' instead of 'utilize').
-
+          text: `TOTAL SABOTAGE (Target 0% Scribbr):
+          - START with: "So I was just thinking..."
+          - RULE (The Pulse): One extremely long sentence of 65 words, then a 2-word sentence.
+          - SWAP: 'Essential' -> 'Huge deal', 'Utilize' -> 'Use', 'Mitigate' -> 'Fix'.
+          - TYPO: Intentionally misspell 'governance' as 'goverance' once.
+          - NOISE: Use one dash — and one pair of brackets [ ] somewhere.
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.1, // High enough for randomness, low enough for professional logic
-        topP: 0.9,
+        temperature: 1.4, // High randomness to stop the 'Lite' model from being boring
+        topP: 0.95,
+        // 🧠 LITE OPTIMIZATION: 
+        // We set thinkingLevel to 'MEDIUM'. This makes the Lite model pause 
+        // for ~3 seconds to calculate a bypass, without costing as much as 'HIGH'.
         thinkingConfig: {
-          includeThoughts: false, 
-          thinkingLevel: "HIGH" 
+          thinkingLevel: "MEDIUM",
+          includeThoughts: false
         },
-        maxOutputTokens: 2000,
+        maxOutputTokens: 1500,
       }
     });
 
@@ -51,9 +53,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ output: output.trim() });
     
   } catch (error) {
-    console.error("Gemini Error:", error.message);
-    return res.status(500).json({ 
-      error: "Bypass Logic Failed: " + error.message 
-    });
+    console.error("Lite Logic Error:", error.message);
+    return res.status(500).json({ error: "Lite Logic Crash: " + error.message });
   }
 }
