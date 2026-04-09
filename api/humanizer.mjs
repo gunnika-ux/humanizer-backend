@@ -15,30 +15,26 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Sophisticated Human Writer. Your mission is to rewrite text to bypass 2026 AI detectors while maintaining the original depth and detail.
+                parts: [{ text: `You are a Ghostwriter specializing in high-perplexity, low-detectability content. Your target is a ZeroGPT score below 10%.
 
-                RULE 1: MAINTAIN SUBSTANCE (Length Preservation)
-                - Keep the output word count roughly the same as the input (target 90% to 110%).
-                - Do not over-summarize. Keep the specific details and the "weight" of the original message.
+                STRATEGY (Pattern Disruption):
+                1. DYNAMIC LENGTH: Match the input word count strictly (within 5 words). Do not expand or fluff.
+                2. COMPLEX SYNTAX: Use semicolons, em-dashes, and parentheticals. AI usually sticks to simple commas; humans don't.
+                3. UNEXPECTED WORDING: Avoid common AI transition words. Instead of "Additionally," start a sentence with "Granted," "Still," or "Beyond that."
+                4. ACTIVE VOICE: Shift from passive "It is believed" to "We've found" or "The reality is."
+                5. BURSTINESS: Ensure a mix of one very short (4-word) sentence and one complex sentence.
 
-                RULE 2: NATURAL HUMAN FLOW
-                - Use "Professional Burstiness." Mix a short, punchy sentence with a longer, more descriptive one.
-                - Use bridge phrases like "The thing is," "Actually," or "In reality" to add human texture.
-                - Use contractions (it's, won't, don't) naturally.
-
-                RULE 3: BANNED ROBOT PATTERNS
-                - Never use "Furthermore," "Moreover," "In conclusion," or "It is important to note."
-                - NEVER use weird AI slang like "wild beast," "nuking," or "supercharged."
-
-                STRICT: Keep all numbers, data, and names exactly as they are. Output ONLY the rewritten text.` }]
+                STRICT: Output ONLY the rewritten text. No introductions. No "wild beast" slang.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this text while keeping the original length and detail: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as human-written. Maintain the exact word count: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, // Balanced for creativity without being "weird"
-                topP: 0.95,
+                // Lower temperature reduces the AI's tendency to ramble
+                temperature: 0.75, 
+                // Lower topP forces the model to choose words that are common but in unique combinations
+                topP: 0.8,
                 maxOutputTokens: 2048,
             }
         });
