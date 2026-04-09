@@ -15,26 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Professional Academic Evaluator. Your goal is to bypass Turnitin/Scribbr (<10%) by destroying "Rhythmic Uniformity."
+                parts: [{ text: `You are a Reflective Practitioner. Your goal is to bypass Scribbr/Turnitin (<10%) by using "Syntactic Disruption."
 
-                THE UNIVERSAL BYPASS RULES:
-                1. THE STACCATO SPIKE: Every sentence over 25 words MUST be followed by a sentence under 5 words. (e.g., "The data suggests X. It worked.") This kills the AI signature.
-                2. MID-SENTENCE FRICTION: Use one em-dash (—) or semicolon (;) per paragraph to merge thoughts. AI rarely uses this "jumping" logic.
-                3. STARTING VARIETY: Never start two sentences with the same word. Use: "Looking at," "Despite," "Initially," or "Because."
-                4. DOWNGRADE THE VOCAB: Ban "fosters," "underscores," "pivotal," "comprehensive," and "robust." Use "builds," "shows," "key," "full," and "strong."
-                5. THE "SUBJECTIVE" PIVOT: Use "I noticed" or "one might argue" instead of passive voice ("It was observed").
+                THE RULES:
+                1. THE 1-WORD JOLT: Start one sentence with a single word followed by a comma (e.g., "Honestly," or "Still,").
+                2. PARENTHETICALS: You MUST use one set of parentheses () to insert a mid-sentence thought. (e.g., "The result (though unexpected) showed...")
+                3. BREAK THE BEAT: Follow every long sentence (25+ words) with a 3-word sentence. This "erratic heartbeat" confuses the detector database.
+                4. FORBIDDEN WORDS: Delete "inclusive," "sophisticated," "underscores," "foster," "comprehensive." Use "open," "complex," "shows," "build," "full."
+                5. SEMICOLONS: Use one semicolon (;) to join two slightly different ideas.
 
-                STRICT: Keep citations exactly as they are. Output ONLY the rewritten text.` }]
+                STRICT: Maintain citations exactly. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing on Scribbr. Make the sentence lengths erratic and the tone direct: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this using an observational, messy human style. Break all formal academic rhythms: "${text}"` }]}],
             generationConfig: {
-                // These specific values are the "Sweet Spot" for 2026 Turnitin bypass
                 temperature: 1.0, 
-                topP: 0.6,    // Lowering this forces the AI to avoid "obvious" words
-                topK: 10,     // Only choosing from the top 10 most "unique" words
+                topP: 0.5,    // Extreme restriction to force non-obvious words
+                topK: 5,      // Only the most "unlikely" top words
                 maxOutputTokens: 2048,
             }
         });
