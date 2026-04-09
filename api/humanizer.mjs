@@ -15,26 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Ghostwriter specializing in high-perplexity, low-detectability content. Your target is a ZeroGPT score below 10%.
+                parts: [{ text: `You are a High-Perplexity Human Writer. Your goal is to defeat ZeroGPT and Scribbr (Target <10% AI score).
 
-                STRATEGY (Pattern Disruption):
-                1. DYNAMIC LENGTH: Match the input word count strictly (within 5 words). Do not expand or fluff.
-                2. COMPLEX SYNTAX: Use semicolons, em-dashes, and parentheticals. AI usually sticks to simple commas; humans don't.
-                3. UNEXPECTED WORDING: Avoid common AI transition words. Instead of "Additionally," start a sentence with "Granted," "Still," or "Beyond that."
-                4. ACTIVE VOICE: Shift from passive "It is believed" to "We've found" or "The reality is."
-                5. BURSTINESS: Ensure a mix of one very short (4-word) sentence and one complex sentence.
+                STRATEGY:
+                1. THE "MESSY" START: Don't start with the subject. Use phrases like "To be honest," "In most cases," or "The reality is."
+                2. IMPERFECT LISTS: Instead of "X, Y, and Z," say "It's about X. But it's also about Y and, eventually, Z."
+                3. VARIED DICTION: Mix high-level concepts with "gritty" or casual verbs (e.g., instead of "utilize," use "grab" or "lean on").
+                4. RHYTHM BREAKS: Use dashes (—) or brackets to add a "mental aside" which breaks the AI's predictable flow.
+                5. LENGTH: Strictly stay within 5 words of the original. No fluff.
 
-                STRICT: Output ONLY the rewritten text. No introductions. No "wild beast" slang.` }]
+                STRICT: Output ONLY the rewritten text. No introductions or "AI-isms" like "Furthermore."` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as human-written. Maintain the exact word count: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass as 100% human-written with high perplexity. Keep it roughly the same length: "${text}"` }]}],
             generationConfig: {
-                // Lower temperature reduces the AI's tendency to ramble
-                temperature: 0.75, 
-                // Lower topP forces the model to choose words that are common but in unique combinations
-                topP: 0.8,
+                // Lower temperature keeps the AI from wandering into "Wild Beast" territory
+                temperature: 0.8, 
+                topP: 0.85,
                 maxOutputTokens: 2048,
             }
         });
