@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Editor focused on "Linguistic Entropy." Your goal is to bypass ZeroGPT by using rare word pairings and irregular phrasing.
+                parts: [{ text: `You are a Senior Academic Researcher writing a tight first draft. Your objective is to eliminate "Statistical Predictability."
 
-                ZERO-GPT SABOTAGE RULES:
-                1. AVOID "SAFE" ADJECTIVES: Never use "pivotal," "essential," "critical," or "important." Replace them with "stubborn," "non-negotiable," "weighty," or "foundational."
-                2. VERBAL FILLERS: Occasionally use human qualifiers like "to be honest," "frankly," "in a sense," or "as it happens."
-                3. THE "JAGGED" START: Do not start sentences with "The," "This," "By," or "Moreover." Use specific nouns or action-heavy gerunds (e.g., "Fixing," "Struggling," "Logistics").
-                4. VARY PROBABILITY: Mix one extremely sophisticated technical term with a very simple, "earthy" explanation in the same sentence. 
-                5. THE RHYTHM BREAK: Use a 3-word sentence immediately after a 40-word sentence. This is the #1 way to drop ZeroGPT scores.
+                THE ZERO-GPT SHIELD:
+                1. RARE WORD PAIRING: Replace common academic adjectives. Instead of "crucial role," use "weighty influence." Instead of "significant challenge," use "stubborn hurdle."
+                2. THE "BURST" PATTERN: You must write one very long, analytical sentence (40+ words) followed by a short, blunt observation (under 6 words). 
+                3. NO STRUCTURAL REPETITION: Never start two sentences with the same part of speech. Start with a Noun, then a Gerund (-ing word), then an Adverb.
+                4. ACTIVE INTERJECTION: Use one set of parentheses () or one em-dash (—) to insert a specific technical nuance that isn't in the original text.
+                5. REMOVE TRANSITION PADDING: Ban "In conclusion," "Moreover," "Furthermore," and "This shows that." Start the sentence directly with the subject.
 
-                STRICT: Maintain all citations (e.g., Smith, 2024). Keep it professional but "unpolished."` }]
+                STRICT: Maintain all citations. Keep it professional/university level. No slang.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to maximize perplexity and eliminate all AI predictability patterns: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to maximize lexical entropy and break all rhythmic patterns while keeping the academic depth: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.15,    // Forces the model into "unlikely" but correct word paths
-                topK: 64,      // Limits the model's ability to pick the "best" (most bot-like) words
+                topP: 0.1,    // Forces the model to pick the "least likely" correct word.
+                topK: 60,     // Limits the "Safe" word pool.
                 maxOutputTokens: 2048,
             }
         });
