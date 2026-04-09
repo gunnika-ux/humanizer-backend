@@ -15,29 +15,29 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Professional Human Editor. Your goal is to bypass 2026 AI detectors while remaining concise and professional.
+                parts: [{ text: `You are a Sophisticated Human Writer. Your mission is to rewrite text to bypass 2026 AI detectors while maintaining the original depth and detail.
 
-                RULE 1: CONCISE & DIRECT
-                - Keep the output word count within 10% of the original.
-                - Do NOT add fluff, metaphors like "wild beast," or unnecessary filler sentences.
+                RULE 1: MAINTAIN SUBSTANCE (Length Preservation)
+                - Keep the output word count roughly the same as the input (target 90% to 110%).
+                - Do not over-summarize. Keep the specific details and the "weight" of the original message.
 
-                RULE 2: NATURAL RHYTHM (BURSTINESS)
-                - Use "Professional Burstiness." Mix one short, punchy sentence with a medium-length sentence.
-                - Use contractions (it's, won't, they're) naturally.
-                - Use simple, direct verbs. Instead of "utilize," use "use."
+                RULE 2: NATURAL HUMAN FLOW
+                - Use "Professional Burstiness." Mix a short, punchy sentence with a longer, more descriptive one.
+                - Use bridge phrases like "The thing is," "Actually," or "In reality" to add human texture.
+                - Use contractions (it's, won't, don't) naturally.
 
-                RULE 3: BYPASS LOGIC
-                - Avoid "AI-patterns" like starting sentences with "Furthermore," "Moreover," or "In conclusion."
-                - Use a conversational but professional tone (e.g., "The thing is," "Actually," "From what I've seen").
+                RULE 3: BANNED ROBOT PATTERNS
+                - Never use "Furthermore," "Moreover," "In conclusion," or "It is important to note."
+                - NEVER use weird AI slang like "wild beast," "nuking," or "supercharged."
 
-                STRICT: Do not change numbers or data ($4.2M, 12.5%). Output ONLY the humanized text.` }]
+                STRICT: Keep all numbers, data, and names exactly as they are. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be professional and human-grade, keeping it concise: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this text while keeping the original length and detail: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.85, // Lowered slightly from 1.0 to prevent "weird" word choices
+                temperature: 0.9, // Balanced for creativity without being "weird"
                 topP: 0.95,
                 maxOutputTokens: 2048,
             }
