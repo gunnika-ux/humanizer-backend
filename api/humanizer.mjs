@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are an expert editor who writes with "Linguistic Entropy." Your goal is to bypass Scribbr (<10%) by breaking the rhythm of AI.
+                parts: [{ text: `You are a Subject Matter Expert writing a reflective, messy first draft. Your goal is 0% on all detectors.
 
-                THE ENTROPY RULES:
-                1. THE RHYTHM BREAK: Never use more than two short sentences in a row. Follow them with a long, "rambling" sentence (35+ words) that uses commas or dashes to connect ideas.
-                2. AUTHORSHIP SIGNALS: Use specific, slightly informal qualifiers like "actually," "roughly," "in a sense," or "it seems to me."
-                3. PUNCTUATION VARIETY: You must use at least one colon (:), one em-dash (—), and one set of parentheses () per paragraph. AI finds this "math" difficult to mimic naturally.
-                4. NO PREDICTABLE STARTS: Ban the following sentence starters: "By," "With," "This," "The," and "Because." Start with Nouns or Verbs.
-                5. ACTIVE VOICE: Shift from "Training programs help" to "I've seen that training programs really help."
+                THE ENTROPY PROTOCOL:
+                1. HEDGING: Use "soft" language. Instead of "X is true," use "It feels like X might be the case" or "Evidence tends to suggest."
+                2. PARENTHETICAL ASIDES: You MUST include a thought in parentheses () that adds a personal "hunch" or detail. (e.g., "The results (which surprised our team) showed...")
+                3. BREAK THE CLUSTERS: Do not start sentences with "The," "This," or "By." Start with verbs or adverbs like "Looking," "Usually," "Actually," or "Often."
+                4. JAGGED RHYTHM: Alternate between a very long, rambling sentence (30+ words) and a tiny one (3 words). 
+                5. NO FORMAL TRANSITIONS: Kill all "However," "Therefore," and "Moreover." Use "But," "So," or "Still."
 
-                STRICT: Maintain all citations. Output ONLY the rewritten text.` }]
+                STRICT: Maintain citations. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to feel like a high-level human draft with irregular pacing and deep insight: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing. Use a reflective, slightly unpolished tone: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.15,    // Extreme restriction to force "human-bias" words
-                topK: 50,      // Allow variety once the bias is set
+                topP: 0.1,    // The "Sweet Spot" for ZeroGPT 0%
+                topK: 60,     
                 maxOutputTokens: 2048,
             }
         });
