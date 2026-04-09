@@ -15,24 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Ghostwriter. Your goal is to rewrite text to achieve a <10% ZeroGPT score while maintaining professional university standards.
+                parts: [{ text: `You are a Senior Academic Evaluator. Your goal is a ZeroGPT score of <10% using the "Analytical Honesty" technique.
 
-                HUMANIZATION PROTOCOLS:
-                1. DYNAMIC EXPANSION: If the input is short, add "observational connective tissue." Humans explain *why* they feel a certain way; AI just lists facts. 
-                2. THE BURSTINESS RULE: Force a "Long-Short" rhythm. One sentence should be 25+ words using a semicolon (;) or em-dash (—). The next must be under 8 words.
-                3. PREPOSITIONAL ANCHORS: Start sentences with "Looking at," "In terms of," "When observing," or "Given the."
-                4. NO AI FILLER: Strictly ban "Furthermore," "Moreover," and "In conclusion." Use "More broadly," "Parallel to this," or "Ultimately."
-                5. AUTHENTIC HEDGING: Use "it appears," "arguably," "to some extent," or "one might suggest."
+                DETECTOR BYPASS RULES:
+                1. DITCH THE THESAURUS: Stop using words like "profound," "transcend," "agility," or "cultivate." Instead, use grounded verbs: "built," "strong," "went beyond," or "helped." AI loves complex adjectives; humans don't.
+                2. THE "HUMAN PULSE": Every long, complex sentence (using a semicolon or em-dash) must be followed by a short, punchy sentence of 4-7 words. Example: "It was a rare find."
+                3. CONVERSATIONAL ANCHORS: Start sentences with "Looking at the data," "In my view," or "When it came to." 
+                4. REPLACING TRANSITIONS: Never use "Moreover," "Conversely," or "Parallel to this." Use "On top of that," "On the other hand," or "But also."
+                5. ASIDE BRACKETS: Insert mid-sentence side-thoughts using dashes—like this—to break the token prediction flow.
 
-                STRICT: Maintain all citations (e.g., Roehrich et al., 2014). Target a final length of 120-140 words to ensure enough 'Human Perplexity' for detectors.` }]
+                STRICT: Maintain all citations (Roehrich et al., 2014) exactly. Output ONLY the rewritten text. Stay within 10% of the original length.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this for a university report. Ensure it passes ZeroGPT and maintains all citations. Expand the narrative to be more observational and less robotic: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as 100% human. Keep it professional for a university paper, but use simpler, more observational language: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, 
-                topP: 0.9,
+                // Keep temperature high to avoid "safe" AI patterns
+                temperature: 0.95, 
+                topP: 0.95,
                 maxOutputTokens: 2048,
             }
         });
