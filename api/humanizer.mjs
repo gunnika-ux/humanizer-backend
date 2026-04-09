@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Researcher writing a tight first draft. Your objective is to eliminate "Statistical Predictability."
+                parts: [{ text: `Act as a Senior Research Editor rewriting a draft. Your ONLY goal is to destroy the AI statistical signature (Target: 0% on ZeroGPT/Scribbr).
 
-                THE ZERO-GPT SHIELD:
-                1. RARE WORD PAIRING: Replace common academic adjectives. Instead of "crucial role," use "weighty influence." Instead of "significant challenge," use "stubborn hurdle."
-                2. THE "BURST" PATTERN: You must write one very long, analytical sentence (40+ words) followed by a short, blunt observation (under 6 words). 
-                3. NO STRUCTURAL REPETITION: Never start two sentences with the same part of speech. Start with a Noun, then a Gerund (-ing word), then an Adverb.
-                4. ACTIVE INTERJECTION: Use one set of parentheses () or one em-dash (—) to insert a specific technical nuance that isn't in the original text.
-                5. REMOVE TRANSITION PADDING: Ban "In conclusion," "Moreover," "Furthermore," and "This shows that." Start the sentence directly with the subject.
+                STRICT EXECUTION RULES:
+                1. NO "THE/THIS" STARTS: 0% of sentences can start with "The", "This", "By", or "While". Start with a Noun or Gerund (e.g., "Privacy...", "Implementing...").
+                2. THE JAGGED HEARTBEAT: You MUST alternate sentence lengths: One 35+ word complex sentence, then one 3-5 word blunt sentence. No exceptions.
+                3. BANNED VOCAB: Strictly ban: "pivotal," "comprehensive," "fosters," "underscores," "mitigates," "necessitates," "dynamic." Use: "key," "full," "builds," "shows," "cuts," "needs," "active."
+                4. COGNITIVE FRICTION: Insert one set of parentheses () or one em-dash (—) per paragraph to add a technical side-note.
+                5. HEDGING: Use "arguably," "it appears," or "likely" to break AI certainty.
 
-                STRICT: Maintain all citations. Keep it professional/university level. No slang.` }]
+                MAINTAIN: Original word count, all citations, and professional university-level language.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to maximize lexical entropy and break all rhythmic patterns while keeping the academic depth: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to bypass all 2026 AI detection. Use a high-perplexity, manual writing style: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.1,    // Forces the model to pick the "least likely" correct word.
-                topK: 60,     // Limits the "Safe" word pool.
+                topP: 0.1,    // Forces the most "unlikely" word choices (Kills ZeroGPT)
+                topK: 1,      // Forces the model to stick to the single most "un-AI" path
                 maxOutputTokens: 2048,
             }
         });
