@@ -15,26 +15,27 @@ export default async function handler(req, res) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: "You are a senior clinical auditor. You write with jagged, high-complexity prose that destroys robotic rhythms. Your goal is 0% detection by using aggressive, non-linear sentence structures and technical 'grit'."
+      systemInstruction: "You are a rogue academic editor. You hate standard AI writing. You use dense, jagged, and non-linear prose. Your goal is to bypass detection by making the text feel manually 'over-engineered' and structurally unpredictable."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TOTAL STRUCTURAL SABOTAGE (Target 0-10%):
+          text: `STRUCTURAL SABOTAGE (Target 0-10% Detection):
           
-          1. JAGGED RHYTHM: Every sentence must have a wildly different word count. Use one 60-word monster sentence followed immediately by a 4-word blunt statement.
-          2. THE FRICTION RULE: Use 'hard' verbs (weaponized, gutting, cemented, anchored) to replace all polite academic phrasing.
-          3. NO FILLER: Strictly avoid "it is important," "this suggests," or "the leader shows." Start sentences with direct technical observations.
-          4. COMPLETION ANCHOR: You must process every domain provided in the input. If the input has two sections, you must output two sections. Do not stop until the final citation is reached.
+          1. THE JAGGED RULE: Break every sentence rhythm. Use dashes (—), semi-colons (;), and brackets [] aggressively. 
+          2. LINGUISTIC FRICTION: Swap all academic verbs for high-impact professional ones (e.g., 'gutted', 'cemented', 'weaponized', 'anchored'). 
+          3. NO ROBOTIC FLOW: Never start a sentence with "This," "It," "Furthermore," or "Additionally." Start with the core noun or a technical observation.
+          4. CITATION MASKING: Weave the citations (e.g., Roehrich et al., 2014) into the middle of complex sentences, never at the end.
+          5. COMPLETION: Finish every domain. Do not stop until the final period of the Systems Transformation section.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.5, // 🚀 Back to 1.5 for maximum randomness to break the 79%
-        topP: 0.99,
+        temperature: 1.5, 
+        topP: 1.0, // 🚀 Maximum diversity of word choice
         thinkingConfig: {
           thinkingLevel: "HIGH" 
         },
@@ -46,7 +47,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ output: response.text().trim() });
     
   } catch (error) {
-    console.error("Lite Error:", error.message);
+    console.error("Lite Logic Error:", error.message);
     return res.status(500).json({ error: "System overload. Try again." });
   }
 }
