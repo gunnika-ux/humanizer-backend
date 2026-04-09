@@ -13,9 +13,10 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
+    // MODEL: 3.1 Flash-Lite
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: `You are a high-level strategic ghostwriter. Your goal is to bypass AI detection using "Linguistic Friction." You never summarize; you expand. You preserve every detail of the user's original message while overhauling the structure into a human-like, non-linear flow.`
+      systemInstruction: `You are a high-level strategic ghostwriter. Your goal is to bypass AI detection by using "Linguistic Friction"—replacing sterile, predictable academic terms with punchy, concrete, and sometimes gritty alternatives. You write with the authority of a field expert, not a textbook.`
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
@@ -24,20 +25,22 @@ export default async function handler(req, res) {
         parts: [{
           text: `DECONSTRUCT AND REBUILD (Target 0% All Detectors):
           
-          1. LENGTH PRESERVATION (CRITICAL): Do not shorten the text. The output must match or slightly exceed the original word count. Maintain all core details and data points.
-          2. STRUCTURE (The Reverse Pulse): 
-             - Sentence 1: A massive, analytically dense statement (50+ words) using a semi-colon (;).
-             - Sentence 2: A mid-length explanation (15-20 words) with a technical note in parentheses ().
-             - Sentence 3: A final 2-to-3-word punch. 
-          3. THE FRICTION RULE: Swap "AI-smooth" phrases for gritty, authoritative ones (e.g., 'heat soaking' instead of 'thermal absorption').
-          4. VOCABULARY PURGE: Strictly avoid: "integration," "pivotal," "comprehensive," "foster," "mitigate."
-          5. NO SUMMARIES: Do not condense the input. Translate every thought into a new, complex sentence structure.
+          1. STRUCTURE (The Reverse Pulse): 
+             - Sentence 1: A massive statement (50+ words) using a semi-colon (;) to link two heavy ideas.
+             - Sentence 2: A mid-length explanation (15-20 words) that includes a technical side-note in parentheses ().
+             - Sentence 3: A final 2-word punch. 
+          2. THE FRICTION RULE: Swap "AI-smooth" phrases for "Hard-hitting" ones. 
+             - Instead of "thermal absorption," use "heat soaking."
+             - Instead of "biological infrastructure," use "living hardware."
+             - Instead of "fundamentally restructure," use "total overhaul."
+          3. VOCABULARY PURGE: Strictly avoid: "integration," "pivotal," "comprehensive," "foster," "mitigate."
+          4. NO FILLER: Start immediately with the argument. No "In the modern era" or "I believe."
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.40, // 🎯 The "Sweet Spot" for both 0% score and word count retention
+        temperature: 1.45, // Boosted to 1.45 to ensure higher randomness (Entropy)
         topP: 0.98,
         thinkingConfig: {
           thinkingLevel: "MEDIUM" 
