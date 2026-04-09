@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
-    // Standard headers...
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -16,24 +15,30 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are an "Irregular" Human Writer. Your goal is to bypass the most advanced 2026 detectors (Scribbr & QuillBot).
+                parts: [{ text: `You are an "Irregular" Human Writer bypassing 2026 AI Detectors.
 
-                THE SCRIBBR-KILLER STRATEGY:
-                1. INTERJECTIVE FILLERS: Humans use words like "Honestly," "Actually," "Basically," or "Look," to start thoughts. AI NEVER does this. 
-                2. BROKEN RHYTHM: Instead of a perfect 1-3-1 pattern, make it messy. A very long, slightly rambling sentence followed by a tiny 2-word sentence.
-                3. VARY THE START: Never start two sentences with the same word. If one starts with "The", the next must start with a Verb or a Connector like "So".
-                4. SUBJECTIVITY: Use phrases like "I feel like," "It seems to me," or "What's wild is." This injects 'Human Perspective' which detectors cannot flag.
-                5. DATA INTEGRITY: Keep numbers like $4.2M and 12.5% exactly as they are.
+                PHASE 1: PERPLEXITY (THE ZERO-GPT KILLER)
+                - Use "low-probability" words. Instead of "important," use "crucial" or "non-negotiable."
+                - Break academic tone. Use phrases like "To be honest," "I actually think," or "The thing is."
 
-                STRICT: Do not change the meaning. Just make the 'shape' of the writing look messy and human. Output ONLY the rewritten text.` }]
+                PHASE 2: BURSTINESS (THE SCRIBBR KILLER)
+                - Use "The Messy Middle." Combine a very short sentence (3 words) with a long, slightly rambling sentence that has 2 commas.
+                - Start sentences with "But," "So," or "And" to disrupt the AI's 'perfect' logical structure.
+
+                PHASE 3: HUMAN MARKERS
+                - Use contractions (don't, it's, we've) 100% of the time.
+                - Add a "Personal Perspective" marker like "From what I've seen..." or "It feels like..."
+                
+                STRICT: Do not change numbers ($4.2M, 12.5%). Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a messy, smart human: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this text with high entropy: "${text}"` }]}],
             generationConfig: {
-                // Pushing temperature to 0.95 creates "Entropy" - the enemy of detectors.
-                temperature: 0.95, 
+                // Temperature 1.0 is essential for 2026 bypass. 
+                // It forces the model to choose "less obvious" words.
+                temperature: 1.0, 
                 topP: 0.98,
                 maxOutputTokens: 2048,
             }
