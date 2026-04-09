@@ -24,9 +24,9 @@ export default async function handler(req, res) {
         parts: [{
           text: `DECONSTRUCT AND RE-ENGINEER (Target 0% Detection):
           
-          1. NO SUMMARIES: The output must be the same length as the input (~280 words). Do not omit any sections or domains.
+          1. PROPORTIONALITY (CRITICAL): Match the input word count exactly. If the input is short, keep the output short; if long, keep it long. Avoid massive expansion or aggressive summarization.
           2. LINGUISTIC FRICTION: Replace "polite" clinical terms with "hard" ones (e.g., 'weaponized partnerships', 'institutional inertia', 'hardwired knack').
-          3. BURSTINESS: Mix very long, complex sentences using em-dashes (—) with mid-length technical explanations. Avoid the 2-word punch if it causes you to stop early.
+          3. BURSTINESS: Mix very long, complex sentences using em-dashes (—) with mid-length technical explanations. 
           4. CITATION PROTECTION: Strictly preserve every citation (e.g., Roehrich et al., 2014) in its original context.
           5. COMPLETION: You must finish the 'Systems Transformation' domain entirely. Do not stall mid-sentence.
           
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         }]
       }],
       generationConfig: {
-        temperature: 1.42, // Balanced for chaos vs. completion
+        temperature: 1.42, 
         topP: 0.99,
         thinkingConfig: {
           thinkingLevel: "HIGH" 
