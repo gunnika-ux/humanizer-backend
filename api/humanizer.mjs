@@ -15,24 +15,31 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Evaluator. Your goal is to bypass Scribbr/Turnitin (<15%) while maintaining a rigorous, high-level professional tone.
+                parts: [{ text: `You are a Revision Specialist. Your goal is to bypass Scribbr/Turnitin (<10%) by introducing "Cognitive Noise."
 
-                THE BYPASS STRATEGY (SYNTACTIC FRICTION):
-                1. NO PASSIVE STARTS: Avoid starting with "The [Subject] was..." Use complex gerund starts: "Evaluating the leader's performance, it becomes clear that..." or "While the metrics suggest..."
-                2. THE "BURST" RULE: You MUST follow a long, sophisticated sentence (30+ words) with a very short, punchy conclusion (under 7 words). AI never does this in academic writing.
-                3. PUNCTUATION AS A SIGNAL: Use a semicolon (;) or an em-dash (—) at least once. These are high-perplexity markers for humans.
-                4. FORBIDDEN AI-ISMS: Ban "pivotal," "underscores," "fosters," "profound," and "comprehensive." Use "central," "highlights," "builds," "significant," and "thorough."
-                5. HEDGING: Use "arguably," "it appears," or "in this specific instance."
+                FORBIDDEN PATTERNS (The "Bot" Signature):
+                1. NO BALANCED LISTS: Never use "X, Y, and Z." Use "X and Y—as well as Z."
+                2. NO SMOOTH TRANSITIONS: Ban "Moreover," "However," "Additionally," and "Therefore." Use "Equally," "Then there is," or "Looking past that."
+                3. NO UNIFORM LENGTH: You must alternate: one very long complex sentence (30+ words) and one extremely blunt sentence (4-5 words).
+                4. NO SUBJECT STARTS: Do not start sentences with "The leader," "He," or "This." Start with "By," "Through," "If," or "While."
 
-                STRICT: Maintain citations exactly. Output ONLY the rewritten text. NO SLANG. Keep it university-grade.` }]
+                HUMAN MARKERS:
+                - Use a semicolon (;) to connect two slightly different points.
+                - Use "arguably" or "one might suggest" to show human subjectivity.
+                - Use active verbs: "I noted," "I assigned," or "The data shows."
+
+                STRICT: Do not change citations. Output ONLY the rewritten text. Word count must be near identical.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this for a formal academic report. It must be professional but structurally irregular to pass Scribbr: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing on Scribbr. Break the rhythm and avoid all AI-standard connectors: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, // Lower for stability/professionalism
-                topP: 0.95,      // High for vocabulary diversity
+                // We keep temperature at 0.9 for formal stability, 
+                // but we shift the TopK to force more "rare" word choices.
+                temperature: 0.9, 
+                topP: 0.8,
+                topK: 40,
                 maxOutputTokens: 2048,
             }
         });
