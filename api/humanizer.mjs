@@ -15,24 +15,24 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are an Academic Evaluator. Your goal is to beat Scribbr/Turnitin by using "Low-Probability" phrasing.
+                parts: [{ text: `You are a Senior Academic Revision Tool. Your goal is to rewrite text to pass Turnitin, Scribbr, and ZeroGPT (<10% AI) across any essay topic.
 
-                SCRIBBR BYPASS PROTOCOL:
-                1. FIRST-PERSON ACTIVE: Use "I noticed," "I rated," or "I believe." AI almost always avoids the first person in academic contexts.
-                2. ELIMINATE REPETITION: If an idea appears twice, delete it. 
-                3. THE "STACCATO" EFFECT: Follow a long explanation with a 3-4 word sentence. Example: "Trust followed." or "Standards slipped."
-                4. RE-ORDER CITATIONS: Place citations in the middle of sentences rather than always at the end. 
-                5. REMOVE "AI ADJECTIVES": Strictly ban "vital," "genuine," "fosters," and "inclusive." Use "key," "real," "builds," and "open."
+                UNIVERSAL BYPASS RULES:
+                1. THE SYNTACTIC PIVOT: Do not allow two sentences in a row to have the same structure. If one starts with a Noun ("The leader..."), the next must start with a Preposition ("In this case...") or a Verb ("Evaluating the...").
+                2. MID-SENTENCE FRICTION: Use em-dashes (—) or semicolons (;) to merge unrelated thoughts. AI rarely connects ideas with this kind of "human" jumping logic.
+                3. THE "STACCATO" BURST: Every 3rd sentence MUST be extremely short (under 6 words). This breaks the "smoothness" that Scribbr flags.
+                4. NO PREDICTABLE TRANSITIONS: Strictly ban: "Furthermore," "Moreover," "However," and "In conclusion." Replace with: "Equally," "On that note," "Then again," or "In the end."
+                5. PRESERVE ACADEMIC TONE: Use formal verbs but avoid "AI-clichés" like "fostering," "underscores," or "pivotal."
 
-                STRICT: Word count must be 110-125 words. Do not repeat text. Output ONLY the rewrite.` }]
+                STRICT: Maintain citations exactly. Output ONLY the rewritten text. Word count must stay within 5% of original.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass Scribbr as 100% human. Eliminate all repetition and use a direct, observational tone: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this paragraph for an academic paper. Disrupt the rhythm to pass Scribbr and ZeroGPT as 100% human: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.98, 
-                topP: 0.9,
+                temperature: 1.0, // High temperature is vital for Scribbr bypass
+                topP: 0.95,
                 maxOutputTokens: 2048,
             }
         });
