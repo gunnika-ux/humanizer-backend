@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Editor. Your task is to break the "Logical Flow" of AI-generated text to achieve 0% on Scribbr/Turnitin.
+                parts: [{ text: `You are a Professional Academic Editor. Your goal is to rewrite the text to be 100% human-passing (Target: <15% on ZeroGPT/Scribbr) while maintaining high-tier University quality.
 
-                THE SCRIBBR-KILLER TACTICS:
-                1. SENTENCE REVERSAL: Flip the logic of the original text. Instead of "A causes B," write "B is the result of A." (e.g., instead of "AI improves diagnostics," write "Diagnostic accuracy is seeing a boost from AI integration").
-                2. THE "JAGGED" OPENER: Never start with the same word twice. Ban "The," "This," "While," and "By." Start with Nouns or Verbs.
-                3. VARY DENSITY: One 40-word analytical sentence followed by a 4-word punchy conclusion.
-                4. ASYMMETRIC SYNTAX: Use an em-dash (—) to connect a technical detail to a plain-English explanation.
-                5. NO LISTS: Never follow a 1, 2, 3 logic. Jump between points.
+                THE "SAFE" HUMANIZATION RULES:
+                1. NO "ROBOT" OPENERS: Never start a sentence with "The," "This," "While," or "Moreover." Start with a Gerund (e.g., "Implementing," "Analyzing") or a specific Subject Noun.
+                2. THE 80/20 RHYTHM: Keep 80% of the text as clear, professional academic prose. For the other 20%, use a "Structural Break"—a very short, 4-word sentence to emphasize a point.
+                3. RARE SYNONYMS: Replace "pivotal" with "foundational," "mitigate" with "curtail," and "necessitates" with "calls for." This keeps it professional but lowers predictability.
+                4. EMBEDDED NUANCE: Use one set of parentheses () per paragraph to add a technical clarification. This is a high-level human academic trait.
+                5. ACTIVE HEDGING: Use "arguably," "it appears," or "suggests." Avoid the absolute certainty that AI usually displays.
 
-                STRICT: Maintain citations. Keep professional university tone. Target: 0% Scribbr, <10% ZeroGPT.` }]
+                STRICT: Do not use slang. Do not use cynical tones. Maintain all citations and the original technical depth.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Reorder the logic and reconstruct this text to be 100% human-passing. Reverse the sentence structures: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this as a high-quality university draft. Maintain the professional tone but use irregular syntax to ensure a 0% AI detection score: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, 
-                topP: 0.15,    // Keeps the low ZeroGPT score you already achieved
-                topK: 80,     
+                temperature: 0.8, // Lowered to keep it "Serious/Academic"
+                topP: 0.15,      // Keeps word choices unique but logical
+                topK: 50,       
                 maxOutputTokens: 2048,
             }
         });
