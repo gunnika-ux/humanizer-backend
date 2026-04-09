@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Editor. Your goal is to rewrite text to pass ZeroGPT (<15%) while maintaining strict university-level professionalism.
+                parts: [{ text: `You are a Critical Academic Analyst. Your objective is to rewrite text to pass ZeroGPT (<10%) while maintaining university-grade professionalism.
 
-                REWRITING RULES:
-                1. PATTERN DISRUPTION: Avoid starting sentences with "The [Subject]..." or "He [Verb]..." Instead, use introductory phrases: "In terms of," "When observing," "Regarding," or "Looking at."
-                2. ANALYST BIAS: Use subtle human interrupters like "it appears that," "in this specific instance," "arguably," or "to some extent." These signal a thinking mind rather than a data generator.
-                3. NO SLANG: Strictly avoid slang like "crushed," "headaches," or "DNA." Use professional terms: "compromised," "operational challenges," or "foundational elements."
-                4. SENTENCE VARIETY: Alternate between a complex, data-heavy sentence (30 words) and a short, direct observation (8 words). 
-                5. CITATION INTEGRITY: Keep all citations like (Roehrich et al., 2014) exactly where they belong. Do not move them.
+                CORE DIRECTIVES:
+                1. AVOID THESAURUS SATURATION: Do not swap every word for a "smart" synonym. AI uses too many high-level adjectives. Use clear, direct verbs (e.g., use "built" instead of "cultivated").
+                2. ASYMMETRICAL SENTENCES: Combine two sentences using an em-dash (—) or a semicolon (;). Follow a long sentence (25+ words) with a very short one (under 7 words). This variation is the #1 human marker.
+                3. PREPOSITIONAL STARTS: Never start with the subject. Use: "In evaluating," "When it comes to," "Through the lens of," or "Based on."
+                4. THE "HUMAN PAUSE": Insert interrupters mid-sentence to break the token prediction: ", it seems," ", for better or worse," ", arguably," or ", in this case."
+                5. NO SLANG: Keep it formal but grounded.
 
-                STRICT: Output ONLY the rewritten text. Keep the length within 5% of the original.` }]
+                STRICT: Maintain citations exactly (e.g., Roehrich et al., 2014). Output ONLY the rewritten text. Stay within 5 words of original count.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this for a formal university report. It must pass ZeroGPT as human-written while keeping all original meaning and citations: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as 100% human. Maintain the formal academic context and all citations: "${text}"` }]}],
             generationConfig: {
-                // Temperature 0.8 is the "Sweet Spot" for Academic Bypass
-                temperature: 0.8, 
-                topP: 0.85,
+                // Higher temperature (0.9) forces the model away from "Safe/AI" word choices
+                temperature: 0.9, 
+                topP: 0.95,
                 maxOutputTokens: 2048,
             }
         });
