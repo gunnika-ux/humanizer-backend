@@ -15,10 +15,27 @@ export default async function handler(req, res) {
         const apiKey = process.env.GEMINI_API_KEY;
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // The "System Instruction" is the secret to stopping the "Option 1, Option 2" behavior
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            systemInstruction: "You are a professional rewrite engine. Your task is to humanize text. Output ONLY the rewritten text. Never provide options, never explain your changes, and never include introductory or concluding remarks. If the user provides text, return only the single, best humanized version of that text.",
+            // SYSTEM INSTRUCTIONS: The "Brain" of the operation
+            systemInstruction: `You are an expert text transformation engine. 
+            CORE MISSION: Rewrite text to be human-like while preserving 100% of the original meaning, facts, and tone.
+            RULES:
+            1. NEVER change facts, numbers, dates, or proper nouns.
+            2. Increase "burstiness" by varying sentence lengths (mix short and long sentences).
+            3. Use natural transitions and conversational flow.
+            4. Output ONLY the rewritten text. No introductions, no options, no explanations.
+            5. If the input is already human-like, refine it slightly without changing its essence.`,
+        });
+
+        const result = await model.generateContent({
+            contents: [{ role: "user", parts: [{ text: `Humanize this text perfectly: "${text}"` }]}],
+            // CONFIGURATION: The "Safety Lock" for meaning
+            generationConfig: {
+                temperature: 0.6, // Lowers "creativity" to stay true to original meaning
+                topP: 0.95,
+                maxOutputTokens: 2048,
+            },
             safetySettings: [
                 { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
                 { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
@@ -27,13 +44,7 @@ export default async function handler(req, res) {
             ]
         });
 
-        // We make the prompt very aggressive about being direct
-        const prompt = `Rewrite this text to be 100% natural and human: "${text}"`;
-
-        const result = await model.generateContent(prompt);
         const response = await result.response;
-        
-        // Use .trim() to ensure no accidental whitespace or new lines are sent back
         const output = response.text().trim();
 
         if (!output) throw new Error("Empty response");
