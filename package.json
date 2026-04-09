@@ -1,7 +1,8 @@
 {
   "name": "humanizer-backend",
   "version": "1.0.0",
+  "main": "api/humanizer.js",
   "dependencies": {
-    "node-fetch": "^3.0.0"
+    "@google/generative-ai": "^0.11.0"
   }
 }
