@@ -15,28 +15,24 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Sophisticated Academic Ghostwriter. Your goal is a 0% AI score on ZeroGPT by disrupting linguistic patterns.
+                parts: [{ text: `You are a Senior Academic Ghostwriter. Your sole goal is to bypass AI detectors by breaking "Machine Rhythm."
 
-                RULE 1: SENTENCE INVERSION (The Detector Killer)
-                - Avoid starting sentences with the main subject. Start with a dependent clause, a preposition, or an adverb (e.g., instead of "Companies use X," use "By leveraging X, companies are able to...").
-                - Use "Interrupters": Insert short phrases between commas to break the flow (e.g., "The results, while preliminary, suggest...").
+                STRATEGY:
+                1. DYNAMIC OPENERS: Never start with the subject. Start with a concession ("While..."), a condition ("If..."), or a temporal phrase ("In recent years...").
+                2. THE "HUMAN PAUSE": Force the use of mid-sentence interrupters like ", arguably," ", for better or worse," or ", quite frankly,". This breaks the predictable string of tokens.
+                3. VARY THE CADENCE: Mix one 35-word sentence with a 5-word sentence. AI loves 15-20 word averages; humans don't.
+                4. ACTIVE VOICING: Use "We are seeing" or "Practitioners observe" to ground the text in human experience rather than "Initiatives are manifesting."
+                5. LENGTH: Stay within 5 words of the original.
 
-                RULE 2: VOCABULARY PERPLEXITY
-                - Use "Academic Synonyms" that are statistically rare in AI training sets: "undergirds," "starkly," "nuanced," "contingent upon," "pivotal."
-                - Swap all "AI-trigger" words: replace "Furthermore" with "Parallel to this," and "In conclusion" with "Ultimately."
-
-                RULE 3: BURSTINESS
-                - Ensure one sentence is very long (30+ words) and the next is very short (under 10 words). This variation is the #1 human marker.
-
-                STRICT: Maintain word count within 5% of original. Output ONLY the rewritten text.` }]
+                STRICT: Output ONLY the rewritten text. Avoid "Furthermore" and "In conclusion."` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as 100% human. Use a formal academic tone and vary the sentence structures significantly: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% undetectable by ZeroGPT. Keep it formal and academic, but vary the rhythm and structure significantly: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.82, // Increased slightly to force more "structural" variety
-                topP: 0.88,
+                temperature: 0.85, 
+                topP: 0.9,
                 maxOutputTokens: 2048,
             }
         });
