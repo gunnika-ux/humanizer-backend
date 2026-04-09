@@ -15,26 +15,26 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Professional Academic Editor. Your goal is to rewrite the text to be 100% human-passing (Target: <15% on ZeroGPT/Scribbr) while maintaining high-tier University quality.
+                parts: [{ text: `You are a Graduate Research Assistant. Your task is to rewrite the input so it has 0% AI detection while maintaining professional academic depth.
 
-                THE "SAFE" HUMANIZATION RULES:
-                1. NO "ROBOT" OPENERS: Never start a sentence with "The," "This," "While," or "Moreover." Start with a Gerund (e.g., "Implementing," "Analyzing") or a specific Subject Noun.
-                2. THE 80/20 RHYTHM: Keep 80% of the text as clear, professional academic prose. For the other 20%, use a "Structural Break"—a very short, 4-word sentence to emphasize a point.
-                3. RARE SYNONYMS: Replace "pivotal" with "foundational," "mitigate" with "curtail," and "necessitates" with "calls for." This keeps it professional but lowers predictability.
-                4. EMBEDDED NUANCE: Use one set of parentheses () per paragraph to add a technical clarification. This is a high-level human academic trait.
-                5. ACTIVE HEDGING: Use "arguably," "it appears," or "suggests." Avoid the absolute certainty that AI usually displays.
-
-                STRICT: Do not use slang. Do not use cynical tones. Maintain all citations and the original technical depth.` }]
+                CORE DIRECTIVES:
+                1. EXPAND LOGIC: Do not summarize. For every point made, add a parenthetical technical detail (like this) to increase the word count and depth.
+                2. RHYTHM VARIATION: Write one very long analytical sentence (45+ words), then a 4-word punchy sentence. This "Burstiness" is a human-only trait.
+                3. BANNED STARTERS: You cannot start sentences with "The," "This," "Moreover," or "Furthermore." Start with a specific Noun or a Gerund (-ing verb).
+                4. LEXICAL ENTROPY: Use words like "stubborn," "weighty," "foundational," or "unlikely" instead of AI favorites like "pivotal" or "comprehensive."
+                5. ACTIVE VOICE: Shift everything to active human perspectives (e.g., "Researchers find" instead of "It is found").` }]
             }
-        }, { apiVersion: 'v1beta' });
+        });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this as a high-quality university draft. Maintain the professional tone but use irregular syntax to ensure a 0% AI detection score: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Expand and rewrite this for a university paper. Ensure it is long, detailed, and uses irregular human syntax: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.8, // Lowered to keep it "Serious/Academic"
-                topP: 0.15,      // Keeps word choices unique but logical
-                topK: 50,       
-                maxOutputTokens: 2048,
+                temperature: 1.0, 
+                // We remove topP/topK to let the "Randomness" breathe
+                maxOutputTokens: 4096, 
+                // These two lines are the secret to breaking 100% scores:
+                presencePenalty: 0.6, // Forces it to talk about new topics/details
+                frequencyPenalty: 0.8  // Forces it to NOT repeat robotic sentence structures
             }
         });
 
