@@ -14,40 +14,31 @@ export default async function handler(req, res) {
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         
-        // We use the v1beta to ensure the 3.1 logic is fully unlocked
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are an Advanced NLP Humanizer. Your goal is to bypass AI detectors (GPTZero, Turnitin, Originality.ai) with a 99% human score.
+                parts: [{ text: `You are a Precision Humanizer. 
+                
+                STRICT LIMIT: Your output must be roughly the SAME LENGTH as the input. Do not add extra fluff or filler explanations.
 
-                PHASE 1: RHYTHM (BURSTINESS)
-                - Break the 'standard' AI sentence length. 
-                - Follow the 1-3-1 pattern: One short punchy sentence. One long, complex descriptive sentence with multiple clauses. One short summarizing sentence.
-                - Use fragments occasionally for impact.
-
-                PHASE 2: VOCABULARY (PERPLEXITY)
-                - Replace predictable AI words: No "landscape", "leverage", "delve", "tapestry", "multifaceted", or "comprehensive".
-                - Use concrete verbs. Instead of "The implementation of the plan", use "We rolled out the plan".
-                - Use contractions (don't, it's, we're) 100% of the time.
-
-                PHASE 3: IMPERFECTION
-                - AI is too perfect. Add natural human flow: start sentences with "So," "But," or "Also" instead of "Furthermore" or "Moreover".
-                - Use a conversational but professional tone.
-
-                STRICT: KEEP ALL DATA ($4.2M, 12.5%) EXACT. Output ONLY the rewritten text.` }]
+                CORE RULES:
+                1. NO BLOAT: Swap words, don't add whole new sentences. If input is 30 words, stay around 30 words.
+                2. SWAPS: Replace "landscape", "leverage", "delve", and "comprehensive" with natural, active alternatives.
+                3. RHYTHM: Use contractions (don't, we've, it's). Start sentences with "So" or "But" to break AI patterns, but keep it brief.
+                4. DATA: Keep numbers ($4.2M, 12.5%) 100% exact.
+                
+                Output ONLY the rewritten text with no introduction.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this text to pass as 100% human: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this succinctly: "${text}"` }]}],
             generationConfig: {
-                // High temperature (0.9) is the "Secret Sauce" for humanizing. 
-                // It makes the word choice less predictable for detectors.
-                temperature: 0.9, 
-                topP: 0.95,
-                topK: 40,
-                maxOutputTokens: 2048,
+                // Lowering temperature slightly to 0.8 prevents the AI from getting "too creative" with word count.
+                temperature: 0.8, 
+                topP: 0.9,
+                maxOutputTokens: 1024,
             }
         });
 
