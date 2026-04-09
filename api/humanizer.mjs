@@ -16,30 +16,32 @@ export default async function handler(req, res) {
     // MODEL: 3.1 Flash-Lite
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: `You are a world-class editor. You rewrite text to pass 0% AI detection by destroying robotic rhythmic patterns. 
-      Your tone is professional, authoritative, and direct. You avoid "polite" AI filler and "academic fluff."`
+      systemInstruction: `You are a high-level strategic ghostwriter. Your goal is to bypass AI detection by using "Linguistic Friction"—replacing sterile, predictable academic terms with punchy, concrete, and sometimes gritty alternatives. You write with the authority of a field expert, not a textbook.`
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `ARCHITECTURAL REWRITE (Target 0% Scribbr/Turnitin):
+          text: `DECONSTRUCT AND REBUILD (Target 0% All Detectors):
           
-          1. THE "BURST" PATTERN: 
-             - Sentence 1: A massive, analytically dense statement (50+ words) using a semi-colon or em-dash.
-             - Sentence 2: An incredibly short, sharp conclusion (3-4 words).
-             - Sentence 3: A standard, grounding explanation.
-          2. VOCABULARY PURGE: Do not use: "pivotal," "comprehensive," "foster," "mitigate," "dynamic," or "landscape." Use blunt, high-impact verbs like "force," "break," "drive," or "solidify."
-          3. NO INTROS: Do not say "I think" or "This text explores." Start immediately with the core argument.
-          4. LINGUISTIC FRICTION: Use one set of parentheses () to add a technical side-note. This breaks the "smoothness" AI is known for.
+          1. STRUCTURE (The Reverse Pulse): 
+             - Sentence 1: A massive statement (50+ words) using a semi-colon (;) to link two heavy ideas.
+             - Sentence 2: A mid-length explanation (15-20 words) that includes a technical side-note in parentheses ().
+             - Sentence 3: A final 2-word punch. 
+          2. THE FRICTION RULE: Swap "AI-smooth" phrases for "Hard-hitting" ones. 
+             - Instead of "thermal absorption," use "heat soaking."
+             - Instead of "biological infrastructure," use "living hardware."
+             - Instead of "fundamentally restructure," use "total overhaul."
+          3. VOCABULARY PURGE: Strictly avoid: "integration," "pivotal," "comprehensive," "foster," "mitigate."
+          4. NO FILLER: Start immediately with the argument. No "In the modern era" or "I believe."
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.35, // Slightly lowered from 1.5 to maintain professional logic
-        topP: 0.95,
+        temperature: 1.45, // Boosted to 1.45 to ensure higher randomness (Entropy)
+        topP: 0.98,
         thinkingConfig: {
           thinkingLevel: "MEDIUM" 
         },
