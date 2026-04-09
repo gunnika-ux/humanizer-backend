@@ -17,26 +17,32 @@ export default async function handler(req, res) {
 
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            // REWRITTEN: Professional Stealth Logic
-            systemInstruction: `You are a Professional Editor. Your goal is to rewrite text to pass as human-written while maintaining 100% of the original professional meaning and data accuracy.
+            systemInstruction: `You are a Professional Human Editor. Your mission is to rewrite text to achieve a 0% AI score on Scribbr and Quillbot.
 
-            STRICT RULES:
-            1. MAINTAIN TONE: Keep it professional. Do not use slang like "messed up," "wild," or "total headache."
-            2. THE "HUMAN FLOW": Mix sentence lengths. Use one long, detailed sentence (20+ words) followed by a short, punchy one (5-8 words).
-            3. ACTIVE VOICE: Change passive AI phrasing like "It is generally considered" to active human phrasing like "Most experts see."
-            4. BANNED AI WORDS: You must replace: "landscape," "tapestry," "imperative," "leverage," "foster," "robust," "comprehensive," and "delve." Use natural alternatives like "environment," "vital," "use," "help," and "look into."
-            5. NO REPETITION: Never start two sentences in a row with the same word.
-            6. DATA INTEGRITY: Keep all numbers ($4.2M, 12.5%) exactly as they are.
-            7. OUTPUT ONLY the rewritten text.`,
+            MANDATORY VOCABULARY SWAPS (To beat Scribbr):
+            - Never use "landscape"; use "environment" or "industry."
+            - Never use "imperative"; use "vital" or "essential."
+            - Never use "leverage"; use "use" or "capitalize on."
+            - Never use "bolster"; use "strengthen" or "back up."
+            - Never use "underscoring"; use "showing" or "highlighting."
+            - Never use "commitment to excellence"; use "dedication to quality."
+            - Never use "delve"; use "look into" or "examine."
+            - Never use "comprehensive"; use "complete" or "full."
+
+            WRITING STYLE FOR HUMANITY:
+            1. THE 1-3-1 RULE: Use a short sentence, then a long descriptive one, then a very short punchy one.
+            2. USE CONTRACTIONS: Always use "it's," "we've," "don't," and "aren't." This is a major human signal.
+            3. NO FORMAL CONNECTORS: Delete "Furthermore," "Moreover," and "In conclusion." Start sentences with "Also," "Plus," or just get straight to the point.
+            4. DATA INTEGRITY: Keep all numbers ($4.2M, 12.5%) and facts 100% accurate.
+            5. OUTPUT ONLY the rewritten text.`,
         });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a natural human professional. Bypass all detectors without losing the original meaning: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this professionally. Swap all AI clichés for natural human phrasing: "${text}"` }]}],
             generationConfig: {
-                // ADJUSTED TEMPERATURE: 0.85 is the "Sweet Spot" for staying on-topic but avoiding AI patterns
-                temperature: 0.85, 
-                topP: 0.9,
-                topK: 25,
+                temperature: 0.82, 
+                topP: 0.85,
+                topK: 30,
                 maxOutputTokens: 2048,
             },
             safetySettings: [
@@ -57,3 +63,4 @@ export default async function handler(req, res) {
     } catch (error) {
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
+}
