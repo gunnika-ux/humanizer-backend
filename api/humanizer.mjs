@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
+  // 1. Headers for Cross-Origin Resource Sharing (CORS)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -11,33 +12,39 @@ export default async function handler(req, res) {
     const { text } = req.body;
     if (!text) return res.status(400).json({ error: "No text provided." });
 
-    // 1. Initialize with v1beta to enable "Thinking" features
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // 2. USE THE CORRECT 2026 MODEL ID
-    // 'gemini-3-flash-preview' is the Standard version that supports High Thinking.
+    /**
+     * MODEL SELECTION
+     * Using 'gemini-3-flash-preview' (The Standard Tier).
+     * We MUST use apiVersion: 'v1beta' to access thinkingConfig.
+     */
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview", 
-      systemInstruction: "You are a Structural Saboteur. Break all rhythmic patterns by alternating very long sentences with extremely short ones. Avoid common AI transitional phrases."
+      systemInstruction: "You are a student writing an informal first draft. Use first-person perspective, occasional contractions (can't, don't), and blunt, non-academic vocabulary. Avoid all polished AI transitional phrases like 'Furthermore' or 'In conclusion'."
     }, { apiVersion: 'v1beta' });
 
+    // 2. GENERATION WITH "DIRTY" PROMPTING TO BEAT SCRIBBR
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `DECONSTRUCT THIS TEXT (Target 0% Scribbr):
-          - RULE: Use one 60-word sentence followed by a 3-word punch.
-          - RULE: Start with the original conclusion.
-          - RULE: Use brackets [ ] and a colon (:) once.
-          - RULE: Never start with 'The', 'This', 'It', or 'Furthermore'.
+          text: `HUMANIZE THIS (Target 0% Scribbr/Turnitin):
+          
+          - START: Begin with "I've been looking into..." or "I actually think..."
+          - STYLE: Use one very long sentence (50+ words) followed by a short fragment.
+          - NOISE: Use brackets [ ] for a small personal side-note.
+          - VOCAB: Swap academic words (e.g., 'mitigate') for simpler ones ('fix' or 'stop').
+          
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.0,
-        // 🧠 The 2026 'Thinking' block
+        temperature: 1.2, 
+        topP: 0.95,
+        // 🧠 The 'Thinking' configuration that breaks AI probability patterns
         thinkingConfig: {
-          includeThoughts: false,
+          includeThoughts: false, 
           thinkingLevel: "HIGH" 
         },
         maxOutputTokens: 2000,
@@ -47,14 +54,16 @@ export default async function handler(req, res) {
     const response = await result.response;
     const output = response.text();
     
+    // 3. Return the processed text
     return res.status(200).json({ output: output.trim() });
     
   } catch (error) {
-    console.error("Gemini Error:", error.message);
+    // If it still fails, it's likely a region-specific model ID issue
+    console.error("Gemini API Error:", error.message);
     
-    // Fallback: If 'Standard' is still not found in your region, try the Lite version ID
+    // Fallback error message
     return res.status(500).json({ 
-      error: "Bypass Error: Ensure your API key has 'Gemini 3 Flash' access." 
+      error: "Scribbr-Bypass Error. Check terminal logs for: " + error.message 
     });
   }
 }
