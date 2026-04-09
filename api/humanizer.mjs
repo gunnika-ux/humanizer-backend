@@ -12,33 +12,34 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a precise Structural Editor. Your job is to bypass Scribbr by changing the sentence rhythm and logic flow, WITHOUT losing the original detail or word count."
+      systemInstruction: "You are a Structural Disruptor. Your only goal is to bypass 'AI-Refined' detection. You must avoid all 'smooth' transitions and perfectly balanced sentences. Write with a 'Jagged Heartbeat' that mimics human drafting."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `HUMANIZING PROTOCOL (Maintain Word Count Balance):
+          text: `DE-SYNCHRONIZE THIS TEXT (Maintain original 130-word count):
 
-          1. LENGTH LOCK: The output must be roughly the same length as the input (120-140 words). Do not summarize. Do not expand.
-          2. SCRIBBR BYPASS (The 50/5 Rule): Create extreme variance. Write one very long, complex sentence (50 words), immediately followed by a 5-word sentence. This 'heartbeat' kills the Scribbr match.
-          3. LOGIC SHIFT: Move the second paragraph to the beginning. Scribbr checks for sequence lineage; if the sequence is gone, the match drops to 0.
-          4. SYMBOLIC FRICTION: Use one set of brackets [ ] and at least two em-dashes — to break the AI's 'perfect' flow.
-          5. NO STARTERS: Zero sentences can start with 'The', 'This', 'It', 'By', or 'Moreover'. Start with Nouns.
+          1. THE JAGGED HEARTBEAT: Every long sentence (45+ words) MUST be followed by a blunt 2-4 word sentence. (Example: 'This hurts productivity.').
+          2. LOGIC SCRAMBLE: Take the central argument from the middle and make it the opening hook. Move the original intro to the bottom.
+          3. SYMBOLIC FRICTION: Use brackets [ ] once and a colon (:) once. AI models are trained to avoid these in 'refined' text.
+          4. BANNED CONNECTORS: Strictly zero use of 'Furthermore', 'Moreover', 'Consequently', 'This underscores', or 'In conclusion'.
+          5. NO STARTERS: No sentence may start with 'The', 'This', 'It', or 'While'. Start with Nouns or Verbs.
 
-          INPUT TEXT: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.9, // Slightly lower to prevent it from 'going rogue' and deleting text
-        topP: 0.95,
-        maxOutputTokens: 2000,
+        temperature: 1.0, 
+        topP: 1.0, 
+        topK: 100,
+        maxOutputTokens: 2500,
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "System Error." });
+    return res.status(500).json({ error: "System logic crash." });
   }
 }
