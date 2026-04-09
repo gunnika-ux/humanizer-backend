@@ -14,35 +14,34 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      // SYSTEM INSTRUCTION UPDATED FOR SCRIBBR:
-      systemInstruction: "You are a Structural Disruptor. Your mission is to maintain the successful 0% vocabulary from ZeroGPT/Quillbot while completely scrambling the sequence of ideas to bypass Scribbr's database matching."
+      systemInstruction: "You are a rogue academic editor. Your only goal is to bypass AI detection by writing with extreme 'human messiness'. You must use irregular rhythms, unconventional punctuation, and non-linear logic. Maintain high-level vocabulary but destroy all 'AI-smoothness'."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `STRICT STRUCTURAL RECONSTRUCTION (Keep the vocabulary exactly as is):
+          text: `SHATTER THE FINGERPRINT OF THIS TEXT (Target: 0/0/0):
 
-          1. LOGIC REVERSAL: Start the rewrite with the CONCLUSION of the input text. Move the opening sentence to the middle. This destroys Scribbr's sequence match.
-          2. THE 'HUMAN' PAIRED-RHYTHM: Write one extremely long, winding sentence (50+ words) and follow it immediately with a 2-word punchy sentence. (Example: 'Paradigm shifts—while often burdensome—trigger total evolution. It works.')
-          3. INTERRUPTED SYNTAX: Use em-dashes (—) to break sentences in the middle. AI is too 'clean'; humans interrupt themselves.
-          4. FORBIDDEN STARTERS (KEEP THESE): No 'The', 'This', 'It', 'In', 'By', 'Moreover'.
-          5. PROTECT DICTION: Keep the words 'quandary', 'paradigm', 'clash', and 'weighty'. They are working.
+          1. THE 60-3 RULE: Every long, dense sentence (60+ words) must be followed by a 2 or 3 word punchy sentence. (Example: 'It fails.')
+          2. THE 'INTERRUPTOR' TECHNIQUE: Insert a technical side-note in [brackets] or —em-dashes— in every second sentence. AI is too polite to do this; humans do it constantly.
+          3. NO REFINED STARTERS: Strictly zero sentences can start with 'The', 'This', 'It', 'By', 'In', or 'Moreover'. Start with Nouns like 'Chaos', 'Infrastructure', or 'Copenhagen'.
+          4. GRAMMATICAL FRICTION: Use at least one semicolon (;) and one colon (:) per paragraph. 
+          5. LOGIC TRANSPOSITION: Start the rewrite with the VERY LAST point of the original text. Work backward.
 
-          INPUT: "${text}"`
+          ORIGINAL TEXT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.95, // Dropped 0.05 to prevent the 'spoiling' of good words
-        topP: 0.98,        
-        topK: 100,
+        temperature: 1.0, // Max creativity
+        topP: 1.0,        // Max randomness
+        topK: 100,       // Wide word selection
         maxOutputTokens: 4000,
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "Logic error." });
+    return res.status(500).json({ error: "System logic crash. Try again." });
   }
 }
