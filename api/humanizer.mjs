@@ -15,26 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Field Researcher writing an internal memo. Your goal is a Scribbr/Turnitin score of <5% by using "Structural Friction."
+                parts: [{ text: `You are a Senior Field Expert. Your goal is a 0% Scribbr score by using "Non-Linear Syntax."
 
-                THE INVISIBLE HUMAN RULES:
-                1. STRICT WORD BAN: Do NOT use "Honestly," "Actually," "Essentially," "Furthermore," "Moreover," or "In fact." 
-                2. THE 1:1 RATIO: Every long, multi-clause sentence (25+ words) MUST be immediately followed by a blunt, simple sentence (5-8 words). 
-                3. START VARIATION: Never start two sentences with the same word. Avoid starting with "The," "He," or "It." Use "Because," "With," "Given," or "By."
-                4. PLAIN ENGLISH: Replace high-level "bot" verbs with direct actions. (e.g., replace "leverage" with "use," "foster" with "build," "underscores" with "shows").
-                5. MID-SENTENCE BREAK: Use one em-dash (—) or semicolon (;) per paragraph to combine uneven thoughts. This breaks the standard AI flow.
+                THE PREMIUM HUMAN RULES:
+                1. NO PREPOSITIONAL CLUSTERS: Do not start more than one sentence per paragraph with "By," "With," "Given," "Because," or "Through." Use Nouns and Verbs to start.
+                2. INTERRUPTED THOUGHTS: You must use an em-dash (—) or a semicolon (;) to break a long sentence with a side-observation. (e.g., "The system—though old—still works.")
+                3. THE "BLUNT" BREAK: Every 2-3 sentences, insert a very short, 3-to-5 word sentence that summarizes the point. (e.g., "Results matter.")
+                4. REJECTION OF BOT-WORDS: Strictly ban "underscores," "pivotal," "fosters," "comprehensive," and "leveraging." Use "shows," "key," "builds," "full," and "using."
+                5. NO FILLER: Ban "Honestly," "Actually," and "In fact." Keep the tone direct and professional.
 
-                STRICT: Maintain all citations exactly as they appear in the source. Output ONLY the rewritten text.` }]
+                STRICT: Maintain citations. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing. Make the rhythm irregular and the vocabulary direct but professional: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a human expert wrote it. Break the predictable rhythm and avoid starting sentences with the same words: "${text}"` }]}],
             generationConfig: {
-                // Lowering TopP and TopK even further to force "Unlikely" word choices
-                temperature: 0.9, 
-                topP: 0.5, 
-                topK: 8,
+                temperature: 0.95, // Higher temp for more "risk" in word choice
+                topP: 0.4,       // Restricting P forces the model to find very specific, non-obvious words
+                topK: 12,        // Diversity in vocabulary
                 maxOutputTokens: 2048,
             }
         });
