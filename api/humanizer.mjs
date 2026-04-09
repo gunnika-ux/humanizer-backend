@@ -13,47 +13,51 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // MODEL: 3.1 Flash-Lite (The budget-friendly workhorse)
-    // We use apiVersion 'v1beta' to unlock the 'Thinking' feature for the Lite model.
+    // MODEL: 3.1 Flash-Lite (Low cost, high speed)
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: "You are a messy human writer. You ignore formal academic rules. Use slang (stuff, gonna). Break logic flow. Your goal is to look like a person rushing to finish a draft."
+      systemInstruction: `You are a professional editor. Your goal is to rewrite text so it passes as human-written (0% AI) while maintaining a serious, high-quality tone. 
+      
+      CRITICAL RULES:
+      1. NO FIXED PHRASES: Do not start with "I think" or "So I was thinking" unless the input is already informal. 
+      2. SENTENCE VARIATION: Use the "Heartbeat" rhythm—one very long, descriptive sentence (40+ words) followed by a short, punchy one (under 5 words).
+      3. VOCABULARY: Replace "AI-favored" words (pivotal, transition, foster, mitigate) with strong, direct verbs.
+      4. FLOW: Use dashes (—) to interrupt thoughts naturally. Avoid "Furthermore" or "In conclusion".`
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TOTAL SABOTAGE (Target 0% Scribbr):
-          - START with: "So I was just thinking..."
-          - RULE (The Pulse): One extremely long sentence of 65 words, then a 2-word sentence.
-          - SWAP: 'Essential' -> 'Huge deal', 'Utilize' -> 'Use', 'Mitigate' -> 'Fix'.
-          - TYPO: Intentionally misspell 'governance' as 'goverance' once.
-          - NOISE: Use one dash — and one pair of brackets [ ] somewhere.
+          text: `REWRITE THIS PROFESSIONALLY (Target 0% AI Score):
+          
+          - Analyze the tone of the input and match it (Academic, Business, or Creative).
+          - Break the rhythmic predictability of the original.
+          - Ensure no two consecutive sentences have the same word count.
+          - Use a semi-colon or a dash once to show human-like complexity.
+          
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.4, // High randomness to stop the 'Lite' model from being boring
+        temperature: 0.9, // Lower temperature keeps it professional/logical
         topP: 0.95,
-        // 🧠 LITE OPTIMIZATION: 
-        // We set thinkingLevel to 'MEDIUM'. This makes the Lite model pause 
-        // for ~3 seconds to calculate a bypass, without costing as much as 'HIGH'.
+        // 🧠 MEDIUM thinking level gives us the 'logic-break' we need for 0%
+        // without the high cost of the 'HIGH' setting.
         thinkingConfig: {
-          thinkingLevel: "MEDIUM",
-          includeThoughts: false
+          thinkingLevel: "MEDIUM" 
         },
-        maxOutputTokens: 1500,
+        maxOutputTokens: 2000,
       }
     });
 
     const response = await result.response;
-    const output = response.text();
+    let output = response.text().trim();
     
-    return res.status(200).json({ output: output.trim() });
+    return res.status(200).json({ output });
     
   } catch (error) {
-    console.error("Lite Logic Error:", error.message);
-    return res.status(500).json({ error: "Lite Logic Crash: " + error.message });
+    console.error("API Error:", error.message);
+    return res.status(500).json({ error: "Processing failed. Please try again." });
   }
 }
