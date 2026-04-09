@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
-  // 1. Headers for Cross-Origin Resource Sharing (CORS)
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -14,35 +13,30 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    /**
-     * MODEL SELECTION
-     * Using 'gemini-3-flash-preview' (The Standard Tier).
-     * We MUST use apiVersion: 'v1beta' to access thinkingConfig.
-     */
+    // MODEL: Standard Flash (with v1beta for Thinking)
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview", 
-      systemInstruction: "You are a student writing an informal first draft. Use first-person perspective, occasional contractions (can't, don't), and blunt, non-academic vocabulary. Avoid all polished AI transitional phrases like 'Furthermore' or 'In conclusion'."
+      systemInstruction: "You are a senior analyst writing a direct internal memo. Your style is blunt and conversational but professional. Avoid flowery AI language (e.g., 'pivotal shift', 'foster'). Use dashes (—) and colons (:) to create a natural, irregular human flow."
     }, { apiVersion: 'v1beta' });
 
-    // 2. GENERATION WITH "DIRTY" PROMPTING TO BEAT SCRIBBR
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `HUMANIZE THIS (Target 0% Scribbr/Turnitin):
-          
-          - START: Begin with "I've been looking into..." or "I actually think..."
-          - STYLE: Use one very long sentence (50+ words) followed by a short fragment.
-          - NOISE: Use brackets [ ] for a small personal side-note.
-          - VOCAB: Swap academic words (e.g., 'mitigate') for simpler ones ('fix' or 'stop').
-          
+          text: `STRIP AI SIGNATURES (Target 0% Scribbr/Turnitin):
+
+          - TECHNIQUE: Use the 'Heartbeat' rhythm. One very long, detailed sentence followed immediately by a short, 3-word conclusion.
+          - VARY LOGIC: Move the main conclusion of the text to the very first sentence.
+          - NOISE: Insert one dash — or a pair of brackets [ ] to clarify a point.
+          - FORBIDDEN: Do not use 'Furthermore', 'Moreover', 'Consequently', or 'In conclusion'.
+          - VOCAB: Use precise but simple verbs (e.g., 'fix' instead of 'mitigate', 'use' instead of 'utilize').
+
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.2, 
-        topP: 0.95,
-        // 🧠 The 'Thinking' configuration that breaks AI probability patterns
+        temperature: 1.1, // High enough for randomness, low enough for professional logic
+        topP: 0.9,
         thinkingConfig: {
           includeThoughts: false, 
           thinkingLevel: "HIGH" 
@@ -54,16 +48,12 @@ export default async function handler(req, res) {
     const response = await result.response;
     const output = response.text();
     
-    // 3. Return the processed text
     return res.status(200).json({ output: output.trim() });
     
   } catch (error) {
-    // If it still fails, it's likely a region-specific model ID issue
-    console.error("Gemini API Error:", error.message);
-    
-    // Fallback error message
+    console.error("Gemini Error:", error.message);
     return res.status(500).json({ 
-      error: "Scribbr-Bypass Error. Check terminal logs for: " + error.message 
+      error: "Bypass Logic Failed: " + error.message 
     });
   }
 }
