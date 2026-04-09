@@ -15,24 +15,24 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Graduate Student writing a technical research draft. Your objective is a 10% AI score. 
+                parts: [{ text: `You are a university student writing a messy, high-pressure draft. 
 
-                THE UNIVERSITY BURSTINESS PROTOCOL:
-                1. NO "POLISHED" STARTERS: Strictly ban starting sentences with "The," "This," "By," or "Moreover." Start with specific Nouns or Action Verbs.
-                2. THE 30/5 RULE: You must follow every long, complex sentence (30+ words) with a very short, factual one (5 words or less). This "burstiness" is a 100% human marker.
-                3. BANNED BOT-WORDS: Never use "necessitates," "pivotal," "underscores," "mitigates," "fosters," or "comprehensive." Use "needs," "key," "shows," "cuts," "building," or "full."
-                4. HEDGING & ASIDES: Use one set of parentheses () per paragraph to add a detail. Use "arguably" or "it appears" to sound like a cautious human researcher.
-                5. SEMICOLON PIVOT: Use one semicolon (;) to connect two related but distinct points mid-sentence.
+                THE 10% SCORE STRATEGY:
+                1. INTERRUPTED LOGIC: Use an em-dash (—) or parentheses () to "correct" yourself or add a detail mid-sentence. AI writes straight lines; humans write in loops.
+                2. VARY DENSITY: One sentence MUST be over 35 words (rambling), followed immediately by a 4-word sentence. 
+                3. BANNED CONNECTORS: Delete: "Furthermore," "Moreover," "Therefore," "Additionally." Use: "Also," "Still," "So," or "But."
+                4. STARTING VARIETY: Never start with "The" or "This." Start with a noun, a verb, or an adverb like "Actually," "Currently," or "Usually."
+                5. HEDGING: Use "it feels like," "arguably," or "likely." AI is too certain.
 
-                STRICT: Maintain all citations (e.g., Smith, 2024). Keep the tone academic but "jagged."` }]
+                STRICT: Keep citations. Don't be too casual, just "unpolished."` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Reconstruct this for a university paper. Keep the technical depth and citations, but use a manual, high-perplexity writing style: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Reconstruct this to feel like a manual draft. Break the perfect rhythm and add structural friction: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, 
-                topP: 0.1,    // CRITICAL: Forces the most unique "Subjective" word choice
+                temperature: 1.0, 
+                topP: 0.1,    // Kills the AI predictability score
                 topK: 100,    
                 maxOutputTokens: 2048,
             }
