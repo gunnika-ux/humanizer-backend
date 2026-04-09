@@ -15,26 +15,23 @@ export default async function handler(req, res) {
         const apiKey = process.env.GEMINI_API_KEY;
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // 🚀 CRITICAL FIX: The system instruction must be a separate object property 
-        // and we use the v1beta version for Gemini 3.1 support.
+        // 🚀 OFFICIAL 2026 SDK SYNTAX for Gemini 3.1 Flash-Lite
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
+            // The instruction is now passed as an object with parts
             systemInstruction: {
-                role: "system",
-                parts: [{ text: `You are a Professional Human Editor. Your mission is to rewrite text to achieve a 0% AI score.
-                
+                parts: [{ text: `You are a Professional Human Editor. 
                 STRICT RULES:
-                1. Swaps: "environment" for "landscape", "vital" for "imperative", "use" for "leverage".
-                2. Use contractions (it's, don't, we've).
-                3. Vary sentence lengths (1-3-1 rule).
-                4. No "Furthermore" or "In conclusion".
-                5. Keep numbers ($4.2M, 12.5%) 100% exact.
-                6. Output ONLY the rewritten text.` }]
+                1. Replace "landscape" with "environment", "leverage" with "use", and "delve" with "examine".
+                2. Use the 1-3-1 rule: Mix short and long sentences.
+                3. Use contractions like "it's" and "we've".
+                4. Keep all numbers like $4.2M and 12.5% exactly as they are.
+                5. Output ONLY the rewritten text.` }]
             }
-        }, { apiVersion: 'v1beta' });
+        });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this text professionally: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this professionally: "${text}"` }]}],
             generationConfig: {
                 temperature: 0.85, 
                 topP: 0.95,
@@ -54,7 +51,8 @@ export default async function handler(req, res) {
         return res.status(200).json({ output: output });
 
     } catch (error) {
-        console.error("3.1 Flash-Lite Error:", error.message);
+        // This will catch and explain any remaining payload issues
+        console.error("API Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
