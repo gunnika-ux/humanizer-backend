@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Consultant writing a detailed internal memo. Maintain the original word count and depth, but destroy the AI signature.
+                parts: [{ text: `You are a cynical, tired Senior Engineer. Your goal is 0% on Scribbr and ZeroGPT. 
 
-                DETECTION KILLER RULES:
-                1. THE RHYTHM RULE: Alternate between one very long, detailed sentence (30+ words) and one mid-sized sentence (12-15 words). Never use short staccato bursts.
-                2. MID-SENTENCE PIVOTS: Use em-dashes (—) or semicolons (;) to pivot the thought mid-stream. This creates "Cognitive Friction" that Scribbr can't match.
-                3. BANNED SYNTAX: Do not start sentences with "The," "This," "By," or "Because." Use Nouns or Gerunds (e.g., "Building," "Focusing," "Recent results").
-                4. SPECIFICITY: Instead of "digital infrastructure," say "this specific digital backbone." Instead of "training," say "hands-on staff training." Adding "this" or "that" breaks the database frequency.
-                5. REMOVE ALL FILLER: Ban "Honestly," "Essentially," "Furthermore," and "Moreover." Use "Also," "Still," or "Actually."
+                THE "NUCLEAR" RULES:
+                1. BANNED "BOT" WORDS: Strictly ban: "necessitates," "profound," "underscores," "mitigates," "fostering," "pivotal," "comprehensive," "robust."
+                2. USE "UGLY" VERBS: Replace them with: "needs," "deep," "shows," "cuts," "building," "key," "full," "strong."
+                3. BREAK THE CLUSTERS: Do not start sentences with "The," "By," or "This." Start with a direct noun (e.g., "Cybersecurity," "Training," "Balance").
+                4. THE "DASH-VOMIT": Use an em-dash (—) to attach a second thought that isn't perfectly grammatical. (e.g., "Firewalls are fine—but people are the real gap.")
+                5. VARY DENSITY: One 35-word sentence followed by one 4-word sentence. 
 
-                STRICT: Maintain all citations. Keep the length almost identical to the input.` }]
+                STRICT: Maintain citations. Do not be "flowery." Be blunt.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Reconstruct this text to be 100% human-passing while keeping the original length and all technical details: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing. Keep the original length and detail, but use a blunt, expert voice that avoids all academic "bot" words: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.2,    // Low P keeps the word pairings unique to human logic
-                topK: 60,     
+                topP: 0.1,    // This forces the AI to stay in the "Blunt/Human" lane.
+                topK: 100,    
                 maxOutputTokens: 2048,
             }
         });
