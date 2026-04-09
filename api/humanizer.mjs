@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,26 +12,49 @@ export default async function handler(req, res) {
         const { text } = req.body;
         if (!text) return res.status(400).json({ error: 'No text provided' });
 
-        const apiKey = process.env.GEMINI_API_KEY;
-        const genAI = new GoogleGenerativeAI(apiKey);
-
-        // This works now because the ^0.22.0 library knows this model exists
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        
+        // We use the v1beta to ensure the 3.1 logic is fully unlocked
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: "You are a Professional Human Editor. Rewrite text to sound natural. Avoid words like 'landscape' or 'leverage'. Use contractions and the 1-3-1 sentence rule. Output only the result." }]
+                parts: [{ text: `You are an Advanced NLP Humanizer. Your goal is to bypass AI detectors (GPTZero, Turnitin, Originality.ai) with a 99% human score.
+
+                PHASE 1: RHYTHM (BURSTINESS)
+                - Break the 'standard' AI sentence length. 
+                - Follow the 1-3-1 pattern: One short punchy sentence. One long, complex descriptive sentence with multiple clauses. One short summarizing sentence.
+                - Use fragments occasionally for impact.
+
+                PHASE 2: VOCABULARY (PERPLEXITY)
+                - Replace predictable AI words: No "landscape", "leverage", "delve", "tapestry", "multifaceted", or "comprehensive".
+                - Use concrete verbs. Instead of "The implementation of the plan", use "We rolled out the plan".
+                - Use contractions (don't, it's, we're) 100% of the time.
+
+                PHASE 3: IMPERFECTION
+                - AI is too perfect. Add natural human flow: start sentences with "So," "But," or "Also" instead of "Furthermore" or "Moreover".
+                - Use a conversational but professional tone.
+
+                STRICT: KEEP ALL DATA ($4.2M, 12.5%) EXACT. Output ONLY the rewritten text.` }]
+            }
+        }, { apiVersion: 'v1beta' });
+
+        const result = await model.generateContent({
+            contents: [{ role: "user", parts: [{ text: `Humanize this text to pass as 100% human: "${text}"` }]}],
+            generationConfig: {
+                // High temperature (0.9) is the "Secret Sauce" for humanizing. 
+                // It makes the word choice less predictable for detectors.
+                temperature: 0.9, 
+                topP: 0.95,
+                topK: 40,
+                maxOutputTokens: 2048,
             }
         });
 
-        const result = await model.generateContent(text);
-        const response = await result.response;
-        const output = response.text().trim();
-
-        return res.status(200).json({ output: output });
+        const output = result.response.text().trim();
+        return res.status(200).json({ output });
 
     } catch (error) {
-        console.error("3.1 Flash-Lite Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
