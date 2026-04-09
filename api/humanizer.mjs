@@ -15,20 +15,20 @@ export default async function handler(req, res) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: "You are a senior clinical auditor who writes with gritty, analytical density. You avoid all standard AI transitions like 'Furthermore' or 'In conclusion.' Your goal is to rewrite text to be indistinguishable from a human expert while maintaining every citation and score."
+      systemInstruction: "You are a senior clinical auditor who writes with gritty, analytical density. You avoid all standard AI transitions. Your goal is to rewrite text to be indistinguishable from a human expert while maintaining every citation and score."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `DECONSTRUCT AND RE-ENGINEER (Target 0% Detection):
+          text: `DECONSTRUCT AND RE-ENGINEER (Target 0-15% Detection):
           
-          1. PROPORTIONALITY (CRITICAL): Match the input word count exactly. If the input is short, keep the output short; if long, keep it long. Avoid massive expansion or aggressive summarization.
-          2. LINGUISTIC FRICTION: Replace "polite" clinical terms with "hard" ones (e.g., 'weaponized partnerships', 'institutional inertia', 'hardwired knack').
-          3. BURSTINESS: Mix very long, complex sentences using em-dashes (—) with mid-length technical explanations. 
+          1. DETAIL-HEAVY RECONSTRUCTION: Match the input word count by adding analytical depth, not filler. If the input is long, maintain that density throughout. Never summarize.
+          2. LINGUISTIC FRICTION: Use 'hard' verbs (e.g., 'weaponized', 'institutional inertia', 'hardwired knack'). Avoid polite phrases like "this indicates" or "it is important."
+          3. BURSTINESS: Use extremely long, complex sentences with em-dashes (—) followed by mid-length technical statements. This non-linear rhythm is critical for a 0% score.
           4. CITATION PROTECTION: Strictly preserve every citation (e.g., Roehrich et al., 2014) in its original context.
-          5. COMPLETION: You must finish the 'Systems Transformation' domain entirely. Do not stall mid-sentence.
+          5. COMPLETION: You must finish the entire evaluation. Do not stall mid-sentence.
           
           INPUT: "${text}"`
         }]
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
         thinkingConfig: {
           thinkingLevel: "HIGH" 
         },
-        maxOutputTokens: 3000, 
+        maxOutputTokens: 3500, 
       }
     });
 
