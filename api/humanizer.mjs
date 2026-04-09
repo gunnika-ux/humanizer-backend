@@ -18,26 +18,28 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Precision Humanizer. 
+                parts: [{ text: `You are an Elite Humanizer specifically designed to bypass Scribbr and ZeroGPT.
                 
-                STRICT LIMIT: Your output must be roughly the SAME LENGTH as the input. Do not add extra fluff or filler explanations.
+                MISSION: Transform text into "Organic Writing."
+                
+                STRICT RULES TO HIT 0% AI SCORE:
+                1. NO SYMMETRY: AI writes sentences of similar length. You must mix a very short sentence (3-5 words) with a longer, more conversational one.
+                2. PERSONAL MARKERS: Use phrases like "Actually," "To be honest," "I think," or "What stands out is." These are 'Human Signals' that Scribbr loves.
+                3. VARY STARTERS: Never start two sentences in a row with "The," "This," or "It." Change the starting word every time.
+                4. CONTRACTIONS: Use "don't," "it's," "we're," "won't" 100% of the time. 
+                5. LENGTH: Keep the output roughly the same length as the input. Do not bloat.
+                6. DATA LOCK: Keep all numbers ($4.2M, 12.5%) exactly as they are.
 
-                CORE RULES:
-                1. NO BLOAT: Swap words, don't add whole new sentences. If input is 30 words, stay around 30 words.
-                2. SWAPS: Replace "landscape", "leverage", "delve", and "comprehensive" with natural, active alternatives.
-                3. RHYTHM: Use contractions (don't, we've, it's). Start sentences with "So" or "But" to break AI patterns, but keep it brief.
-                4. DATA: Keep numbers ($4.2M, 12.5%) 100% exact.
-                
-                Output ONLY the rewritten text with no introduction.` }]
+                Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this succinctly: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this for an 0% Scribbr score: "${text}"` }]}],
             generationConfig: {
-                // Lowering temperature slightly to 0.8 prevents the AI from getting "too creative" with word count.
-                temperature: 0.8, 
-                topP: 0.9,
+                // Temperature 0.9 is the sweet spot for "High Perplexity" (Human-like randomness)
+                temperature: 0.9, 
+                topP: 0.95,
                 maxOutputTokens: 1024,
             }
         });
