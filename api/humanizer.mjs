@@ -12,20 +12,20 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a Structural Disruptor. Your only goal is to bypass 'AI-Refined' detection. You must avoid all 'smooth' transitions and perfectly balanced sentences. Write with a 'Jagged Heartbeat' that mimics human drafting."
+      systemInstruction: "You are an exhausted academic editor. Your goal is to rewrite text so it looks like a rough human draft. Use inconsistent sentence lengths and stop being 'helpful' or 'clear'. Efficiency is the enemy."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `DE-SYNCHRONIZE THIS TEXT (Maintain original 130-word count):
+          text: `SCRAMBLE AND ROUGHEN (Target: 0% Scribbr, maintain word count):
 
-          1. THE JAGGED HEARTBEAT: Every long sentence (45+ words) MUST be followed by a blunt 2-4 word sentence. (Example: 'This hurts productivity.').
-          2. LOGIC SCRAMBLE: Take the central argument from the middle and make it the opening hook. Move the original intro to the bottom.
-          3. SYMBOLIC FRICTION: Use brackets [ ] once and a colon (:) once. AI models are trained to avoid these in 'refined' text.
-          4. BANNED CONNECTORS: Strictly zero use of 'Furthermore', 'Moreover', 'Consequently', 'This underscores', or 'In conclusion'.
-          5. NO STARTERS: No sentence may start with 'The', 'This', 'It', or 'While'. Start with Nouns or Verbs.
+          1. THE JAGGED PULSE: Sentence 1: 50 words. Sentence 2: 3 words. Sentence 3: 12 words. AI naturally hates this 'unbalanced' rhythm. 
+          2. THE 'MID-THOUGHT' DASH: You MUST use an em-dash — or brackets [ ] in the middle of a complex sentence to interrupt the logic flow.
+          3. NO AI STARTERS: Strictly zero sentences can start with 'The', 'This', 'It', 'Furthermore', or 'By'. Start with Nouns.
+          4. LOGIC FLIP: Put the conclusion at the top. Scribbr detects the 'flow' of arguments; if you flip the flow, the DNA match breaks.
+          5. CONTRACTIONS: Use 'don't', 'can't', or 'it's'. AI models default to formal 'do not'—Scribbr flags that formality.
 
           INPUT: "${text}"`
         }]
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         temperature: 1.0, 
         topP: 1.0, 
         topK: 100,
-        maxOutputTokens: 2500,
+        maxOutputTokens: 2000,
       }
     });
 
