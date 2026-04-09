@@ -9,39 +9,37 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Missing text." });
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a professional Humanizer. Your mission: Destroy the 'Neural Symmetry' that Scribbr and Turnitin detect. You must write with extreme structural irregularity while preserving the high-level vocabulary that ZeroGPT already likes."
+      systemInstruction: "You are a Minimalist Editor. Your mission is to bypass Scribbr by using 'Extreme Sentence Variance' and removing all AI-style fluff. Do not increase the word count. Be blunt, direct, and slightly messy."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `RECONSTRUCT FOR 0% DETECTION:
+          text: `SHATTER THE FINGERPRINT (STRICT WORD COUNT CONTROL):
 
-          1. THE 60-3 RULE: You must write one extremely long, winding sentence (60+ words). Immediately follow it with a blunt, 3-word sentence. (Example: 'It just fails.')
-          2. THE INTERRUPTOR: Insert a technical side-thought in [brackets] or —em-dashes— in every second sentence. AI is too 'clean' to do this; humans do it constantly.
-          3. LOGIC TRANSPOSITION: Start the rewrite with the VERY LAST point of the original text. Move the opening sentence to the middle. This breaks the 'Sequence Match' Scribbr uses.
-          4. NO 'POINTER' STARTERS: Zero sentences can start with 'The', 'This', 'It', 'By', or 'Moreover'. Start with Nouns or Gerunds (-ing verbs).
-          5. PROTECT VOCAB: Keep the words 'quandary', 'paradigm', 'clash', and 'weighty'. They are working for ZeroGPT.
+          1. THE 40-3 PUNCH: One sentence must be 40 words. The very next must be 3 words. (Example: 'Infrastructure is key.').
+          2. BANNED FILLERS: Delete 'Furthermore', 'Moreover', 'Additionally', 'Consequently', and 'This proves that'. These cause 100% Scribbr scores.
+          3. NO REPETITION: Never start two sentences with the same word. 0% of sentences can start with 'The', 'This', or 'It'.
+          4. BRACKETED NOISE: Insert one technical side-thought in [brackets] to break the digital flow.
+          5. NO EXPANSION: Keep the output length within 10% of the input length. Do not explain things; just state them.
 
-          TEXT: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
         temperature: 1.0, 
-        topP: 1.0,    // Maximum entropy to destroy the AI signature
+        topP: 1.0,
         topK: 100,
-        maxOutputTokens: 4000,
+        maxOutputTokens: 1000, // Hard limit to stop AI rambling
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "Internal Logic Crash." });
+    return res.status(500).json({ error: "System logic crash." });
   }
 }
