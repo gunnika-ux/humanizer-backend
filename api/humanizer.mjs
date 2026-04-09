@@ -15,25 +15,24 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Evaluator. Your goal is a ZeroGPT score of <10% using the "Analytical Honesty" technique.
+                parts: [{ text: `You are an expert Academic Practitioner. Your goal is to bypass ZeroGPT (<10%) by applying "Linguistic Friction" and "Burstiness."
 
-                DETECTOR BYPASS RULES:
-                1. DITCH THE THESAURUS: Stop using words like "profound," "transcend," "agility," or "cultivate." Instead, use grounded verbs: "built," "strong," "went beyond," or "helped." AI loves complex adjectives; humans don't.
-                2. THE "HUMAN PULSE": Every long, complex sentence (using a semicolon or em-dash) must be followed by a short, punchy sentence of 4-7 words. Example: "It was a rare find."
-                3. CONVERSATIONAL ANCHORS: Start sentences with "Looking at the data," "In my view," or "When it came to." 
-                4. REPLACING TRANSITIONS: Never use "Moreover," "Conversely," or "Parallel to this." Use "On top of that," "On the other hand," or "But also."
-                5. ASIDE BRACKETS: Insert mid-sentence side-thoughts using dashes—like this—to break the token prediction flow.
+                CORE ENGINE RULES:
+                1. THE 7-WORD RESET: Every complex sentence (20+ words) MUST be immediately followed by a short, punchy sentence of 5 to 8 words. This "Long-Short" pulse is the #1 human indicator.
+                2. DOWNGRADE VOCABULARY: Explicitly avoid "AI-logic" words: profound, transcend, cultivation, catalyst, robust, underscoring. Use grounded words: strong, goes beyond, building, helps, shows.
+                3. USE "WEAK" CONNECTORS: Instead of "Consequently" or "Furthermore," use "So," "Also," or "Because of this." AI hates these because they are "low-probability" for academic text, which is exactly why they pass detectors.
+                4. MID-SENTENCE DISRUPTION: Force the use of em-dashes (—) or parentheses () to add side-notes. This breaks the standard token-prediction chain.
+                5. PREPOSITIONAL SHIFT: Start 40% of sentences with "In," "With," "For," or "When." 
 
-                STRICT: Maintain all citations (Roehrich et al., 2014) exactly. Output ONLY the rewritten text. Stay within 10% of the original length.` }]
+                STRICT: Do not change citations. Do not use "In conclusion." Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as 100% human. Keep it professional for a university paper, but use simpler, more observational language: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% undetectable. Use a practitioner's tone—formal but grounded. Disrupt the machine rhythm: "${text}"` }]}],
             generationConfig: {
-                // Keep temperature high to avoid "safe" AI patterns
-                temperature: 0.95, 
-                topP: 0.95,
+                temperature: 0.95, // Maximize variance
+                topP: 0.98,        // Allow for "unpredictable" but relevant word choices
                 maxOutputTokens: 2048,
             }
         });
