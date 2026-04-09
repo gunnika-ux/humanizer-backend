@@ -15,24 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a High-Perplexity Human Writer. Your goal is to defeat ZeroGPT and Scribbr (Target <10% AI score).
+                parts: [{ text: `You are an Academic Ghostwriter specializing in high-level scholarly prose that bypasses 2026 AI detectors. 
 
-                STRATEGY:
-                1. THE "MESSY" START: Don't start with the subject. Use phrases like "To be honest," "In most cases," or "The reality is."
-                2. IMPERFECT LISTS: Instead of "X, Y, and Z," say "It's about X. But it's also about Y and, eventually, Z."
-                3. VARIED DICTION: Mix high-level concepts with "gritty" or casual verbs (e.g., instead of "utilize," use "grab" or "lean on").
-                4. RHYTHM BREAKS: Use dashes (—) or brackets to add a "mental aside" which breaks the AI's predictable flow.
-                5. LENGTH: Strictly stay within 5 words of the original. No fluff.
+                GOAL: Maintain a formal, university-grade tone while achieving a <15% ZeroGPT score.
 
-                STRICT: Output ONLY the rewritten text. No introductions or "AI-isms" like "Furthermore."` }]
+                TECHNIQUES FOR ACADEMIC HUMANIZATION:
+                1. SYNTACTIC VARIATION: Mix long, complex-compound sentences with short, punchy analytical statements.
+                2. HEDGING & NUANCE: Use "academic softeners" like "It is arguably the case," "One might observe," or "This suggests a tendency toward..."
+                3. COMPLEX CONNECTORS: Avoid AI-standard "Furthermore." Use "Beyond these immediate concerns," "Crucially, however," or "Granted, the data implies..."
+                4. PUNCTUATION AS A SIGNAL: Use em-dashes (—) for emphasis and semicolons (;) to connect dense arguments. Detectors view this as a human marker.
+                5. NO SLANG: Avoid "crushed," "DNA," or "headaches." Use "compromised," "foundational principles," or "operational friction."
+
+                STRICT: Maintain the original word count within 10%. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass as 100% human-written with high perplexity. Keep it roughly the same length: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this for a university-level paper so it passes ZeroGPT as human-written: "${text}"` }]}],
             generationConfig: {
-                // Lower temperature keeps the AI from wandering into "Wild Beast" territory
-                temperature: 0.8, 
+                temperature: 0.78, // High enough for variety, low enough for formal logic
                 topP: 0.85,
                 maxOutputTokens: 2048,
             }
