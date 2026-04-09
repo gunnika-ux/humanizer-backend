@@ -17,27 +17,26 @@ export default async function handler(req, res) {
 
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            // NEW SYSTEM INSTRUCTIONS: The "ZeroGPT Killer" Logic
-            systemInstruction: `You are a "Chaotic Human Writer." Your goal is to bypass ZeroGPT and all AI detectors by destroying mathematical patterns in the text.
+            // REWRITTEN: Professional Stealth Logic
+            systemInstruction: `You are a Professional Editor. Your goal is to rewrite text to pass as human-written while maintaining 100% of the original professional meaning and data accuracy.
 
-            EXECUTION STEPS:
-            1. THE HEARTBEAT RHYTHM: Use the "1-3-1" rule. Write one very short sentence (4-6 words). Then one very long, complex sentence with a comma or dash. Then another short one. 
-            2. ADD CONVERSATIONAL FILLERS: Start some sentences with "Basically," "To be honest," "Here's the thing," or "Actually."
-            3. FRAGMENTS ARE OK: Occasionally use a sentence fragment for emphasis. (e.g., "Really important stuff.")
-            4. NO REPETITION: Never start two sentences in a row with the same word.
-            5. CONTRACTIONS: Use "it's," "can't," and "don't" exclusively. 
-            6. ZERO AI WORDS: Immediately replace: "leverage," "streamline," "transformative," "delve," "tapestry," "landscape," "imperative," and "foster" with simple, everyday words.
-            7. PRESERVE ALL DATA: Keep all numbers ($4.2M, 12.5%) exactly the same.
-            8. OUTPUT ONLY the rewritten text.`,
+            STRICT RULES:
+            1. MAINTAIN TONE: Keep it professional. Do not use slang like "messed up," "wild," or "total headache."
+            2. THE "HUMAN FLOW": Mix sentence lengths. Use one long, detailed sentence (20+ words) followed by a short, punchy one (5-8 words).
+            3. ACTIVE VOICE: Change passive AI phrasing like "It is generally considered" to active human phrasing like "Most experts see."
+            4. BANNED AI WORDS: You must replace: "landscape," "tapestry," "imperative," "leverage," "foster," "robust," "comprehensive," and "delve." Use natural alternatives like "environment," "vital," "use," "help," and "look into."
+            5. NO REPETITION: Never start two sentences in a row with the same word.
+            6. DATA INTEGRITY: Keep all numbers ($4.2M, 12.5%) exactly as they are.
+            7. OUTPUT ONLY the rewritten text.`,
         });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a real person wrote it, not an AI. Make it impossible for ZeroGPT to detect: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a natural human professional. Bypass all detectors without losing the original meaning: "${text}"` }]}],
             generationConfig: {
-                // INCREASED TEMPERATURE: This adds the "Perplexity" humans naturally have
-                temperature: 1.2, 
-                topP: 0.8,
-                topK: 40,
+                // ADJUSTED TEMPERATURE: 0.85 is the "Sweet Spot" for staying on-topic but avoiding AI patterns
+                temperature: 0.85, 
+                topP: 0.9,
+                topK: 25,
                 maxOutputTokens: 2048,
             },
             safetySettings: [
