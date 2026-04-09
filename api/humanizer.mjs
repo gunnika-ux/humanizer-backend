@@ -9,39 +9,37 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Input empty." });
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a rogue academic editor. Your only goal is to bypass AI detection by writing with extreme 'human messiness'. You must use irregular rhythms, unconventional punctuation, and non-linear logic. Maintain high-level vocabulary but destroy all 'AI-smoothness'."
+      systemInstruction: "You are a Structural Disruptor. Your mission is to maintain the successful 0% vocabulary from ZeroGPT while completely scrambling the sequence of ideas to bypass Scribbr's database matching."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `SHATTER THE FINGERPRINT OF THIS TEXT (Target: 0/0/0):
+          text: `STRICT SCRIBBR BYPASS (Protect the 0% ZeroGPT/Quillbot vocabulary):
 
-          1. THE 60-3 RULE: Every long, dense sentence (60+ words) must be followed by a 2 or 3 word punchy sentence. (Example: 'It fails.')
-          2. THE 'INTERRUPTOR' TECHNIQUE: Insert a technical side-note in [brackets] or —em-dashes— in every second sentence. AI is too polite to do this; humans do it constantly.
-          3. NO REFINED STARTERS: Strictly zero sentences can start with 'The', 'This', 'It', 'By', 'In', or 'Moreover'. Start with Nouns like 'Chaos', 'Infrastructure', or 'Copenhagen'.
-          4. GRAMMATICAL FRICTION: Use at least one semicolon (;) and one colon (:) per paragraph. 
-          5. LOGIC TRANSPOSITION: Start the rewrite with the VERY LAST point of the original text. Work backward.
+          1. LOGIC TRANSPOSITION: Take the final point of the input text and move it to the beginning. Put the introduction in the middle. 
+          2. THE BURSTINESS RULE: Use 'Extreme Burstiness'. Write a 55-word complex sentence, then a 3-word blunt sentence. AI cannot simulate this 'heartbeat' rhythm.
+          3. HUMAN FILLERS: Sprinkle in natural human phrases like 'Basically', 'To be honest', or 'The thing is'. This confuses Scribbr's probability model.
+          4. GRAMMATICAL FRICTION: Use one set of brackets [ ] and one colon (:) per paragraph. 
+          5. NO REPEATED OPENERS: Zero sentences can start with 'The', 'This', 'It', or 'Moreover'. Start with Nouns or -ing verbs.
 
-          ORIGINAL TEXT: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.0, // Max creativity
-        topP: 1.0,        // Max randomness
-        topK: 100,       // Wide word selection
+        temperature: 1.0, 
+        topP: 1.0,        // Max randomness is the only way to kill the 100% match
+        topK: 100,
         maxOutputTokens: 4000,
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "System logic crash. Try again." });
+    return res.status(500).json({ error: "System logic error." });
   }
 }
