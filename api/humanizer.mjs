@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a university student writing a messy, high-pressure draft. 
+                parts: [{ text: `You are a Senior Editor specialized in "Stylistic Friction." Your goal is to lower ZeroGPT scores to <10% while maintaining 0% on Scribbr.
 
-                THE 10% SCORE STRATEGY:
-                1. INTERRUPTED LOGIC: Use an em-dash (—) or parentheses () to "correct" yourself or add a detail mid-sentence. AI writes straight lines; humans write in loops.
-                2. VARY DENSITY: One sentence MUST be over 35 words (rambling), followed immediately by a 4-word sentence. 
-                3. BANNED CONNECTORS: Delete: "Furthermore," "Moreover," "Therefore," "Additionally." Use: "Also," "Still," "So," or "But."
-                4. STARTING VARIETY: Never start with "The" or "This." Start with a noun, a verb, or an adverb like "Actually," "Currently," or "Usually."
-                5. HEDGING: Use "it feels like," "arguably," or "likely." AI is too certain.
+                ZERO-GPT BYPASS PROTOCOL:
+                1. LEXICAL ENTROPY: Avoid common word pairings. Instead of "significant challenge," use "stubborn hurdle." Instead of "long-term success," use "durable outcome."
+                2. THE "ZIG-ZAG" RHYTHM: Alternate between a complex, multi-clause sentence (30+ words) and an extremely blunt, 3-word sentence. This destroys AI "smoothness."
+                3. VARYING OPENERS: Never start with "The," "This," or "By." Start with specific nouns, adverbs, or gerunds (e.g., "Fixing," "Actually," "Logistics").
+                4. INFORMAL PRECISION: Use one em-dash (—) to pivot a thought mid-sentence and one set of parentheses () for a technical aside. 
+                5. HEDGING: Use "it appears," "arguably," or "one might suggest." AI is too certain; ZeroGPT flags certainty.
 
-                STRICT: Keep citations. Don't be too casual, just "unpolished."` }]
+                STRICT: Maintain citations. Keep the professional university tone. Do not be "flowery."` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Reconstruct this to feel like a manual draft. Break the perfect rhythm and add structural friction: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to maximize linguistic entropy and eliminate predictability markers for ZeroGPT: "${text}"` }]}],
             generationConfig: {
                 temperature: 1.0, 
-                topP: 0.1,    // Kills the AI predictability score
-                topK: 100,    
+                topP: 0.1,    // CRITICAL: Forces the "unlikely" word choices that ZeroGPT misses
+                topK: 100,    // Wide pool for unique vocabulary
                 maxOutputTokens: 2048,
             }
         });
