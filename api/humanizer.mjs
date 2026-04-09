@@ -9,36 +9,40 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
+    if (!text) return res.status(400).json({ error: "Input empty." });
+
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      // SYSTEM INSTRUCTION: Tells the AI to PROTECT the words that ZeroGPT likes.
-      systemInstruction: "You are a Structural Editor. Keep the existing high-level vocabulary (like quandary, paradigm, enclaves) but SHUFFLE the sentence lengths to bypass Scribbr."
+      // SYSTEM INSTRUCTION UPDATED FOR SCRIBBR:
+      systemInstruction: "You are a Structural Disruptor. Your mission is to maintain the successful 0% vocabulary from ZeroGPT/Quillbot while completely scrambling the sequence of ideas to bypass Scribbr's database matching."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Apply 'Syntactic Inversion' to this text. 
+          text: `STRICT STRUCTURAL RECONSTRUCTION (Keep the vocabulary exactly as is):
 
-          1. PROTECT THE WORDS: Do not change the heavy academic words. ZeroGPT and Quillbot like them.
-          2. BREAK THE RHYTHM: Scribbr detects the 'flow'. You must change the order of the ideas. Start with the middle of the paragraph and move the beginning to the end.
-          3. THE JAGGED RULE: One sentence must be 50 words long. The very next sentence must be 3 words long. This 'Jagged' rhythm is 0% on Scribbr.
-          4. USE SYMBOLS: Use a dash (—) or brackets [] to break a sentence in half. This destroys the AI fingerprint.
+          1. LOGIC REVERSAL: Start the rewrite with the CONCLUSION of the input text. Move the opening sentence to the middle. This destroys Scribbr's sequence match.
+          2. THE 'HUMAN' PAIRED-RHYTHM: Write one extremely long, winding sentence (50+ words) and follow it immediately with a 2-word punchy sentence. (Example: 'Paradigm shifts—while often burdensome—trigger total evolution. It works.')
+          3. INTERRUPTED SYNTAX: Use em-dashes (—) to break sentences in the middle. AI is too 'clean'; humans interrupt themselves.
+          4. FORBIDDEN STARTERS (KEEP THESE): No 'The', 'This', 'It', 'In', 'By', 'Moreover'.
+          5. PROTECT DICTION: Keep the words 'quandary', 'paradigm', 'clash', and 'weighty'. They are working.
 
-          TEXT: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.9, // Balanced to keep the good words but change the structure
-        topP: 0.95,
-        maxOutputTokens: 3000,
+        temperature: 0.95, // Dropped 0.05 to prevent the 'spoiling' of good words
+        topP: 0.98,        
+        topK: 100,
+        maxOutputTokens: 4000,
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "API Error" });
+    return res.status(500).json({ error: "Logic error." });
   }
 }
