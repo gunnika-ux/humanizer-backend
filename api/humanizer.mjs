@@ -12,34 +12,33 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a Minimalist Editor. Your mission is to bypass Scribbr by using 'Extreme Sentence Variance' and removing all AI-style fluff. Do not increase the word count. Be blunt, direct, and slightly messy."
+      systemInstruction: "You are a precise Structural Editor. Your job is to bypass Scribbr by changing the sentence rhythm and logic flow, WITHOUT losing the original detail or word count."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `SHATTER THE FINGERPRINT (STRICT WORD COUNT CONTROL):
+          text: `HUMANIZING PROTOCOL (Maintain Word Count Balance):
 
-          1. THE 40-3 PUNCH: One sentence must be 40 words. The very next must be 3 words. (Example: 'Infrastructure is key.').
-          2. BANNED FILLERS: Delete 'Furthermore', 'Moreover', 'Additionally', 'Consequently', and 'This proves that'. These cause 100% Scribbr scores.
-          3. NO REPETITION: Never start two sentences with the same word. 0% of sentences can start with 'The', 'This', or 'It'.
-          4. BRACKETED NOISE: Insert one technical side-thought in [brackets] to break the digital flow.
-          5. NO EXPANSION: Keep the output length within 10% of the input length. Do not explain things; just state them.
+          1. LENGTH LOCK: The output must be roughly the same length as the input (120-140 words). Do not summarize. Do not expand.
+          2. SCRIBBR BYPASS (The 50/5 Rule): Create extreme variance. Write one very long, complex sentence (50 words), immediately followed by a 5-word sentence. This 'heartbeat' kills the Scribbr match.
+          3. LOGIC SHIFT: Move the second paragraph to the beginning. Scribbr checks for sequence lineage; if the sequence is gone, the match drops to 0.
+          4. SYMBOLIC FRICTION: Use one set of brackets [ ] and at least two em-dashes — to break the AI's 'perfect' flow.
+          5. NO STARTERS: Zero sentences can start with 'The', 'This', 'It', 'By', or 'Moreover'. Start with Nouns.
 
-          INPUT: "${text}"`
+          INPUT TEXT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.0, 
-        topP: 1.0,
-        topK: 100,
-        maxOutputTokens: 1000, // Hard limit to stop AI rambling
+        temperature: 0.9, // Slightly lower to prevent it from 'going rogue' and deleting text
+        topP: 0.95,
+        maxOutputTokens: 2000,
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "System logic crash." });
+    return res.status(500).json({ error: "System Error." });
   }
 }
