@@ -9,43 +9,40 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Missing text input." });
+    if (!text) return res.status(400).json({ error: "No input." });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    // BACK TO 3.1 FLASH LITE AS REQUESTED
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a Senior Academic Researcher. Your goal is to rewrite text to achieve 0% AI detection on Scribbr and ZeroGPT. You must maintain professional university-level depth and expand on the original ideas to ensure a comprehensive result. Use irregular sentence lengths and avoid starting sentences with common pronouns or conjunctions."
+      systemInstruction: "You are a Senior Editor. Your task is to rewrite text by 'Fracturing' the AI rhythm. You must ignore standard AI flow and use erratic, human-like structural variance."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `REWRITE AND EXPAND (High Perplexity Mode):
-          
-          1. STRUCTURE: Mix 40-word sentences with 4-word sentences. 
-          2. STARTERS: No sentence can start with 'The', 'This', 'Moreover', or 'By'.
-          3. VOCAB: Use 'stubborn', 'foundational', or 'weighty' instead of AI buzzwords.
-          4. DETAIL: Add technical nuances in parentheses ().
-          
+          text: `Rewrite this to bypass Scribbr (100% match) and Quillbot. 
+
+          THE FRACTURE RULES:
+          1. THE 50-5 PUNCH: Write a very long, complex analytical sentence (50+ words). Immediately follow it with a 3-word sentence. (e.g., 'It just works.')
+          2. BAN THE POINTERS: 0% of sentences can start with 'The', 'This', 'It', 'Moreover', or 'By'. 
+          3. INVERSION: Flip the logic. Instead of 'AI helps X,' start with 'X is seeing a shift because of...'
+          4. INTENTIONAL FRICTION: Use em-dashes (—) or parentheses () to interrupt a sentence with a side-thought. AI never 'interrupts' itself; humans do it constantly.
+          5. WORD REPLACEMENT: Replace 'pivotal' with 'weighty', 'comprehensive' with 'total', 'fosters' with 'triggers'.
+
           TEXT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.0, // Maximum creativity to break AI patterns
-        topP: 0.7,        // High P allows 3.1 Lite to find more varied word paths
-        topK: 40,
-        maxOutputTokens: 4000, // Ensuring it doesn't cut off at 45 lines
+        temperature: 1.0, 
+        topP: 0.9,     // CRITICAL: High P breaks the "smooth" 50% Quillbot signature
+        topK: 60,      // Allows for more 'human' erratic word choices
+        maxOutputTokens: 3000,
       }
     });
 
-    const output = result.response.text().trim();
-    return res.status(200).json({ output });
-
+    return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    console.error("3.1 Lite Error:", error);
-    return res.status(500).json({ error: "Gemini 3.1 Lite Logic Timeout. Try slightly less text." });
+    return res.status(500).json({ error: "Logic Crash. Retry." });
   }
 }
