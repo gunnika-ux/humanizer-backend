@@ -13,17 +13,28 @@ export default async function handler(req, res) {
         if (!text) return res.status(400).json({ error: 'No text provided' });
 
         const apiKey = process.env.GEMINI_API_KEY;
-        
-        // 🚀 FORCE THE BETA API (This fixes the 404 for Gemini 3.1)
         const genAI = new GoogleGenerativeAI(apiKey);
 
+        // 🚀 CRITICAL FIX: The system instruction must be a separate object property 
+        // and we use the v1beta version for Gemini 3.1 support.
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-        }, { apiVersion: 'v1beta' }); // <--- THIS IS THE CRITICAL FIX
+            systemInstruction: {
+                role: "system",
+                parts: [{ text: `You are a Professional Human Editor. Your mission is to rewrite text to achieve a 0% AI score.
+                
+                STRICT RULES:
+                1. Swaps: "environment" for "landscape", "vital" for "imperative", "use" for "leverage".
+                2. Use contractions (it's, don't, we've).
+                3. Vary sentence lengths (1-3-1 rule).
+                4. No "Furthermore" or "In conclusion".
+                5. Keep numbers ($4.2M, 12.5%) 100% exact.
+                6. Output ONLY the rewritten text.` }]
+            }
+        }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this text professionally. Maintain 100% data integrity for numbers like $4.2M or 12.5%. Rewrite to bypass AI detection: "${text}"` }]}],
-            systemInstruction: "You are a Professional Human Editor. Rewrite text to sound natural and human. Use contractions, vary sentence lengths (the 1-3-1 rule), and avoid AI buzzwords like 'landscape' or 'leverage'.",
+            contents: [{ role: "user", parts: [{ text: `Humanize this text professionally: "${text}"` }]}],
             generationConfig: {
                 temperature: 0.85, 
                 topP: 0.95,
@@ -43,8 +54,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ output: output });
 
     } catch (error) {
-        // Log the specific error to Vercel console
-        console.error("3.1 Lite API Error:", error.message);
+        console.error("3.1 Flash-Lite Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
