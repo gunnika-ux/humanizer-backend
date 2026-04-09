@@ -13,27 +13,30 @@ export default async function handler(req, res) {
         if (!text) return res.status(400).json({ error: 'No text provided' });
 
         const apiKey = process.env.GEMINI_API_KEY;
+        
+        // 🚀 STEP 1: Initialize the SDK
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // 🚀 THE FIX: We add { apiVersion: 'v1beta' } to find the 3.1 model
+        // 🚀 STEP 2: Force 'v1beta' to find the 3.1-flash-lite model
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
+                role: "system",
                 parts: [{ text: `You are a Professional Human Editor. 
                 STRICT RULES:
-                1. Replace "landscape" with "environment", "leverage" with "use", and "delve" with "examine".
+                1. Replace "landscape" with "environment", "leverage" with "use".
                 2. Use the 1-3-1 rule: Mix short and long sentences.
-                3. Use contractions like "it's" and "we've".
-                4. Keep all numbers like $4.2M and 12.5% exactly as they are.
+                3. Use contractions (it's, don't).
+                4. Keep all numbers ($4.2M, 12.5%) 100% exact.
                 5. Output ONLY the rewritten text.` }]
             }
-        }, { apiVersion: 'v1beta' });
+        }, { apiVersion: 'v1beta' }); // <--- CRITICAL FIX FOR 404
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this professionally: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.82, 
-                topP: 0.9,
+                temperature: 0.8, 
+                topP: 0.95,
                 maxOutputTokens: 2048,
             },
             safetySettings: [
@@ -50,7 +53,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ output: output });
 
     } catch (error) {
-        console.error("3.1 Lite Error:", error.message);
+        console.error("Gemini 3.1 Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
