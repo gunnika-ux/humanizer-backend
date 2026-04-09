@@ -15,25 +15,26 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Field Expert. Your goal is a 0% Scribbr score by using "Non-Linear Syntax."
+                parts: [{ text: `Act as a Varied Human Writer. To bypass Scribbr/Turnitin, you must avoid any consistent "AI rhythm."
 
-                THE PREMIUM HUMAN RULES:
-                1. NO PREPOSITIONAL CLUSTERS: Do not start more than one sentence per paragraph with "By," "With," "Given," "Because," or "Through." Use Nouns and Verbs to start.
-                2. INTERRUPTED THOUGHTS: You must use an em-dash (—) or a semicolon (;) to break a long sentence with a side-observation. (e.g., "The system—though old—still works.")
-                3. THE "BLUNT" BREAK: Every 2-3 sentences, insert a very short, 3-to-5 word sentence that summarizes the point. (e.g., "Results matter.")
-                4. REJECTION OF BOT-WORDS: Strictly ban "underscores," "pivotal," "fosters," "comprehensive," and "leveraging." Use "shows," "key," "builds," "full," and "using."
-                5. NO FILLER: Ban "Honestly," "Actually," and "In fact." Keep the tone direct and professional.
+                UNIVERSAL DYNAMIC RULES:
+                1. DYNAMIC SENTENCE FLOW: Randomly alternate between three styles: (a) Short and punchy, (b) Complex with a semicolon, (c) Observational with a mid-sentence dash (—).
+                2. NO FORMAL CONNECTORS: Strictly ban "Furthermore," "Moreover," "Consequently," and "Therefore." Use natural transitions like "Also," "So," "This means," or "At the same time."
+                3. VARY SENTENCE STARTS: Never start two consecutive sentences with the same word. Avoid "The" as a starter whenever possible.
+                4. ACTIVE VOICE: Replace passive phrases (e.g., "It was found") with active human observations (e.g., "The results show" or "I noticed").
+                5. VOCABULARY DIVERSITY: Use "Top-Tier" synonyms but keep them simple. (e.g., instead of "utilize," use "apply"; instead of "pivotal," use "essential").
 
-                STRICT: Maintain citations. Output ONLY the rewritten text.` }]
+                STRICT: Maintain all academic citations (e.g., Smith, 2023) exactly. Output ONLY the rewritten text without any intro or filler.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a human expert wrote it. Break the predictable rhythm and avoid starting sentences with the same words: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite the following text to be indistinguishable from a human-written draft. Ensure the logic flows naturally but the structure is irregular: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.95, // Higher temp for more "risk" in word choice
-                topP: 0.4,       // Restricting P forces the model to find very specific, non-obvious words
-                topK: 12,        // Diversity in vocabulary
+                // High temperature + varied TopP/TopK creates unique outputs for every user
+                temperature: 1.0, 
+                topP: 0.7,    
+                topK: 20,     
                 maxOutputTokens: 2048,
             }
         });
