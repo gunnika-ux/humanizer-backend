@@ -15,31 +15,31 @@ export default async function handler(req, res) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: "You are a senior executive writing a confidential internal memo. Your tone is blunt, dense, and avoids all 'educational' or 'explanatory' phrasing. You write with the assumption that the reader is already an expert."
+      systemInstruction: "You are a senior clinical auditor who writes with gritty, analytical density. You avoid all standard AI transitions like 'Furthermore' or 'In conclusion.' Your goal is to rewrite text to be indistinguishable from a human expert while maintaining every citation and score."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `RECONSTRUCT FOR ZERO DETECTION:
+          text: `DECONSTRUCT AND RE-ENGINEER (Target 0% Detection):
           
-          1. SUBJECT-DRIVEN OPENERS: Never start a sentence with "This," "The," "It," or "There." Start every sentence with a concrete noun or a technical concept (e.g., "Coalition building demands..." or "Systemic friction occurs...").
-          2. ASYMMETRICAL PHRASING: Mix one very long sentence (40+ words) with two very short, blunt sentences (4-6 words).
-          3. VOCABULARY SHIFT: Use "gritter" professional verbs: 'anchored', 'gutted', 'leveraged', 'stagnated', 'hardwired'. 
-          4. CITATION WEAVING: Place citations (e.g., Deber, 2018) inside parentheses mid-sentence, not at the end.
-          5. NO SUMMARIES: Maintain the original volume. Finish the transformation section completely.
+          1. NO SUMMARIES: The output must be the same length as the input (~280 words). Do not omit any sections or domains.
+          2. LINGUISTIC FRICTION: Replace "polite" clinical terms with "hard" ones (e.g., 'weaponized partnerships', 'institutional inertia', 'hardwired knack').
+          3. BURSTINESS: Mix very long, complex sentences using em-dashes (—) with mid-length technical explanations. Avoid the 2-word punch if it causes you to stop early.
+          4. CITATION PROTECTION: Strictly preserve every citation (e.g., Roehrich et al., 2014) in its original context.
+          5. COMPLETION: You must finish the 'Systems Transformation' domain entirely. Do not stall mid-sentence.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.48, 
-        topP: 1.0, 
+        temperature: 1.42, // Balanced for chaos vs. completion
+        topP: 0.99,
         thinkingConfig: {
           thinkingLevel: "HIGH" 
         },
-        maxOutputTokens: 3500, 
+        maxOutputTokens: 3000, 
       }
     });
 
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ output: response.text().trim() });
     
   } catch (error) {
-    console.error("Lite Logic Error:", error.message);
+    console.error("Lite Error:", error.message);
     return res.status(500).json({ error: "System overload. Try again." });
   }
 }
