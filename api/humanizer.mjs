@@ -15,10 +15,9 @@ export default async function handler(req, res) {
         const apiKey = process.env.GEMINI_API_KEY;
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // 🚀 OFFICIAL 2026 SDK SYNTAX for Gemini 3.1 Flash-Lite
+        // 🚀 THE FIX: We add { apiVersion: 'v1beta' } to find the 3.1 model
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            // The instruction is now passed as an object with parts
             systemInstruction: {
                 parts: [{ text: `You are a Professional Human Editor. 
                 STRICT RULES:
@@ -28,13 +27,13 @@ export default async function handler(req, res) {
                 4. Keep all numbers like $4.2M and 12.5% exactly as they are.
                 5. Output ONLY the rewritten text.` }]
             }
-        });
+        }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
             contents: [{ role: "user", parts: [{ text: `Humanize this professionally: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.85, 
-                topP: 0.95,
+                temperature: 0.82, 
+                topP: 0.9,
                 maxOutputTokens: 2048,
             },
             safetySettings: [
@@ -51,8 +50,7 @@ export default async function handler(req, res) {
         return res.status(200).json({ output: output });
 
     } catch (error) {
-        // This will catch and explain any remaining payload issues
-        console.error("API Error:", error.message);
+        console.error("3.1 Lite Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
