@@ -1,47 +1,42 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
-  const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-  
-  // We use the model internally, but we don't tell the user
-  const model = genAI.getGenerativeModel({ 
-    model: "gemini-3.1-flash-lite-preview" 
-  });
+  // 1. Handle CORS (This stops the "Nothing Happens" bug)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
-  const { text } = req.body;
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-  const prompt = `You are the "Humanizer X Pro" proprietary AI engine. 
-  Your sole purpose is to rewrite text to be indistinguishable from human writing.
+  // 2. Check if we have an API Key
+  const apiKey = process.env.GOOGLE_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: "Configuration Error: API Key missing on Vercel." });
+  }
 
-  Identity Rules:
-  - If asked who you are, you are the "Humanizer X Pro Engine."
-  - Never mention Google, Gemini, or AI models.
-  
-  Rewriting Rules:
-  - Maximize Burstiness (varied sentence length).
-  - Maximize Perplexity (natural, non-robotic word choice).
-  - Use a professional yet conversational human tone.
-  - Maintain the exact original meaning.
-
-  Text to process:
-  "${text}"`;
+  const genAI = new GoogleGenerativeAI(apiKey);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Stable version for 2026
 
   try {
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.9,
-        topP: 0.95,
-        maxOutputTokens: 2048,
-      },
-    });
+    const { text } = req.body;
 
+    if (!text) {
+      return res.status(400).json({ error: "No text provided." });
+    }
+
+    const prompt = `You are the "Humanizer X Pro" engine. Rewrite this to sound like a natural human: "${text}"`;
+
+    const result = await model.generateContent(prompt);
     const response = await result.response;
     const humanizedText = response.text();
     
-    res.status(200).json({ humanizedText });
+    return res.status(200).json({ humanizedText });
   } catch (error) {
-    // We change the error message to be generic so they don't see "Google" or "Gemini"
-    res.status(500).json({ error: "Humanizer Engine is currently busy. Please try again." });
+    console.error(error);
+    return res.status(500).json({ error: "The Humanizer Engine is busy. Try again!" });
   }
 }
