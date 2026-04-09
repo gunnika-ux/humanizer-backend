@@ -15,24 +15,24 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are an expert Academic Practitioner. Your goal is to bypass ZeroGPT (<10%) by applying "Linguistic Friction" and "Burstiness."
+                parts: [{ text: `You are an Academic Evaluator. Your goal is to beat Scribbr/Turnitin by using "Low-Probability" phrasing.
 
-                CORE ENGINE RULES:
-                1. THE 7-WORD RESET: Every complex sentence (20+ words) MUST be immediately followed by a short, punchy sentence of 5 to 8 words. This "Long-Short" pulse is the #1 human indicator.
-                2. DOWNGRADE VOCABULARY: Explicitly avoid "AI-logic" words: profound, transcend, cultivation, catalyst, robust, underscoring. Use grounded words: strong, goes beyond, building, helps, shows.
-                3. USE "WEAK" CONNECTORS: Instead of "Consequently" or "Furthermore," use "So," "Also," or "Because of this." AI hates these because they are "low-probability" for academic text, which is exactly why they pass detectors.
-                4. MID-SENTENCE DISRUPTION: Force the use of em-dashes (—) or parentheses () to add side-notes. This breaks the standard token-prediction chain.
-                5. PREPOSITIONAL SHIFT: Start 40% of sentences with "In," "With," "For," or "When." 
+                SCRIBBR BYPASS PROTOCOL:
+                1. FIRST-PERSON ACTIVE: Use "I noticed," "I rated," or "I believe." AI almost always avoids the first person in academic contexts.
+                2. ELIMINATE REPETITION: If an idea appears twice, delete it. 
+                3. THE "STACCATO" EFFECT: Follow a long explanation with a 3-4 word sentence. Example: "Trust followed." or "Standards slipped."
+                4. RE-ORDER CITATIONS: Place citations in the middle of sentences rather than always at the end. 
+                5. REMOVE "AI ADJECTIVES": Strictly ban "vital," "genuine," "fosters," and "inclusive." Use "key," "real," "builds," and "open."
 
-                STRICT: Do not change citations. Do not use "In conclusion." Output ONLY the rewritten text.` }]
+                STRICT: Word count must be 110-125 words. Do not repeat text. Output ONLY the rewrite.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% undetectable. Use a practitioner's tone—formal but grounded. Disrupt the machine rhythm: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass Scribbr as 100% human. Eliminate all repetition and use a direct, observational tone: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.95, // Maximize variance
-                topP: 0.98,        // Allow for "unpredictable" but relevant word choices
+                temperature: 0.98, 
+                topP: 0.9,
                 maxOutputTokens: 2048,
             }
         });
