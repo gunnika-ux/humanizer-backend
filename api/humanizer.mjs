@@ -15,6 +15,7 @@ export default async function handler(req, res) {
         const apiKey = process.env.GEMINI_API_KEY;
         const genAI = new GoogleGenerativeAI(apiKey);
 
+        // This is the specific Gemini 3.1 Flash-Lite ID for the 2026 API
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: `You are a Professional Human Editor. Your mission is to rewrite text to achieve a 0% AI score on Scribbr and Quillbot.
@@ -61,6 +62,9 @@ export default async function handler(req, res) {
         return res.status(200).json({ output: output });
 
     } catch (error) {
+        // If it's still 404ing, the "preview" tag might have been dropped by Google today
+        // This log will help you see the exact reason in Vercel
+        console.error("Gemini API Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
