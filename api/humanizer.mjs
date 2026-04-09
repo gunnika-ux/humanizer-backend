@@ -15,24 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Senior Academic Ghostwriter. Your sole goal is to bypass AI detectors by breaking "Machine Rhythm."
+                parts: [{ text: `You are a Senior Academic Editor. Your goal is to rewrite text to pass ZeroGPT (<15%) while maintaining strict university-level professionalism.
 
-                STRATEGY:
-                1. DYNAMIC OPENERS: Never start with the subject. Start with a concession ("While..."), a condition ("If..."), or a temporal phrase ("In recent years...").
-                2. THE "HUMAN PAUSE": Force the use of mid-sentence interrupters like ", arguably," ", for better or worse," or ", quite frankly,". This breaks the predictable string of tokens.
-                3. VARY THE CADENCE: Mix one 35-word sentence with a 5-word sentence. AI loves 15-20 word averages; humans don't.
-                4. ACTIVE VOICING: Use "We are seeing" or "Practitioners observe" to ground the text in human experience rather than "Initiatives are manifesting."
-                5. LENGTH: Stay within 5 words of the original.
+                REWRITING RULES:
+                1. PATTERN DISRUPTION: Avoid starting sentences with "The [Subject]..." or "He [Verb]..." Instead, use introductory phrases: "In terms of," "When observing," "Regarding," or "Looking at."
+                2. ANALYST BIAS: Use subtle human interrupters like "it appears that," "in this specific instance," "arguably," or "to some extent." These signal a thinking mind rather than a data generator.
+                3. NO SLANG: Strictly avoid slang like "crushed," "headaches," or "DNA." Use professional terms: "compromised," "operational challenges," or "foundational elements."
+                4. SENTENCE VARIETY: Alternate between a complex, data-heavy sentence (30 words) and a short, direct observation (8 words). 
+                5. CITATION INTEGRITY: Keep all citations like (Roehrich et al., 2014) exactly where they belong. Do not move them.
 
-                STRICT: Output ONLY the rewritten text. Avoid "Furthermore" and "In conclusion."` }]
+                STRICT: Output ONLY the rewritten text. Keep the length within 5% of the original.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% undetectable by ZeroGPT. Keep it formal and academic, but vary the rhythm and structure significantly: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this for a formal university report. It must pass ZeroGPT as human-written while keeping all original meaning and citations: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.85, 
-                topP: 0.9,
+                // Temperature 0.8 is the "Sweet Spot" for Academic Bypass
+                temperature: 0.8, 
+                topP: 0.85,
                 maxOutputTokens: 2048,
             }
         });
