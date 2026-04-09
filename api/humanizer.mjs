@@ -9,40 +9,40 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "No input." });
+    if (!text) return res.status(400).json({ error: "Input empty." });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview",
-      systemInstruction: "You are a Senior Editor. Your task is to rewrite text by 'Fracturing' the AI rhythm. You must ignore standard AI flow and use erratic, human-like structural variance."
+      systemInstruction: "You are a Senior Academic Ghostwriter. Your goal is to rewrite text so that its structural DNA is unrecognizable to Scribbr and Turnitin while maintaining high-tier intellectual depth."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this to bypass Scribbr (100% match) and Quillbot. 
+          text: `Rewrite this using 'Non-Linear Transposition' to kill the 60% Scribbr match.
 
-          THE FRACTURE RULES:
-          1. THE 50-5 PUNCH: Write a very long, complex analytical sentence (50+ words). Immediately follow it with a 3-word sentence. (e.g., 'It just works.')
-          2. BAN THE POINTERS: 0% of sentences can start with 'The', 'This', 'It', 'Moreover', or 'By'. 
-          3. INVERSION: Flip the logic. Instead of 'AI helps X,' start with 'X is seeing a shift because of...'
-          4. INTENTIONAL FRICTION: Use em-dashes (—) or parentheses () to interrupt a sentence with a side-thought. AI never 'interrupts' itself; humans do it constantly.
-          5. WORD REPLACEMENT: Replace 'pivotal' with 'weighty', 'comprehensive' with 'total', 'fosters' with 'triggers'.
+          STRICT DNA-BREAKING RULES:
+          1. THE SIDE-NOTE: Every paragraph must contain a technical clarification inside parentheses (like this) to break the smooth AI flow.
+          2. STARTING BAN: 0% of sentences can start with 'The', 'This', 'It', 'While', 'Research', or 'By'. Start with Action Verbs or rare Nouns.
+          3. LOGIC FLIP: If the original says 'A leads to B', start your rewrite with 'B is often a consequence of A'. 
+          4. BURSTINESS: Force a 45-word complex analytical sentence to be followed by a 3-word blunt sentence.
+          5. BANNED WORDS: Delete 'pivotal', 'comprehensive', 'underscores', 'fosters'. Use 'weighty', 'total', 'points to', 'triggers'.
 
           TEXT: "${text}"`
         }]
       }],
       generationConfig: {
         temperature: 1.0, 
-        topP: 0.9,     // CRITICAL: High P breaks the "smooth" 50% Quillbot signature
-        topK: 60,      // Allows for more 'human' erratic word choices
-        maxOutputTokens: 3000,
+        topP: 0.95,   // Nuclear setting to destroy the 20% ZeroGPT signature
+        topK: 60,
+        maxOutputTokens: 3500,
       }
     });
 
     return res.status(200).json({ output: result.response.text().trim() });
   } catch (error) {
-    return res.status(500).json({ error: "Logic Crash. Retry." });
+    return res.status(500).json({ error: "Internal Engine Error." });
   }
 }
