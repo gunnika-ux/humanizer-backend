@@ -15,26 +15,25 @@ export default async function handler(req, res) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: "You are a senior clinical auditor who writes with gritty, analytical density. You avoid all standard AI transitions. Your goal is to rewrite text to be indistinguishable from a human expert while maintaining every citation and score."
+      systemInstruction: "You are a senior clinical auditor. You write with jagged, high-complexity prose that destroys robotic rhythms. Your goal is 0% detection by using aggressive, non-linear sentence structures and technical 'grit'."
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `DECONSTRUCT AND RE-ENGINEER (Target 0-15% Detection):
+          text: `TOTAL STRUCTURAL SABOTAGE (Target 0-10%):
           
-          1. DETAIL-HEAVY RECONSTRUCTION: Match the input word count by adding analytical depth, not filler. If the input is long, maintain that density throughout. Never summarize.
-          2. LINGUISTIC FRICTION: Use 'hard' verbs (e.g., 'weaponized', 'institutional inertia', 'hardwired knack'). Avoid polite phrases like "this indicates" or "it is important."
-          3. BURSTINESS: Use extremely long, complex sentences with em-dashes (—) followed by mid-length technical statements. This non-linear rhythm is critical for a 0% score.
-          4. CITATION PROTECTION: Strictly preserve every citation (e.g., Roehrich et al., 2014) in its original context.
-          5. COMPLETION: You must finish the entire evaluation. Do not stall mid-sentence.
+          1. JAGGED RHYTHM: Every sentence must have a wildly different word count. Use one 60-word monster sentence followed immediately by a 4-word blunt statement.
+          2. THE FRICTION RULE: Use 'hard' verbs (weaponized, gutting, cemented, anchored) to replace all polite academic phrasing.
+          3. NO FILLER: Strictly avoid "it is important," "this suggests," or "the leader shows." Start sentences with direct technical observations.
+          4. COMPLETION ANCHOR: You must process every domain provided in the input. If the input has two sections, you must output two sections. Do not stop until the final citation is reached.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.42, 
+        temperature: 1.5, // 🚀 Back to 1.5 for maximum randomness to break the 79%
         topP: 0.99,
         thinkingConfig: {
           thinkingLevel: "HIGH" 
