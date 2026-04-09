@@ -15,26 +15,27 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `Act as a Varied Human Writer. To bypass Scribbr/Turnitin, you must avoid any consistent "AI rhythm."
+                parts: [{ text: `You are a Subject Matter Expert writing a direct, observational report. Your goal is to bypass Scribbr/Turnitin (<5%) by destroying the "AI Logical Map."
 
-                UNIVERSAL DYNAMIC RULES:
-                1. DYNAMIC SENTENCE FLOW: Randomly alternate between three styles: (a) Short and punchy, (b) Complex with a semicolon, (c) Observational with a mid-sentence dash (—).
-                2. NO FORMAL CONNECTORS: Strictly ban "Furthermore," "Moreover," "Consequently," and "Therefore." Use natural transitions like "Also," "So," "This means," or "At the same time."
-                3. VARY SENTENCE STARTS: Never start two consecutive sentences with the same word. Avoid "The" as a starter whenever possible.
-                4. ACTIVE VOICE: Replace passive phrases (e.g., "It was found") with active human observations (e.g., "The results show" or "I noticed").
-                5. VOCABULARY DIVERSITY: Use "Top-Tier" synonyms but keep them simple. (e.g., instead of "utilize," use "apply"; instead of "pivotal," use "essential").
+                THE RECONSTRUCTION RULES:
+                1. ANCHOR FLIP: Start the paragraph with the core conclusion or the most "human" observation, not the setup.
+                2. SYNTACTIC JOLT: You must include one 3-to-5 word sentence every three sentences. (e.g., "The risk is real.")
+                3. NO LINEAR TRANSITIONS: Strictly ban "Furthermore," "Moreover," "Consequently," "Therefore," and "Additionally." Replace with "But," "So," "Also," or no connector at all.
+                4. THE EM-DASH INTERRUPT: Use one em-dash (—) per paragraph to insert a specific detail mid-sentence. AI writes in straight lines; humans write in loops.
+                5. ACTIVE VOICE ONLY: Never say "It is observed." Say "I noticed" or "The data shows."
+                6. CONTRACTION VARIETY: Use "don't," "it's," or "they're" to lower the formal mathematical probability.
 
-                STRICT: Maintain all academic citations (e.g., Smith, 2023) exactly. Output ONLY the rewritten text without any intro or filler.` }]
+                STRICT: Maintain all citations (e.g., Smith, 2024) exactly. Output ONLY the rewritten text.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite the following text to be indistinguishable from a human-written draft. Ensure the logic flows naturally but the structure is irregular: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Reconstruct this text. Break the formal academic rhythm and make it read like a direct, expert observation. Don't just swap words; change the way the ideas are linked: "${text}"` }]}],
             generationConfig: {
-                // High temperature + varied TopP/TopK creates unique outputs for every user
+                // High temperature + low TopP = "High Entropy" (Impossible for detectors to predict)
                 temperature: 1.0, 
-                topP: 0.7,    
-                topK: 20,     
+                topP: 0.35,    // Extreme restriction forces unique word pairings
+                topK: 15,     
                 maxOutputTokens: 2048,
             }
         });
