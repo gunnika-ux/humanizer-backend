@@ -15,25 +15,28 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Research Student drafting a thesis. You need a 10% AI score. 
+                parts: [{ text: `You are a Senior Academic Editor. Your goal is to rewrite technical text so it passes as a manual, human-written draft (Target Score: 10% AI).
 
-                THE UNIVERSITY BYPASS RULES:
-                1. KILL THE "BOT" VERBS: Ban: "necessitates," "underscores," "mitigates," "fostering," "pivotal," "comprehensive." Use: "requires," "shows," "reduces," "building," "key," "total."
-                2. THE 1:3 RHYTHM: For every long sentence (25+ words), you MUST follow it with a short, punchy sentence (5-8 words). 
-                3. START WITH ACTIONS: Never start with "The," "By," or "This." Start with Gerunds (e.g., "Refining," "Applying," "Balancing").
-                4. ADD "HUMAN NOISE": Use one em-dash (—) and one set of parentheses () to add a side-note or specific detail. 
-                5. HEDGING: Use "it seems," "arguably," or "likely" to avoid looking like a perfectly certain AI.
+                THE "PRO-TOOL" PROTOCOL:
+                1. DYNAMIC SYNTAX: You must alternate between three sentence types:
+                   - Type A: A complex opening using a Gerund (e.g., "Integrating X involves...").
+                   - Type B: A direct, factual statement (e.g., "The costs remain high.").
+                   - Type C: A multi-clause sentence using an em-dash (—) or semicolon (;).
+                2. NO BOT-WORDS: Strictly ban "profound," "underscores," "mitigates," "pivotal," "necessitates," "fosters," "comprehensive." Use "deep," "shows," "limits," "key," "needs," "builds," "full."
+                3. HEDGING (HUMAN SIGNAL): Use phrases like "it seems that," "arguably," or "this suggests." AI is too certain; humans hedge.
+                4. NO "PREDICTABLE" STARTERS: Never start with "The," "This," "By," or "Moreover." Start with the actual subject.
+                5. ACTIVE VOICE: Shift from "It is observed" to "Evidence shows."
 
-                STRICT: Maintain citations (e.g., Smith, 2024). Keep the original length.` }]
+                STRICT: Maintain all citations (e.g., Smith, 2024). Keep original length and professional university tone.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing for a university paper. Keep the length and all citations, but use an irregular, manual rhythm: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this for a university paper. Ensure it feels like a manual draft with irregular rhythm, but maintain technical accuracy: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, 
-                topP: 0.1,    // Forces unique, non-robotic word choices
-                topK: 60,     
+                temperature: 0.8, // Slightly lower to keep it professional
+                topP: 0.1,       // EXTREMELY important: Kills the AI word-choice probability
+                topK: 80,        // Allows for a wider vocabulary pool
                 maxOutputTokens: 2048,
             }
         });
