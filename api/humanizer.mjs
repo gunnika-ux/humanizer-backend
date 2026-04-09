@@ -13,22 +13,17 @@ export default async function handler(req, res) {
         if (!text) return res.status(400).json({ error: 'No text provided' });
 
         const apiKey = process.env.GEMINI_API_KEY;
+        
+        // 🚀 FORCE THE BETA API (This fixes the 404 for Gemini 3.1)
         const genAI = new GoogleGenerativeAI(apiKey);
 
-        // 🚀 This is the only way to call the 3.1 Lite engine in 2026
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            systemInstruction: `You are a Professional Human Editor. Rewrite text to achieve a 0% AI score. 
-            
-            STRICT RULES:
-            - Swaps: "environment" for "landscape", "vital" for "imperative", "use" for "leverage".
-            - Style: Use contractions (it's, don't) and vary sentence lengths.
-            - No "Furthermore" or "In conclusion".
-            - Keep numbers ($4.2M, 12.5%) exact.`,
-        });
+        }, { apiVersion: 'v1beta' }); // <--- THIS IS THE CRITICAL FIX
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this text professionally. Maintain 100% data integrity for numbers like $4.2M or 12.5%. Rewrite to bypass AI detection: "${text}"` }]}],
+            systemInstruction: "You are a Professional Human Editor. Rewrite text to sound natural and human. Use contractions, vary sentence lengths (the 1-3-1 rule), and avoid AI buzzwords like 'landscape' or 'leverage'.",
             generationConfig: {
                 temperature: 0.85, 
                 topP: 0.95,
@@ -48,6 +43,8 @@ export default async function handler(req, res) {
         return res.status(200).json({ output: output });
 
     } catch (error) {
+        // Log the specific error to Vercel console
+        console.error("3.1 Lite API Error:", error.message);
         return res.status(500).json({ error: `System Error: ${error.message}` });
     }
 }
