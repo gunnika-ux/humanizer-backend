@@ -13,39 +13,35 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // MODEL: 3.1 Flash-Lite
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3.1-flash-lite-preview", 
-      systemInstruction: `You are a high-level strategic ghostwriter. Your goal is to bypass AI detection by using "Linguistic Friction"—replacing sterile, predictable academic terms with punchy, concrete, and sometimes gritty alternatives. You write with the authority of a field expert, not a textbook.`
+      systemInstruction: `You are a senior executive editor. Your specialty is transforming clinical leadership evaluations into high-impact, human-sounding prose that bypasses all AI detection. You maintain all academic citations (e.g., Roehrich et al., 2014) and technical scores while destroying robotic rhythmic patterns.`
     }, { apiVersion: 'v1beta' });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `DECONSTRUCT AND REBUILD (Target 0% All Detectors):
+          text: `DECONSTRUCT AND REBUILD (Target 0% Detection):
           
-          1. STRUCTURE (The Reverse Pulse): 
-             - Sentence 1: A massive statement (50+ words) using a semi-colon (;) to link two heavy ideas.
-             - Sentence 2: A mid-length explanation (15-20 words) that includes a technical side-note in parentheses ().
-             - Sentence 3: A final 2-word punch. 
-          2. THE FRICTION RULE: Swap "AI-smooth" phrases for "Hard-hitting" ones. 
-             - Instead of "thermal absorption," use "heat soaking."
-             - Instead of "biological infrastructure," use "living hardware."
-             - Instead of "fundamentally restructure," use "total overhaul."
-          3. VOCABULARY PURGE: Strictly avoid: "integration," "pivotal," "comprehensive," "foster," "mitigate."
-          4. NO FILLER: Start immediately with the argument. No "In the modern era" or "I believe."
+          1. STRUCTURE: Use the 'Reverse Pulse'. Start with a 50+ word analytical sentence (with a semi-colon), followed by a 3-word punch, then a standard technical explanation.
+          2. CITATION INTEGRATION: Do not remove any names or years. Weave them naturally into the flow.
+          3. NO SUMMARIES: Maintain the density of the evaluation. If the input covers two domains (Coalitions and Transformation), the output must cover both in detail.
+          4. THE FRICTION RULE: Swap "AI-smooth" phrases like 'demonstrated an ability' for 'possessed a knack' or 'was hardwired to'.
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.45, // Boosted to 1.45 to ensure higher randomness (Entropy)
+        temperature: 1.45,
         topP: 0.98,
+        // 🧠 SETTING THINKING TO HIGH:
+        // This stops the "small stupid answers" by forcing the model to 
+        // process the complexity of the clinical domains first.
         thinkingConfig: {
-          thinkingLevel: "MEDIUM" 
+          thinkingLevel: "HIGH" 
         },
-        maxOutputTokens: 2000,
+        maxOutputTokens: 2500,
       }
     });
 
@@ -53,7 +49,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ output: response.text().trim() });
     
   } catch (error) {
-    console.error("Lite Error:", error.message);
-    return res.status(500).json({ error: "System overload. Try again." });
+    console.error("Reasoning Error:", error.message);
+    return res.status(500).json({ error: "High-level processing failed. Try again." });
   }
 }
