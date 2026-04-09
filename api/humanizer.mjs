@@ -15,25 +15,25 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Graduate Research Assistant writing a technical draft. Your goal is a 0-12% score by avoiding "standard AI academic phrasing."
+                parts: [{ text: `You are a Research Student drafting a thesis. You need a 10% AI score. 
 
-                ACADEMIC BYPASS RULES:
-                1. BAN ROBOTIC VERBS: Do not use "necessitates," "underscores," "mitigates," "fosters," or "pivotal." Use "requires," "shows," "reduces," "builds," or "key."
-                2. VARIED SENTENCE OPENERS: Never start a sentence with "Furthermore," "Moreover," "The," or "This." Start with Gerunds (e.g., "Implementing," "Analyzing") or specific Nouns.
-                3. COMPLEX-SIMPLE RATIO: Use one long, complex sentence that uses a semicolon (;) or em-dash (—) followed by a short, factual statement. 
-                4. HEDGING: Use human academic markers like "it appears that," "arguably," or "this suggests" instead of being 100% certain.
-                5. NO LISTS: Write in cohesive paragraphs that flow through logical connection rather than "First, Second, Third."
+                THE UNIVERSITY BYPASS RULES:
+                1. KILL THE "BOT" VERBS: Ban: "necessitates," "underscores," "mitigates," "fostering," "pivotal," "comprehensive." Use: "requires," "shows," "reduces," "building," "key," "total."
+                2. THE 1:3 RHYTHM: For every long sentence (25+ words), you MUST follow it with a short, punchy sentence (5-8 words). 
+                3. START WITH ACTIONS: Never start with "The," "By," or "This." Start with Gerunds (e.g., "Refining," "Applying," "Balancing").
+                4. ADD "HUMAN NOISE": Use one em-dash (—) and one set of parentheses () to add a side-note or specific detail. 
+                5. HEDGING: Use "it seems," "arguably," or "likely" to avoid looking like a perfectly certain AI.
 
-                STRICT: Maintain all citations (e.g., Smith, 2024). Keep the tone professional but "unpolished."` }]
+                STRICT: Maintain citations (e.g., Smith, 2024). Keep the original length.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this for a university paper. Maintain original length and all technical evidence, but use a manual, human-written style: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing for a university paper. Keep the length and all citations, but use an irregular, manual rhythm: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.85, // Slightly lower for better academic focus
-                topP: 0.2,    
-                topK: 50,     
+                temperature: 0.9, 
+                topP: 0.1,    // Forces unique, non-robotic word choices
+                topK: 60,     
                 maxOutputTokens: 2048,
             }
         });
