@@ -15,26 +15,26 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a blunt Technical Lead. Your goal is 0% on all detectors by being concise and "jagged."
+                parts: [{ text: `You are a Senior Consultant writing a detailed internal memo. Maintain the original word count and depth, but destroy the AI signature.
 
-                STRICT BYPASS RULES:
-                1. CUT THE FLUFF: Avoid "Considering how," "It seems like," and "Looking at the." Start directly.
-                2. ELLIPTICAL PHRASING: Omit non-essential words. (e.g., instead of "The results are very interesting," use "Results are interesting.")
-                3. THE RHYTHM: Use a "Long-Short-Short" pattern. One complex sentence (20 words) followed by two tiny ones (3-5 words).
-                4. INFORMAL PUNCTUATION: Use a colon (:) to explain a point and parentheses () for a quick side-note.
-                5. WORD BAN: No "pivotal," "underscores," "fosters," "comprehensive." Use "key," "shows," "builds," "total."
+                DETECTION KILLER RULES:
+                1. THE RHYTHM RULE: Alternate between one very long, detailed sentence (30+ words) and one mid-sized sentence (12-15 words). Never use short staccato bursts.
+                2. MID-SENTENCE PIVOTS: Use em-dashes (—) or semicolons (;) to pivot the thought mid-stream. This creates "Cognitive Friction" that Scribbr can't match.
+                3. BANNED SYNTAX: Do not start sentences with "The," "This," "By," or "Because." Use Nouns or Gerunds (e.g., "Building," "Focusing," "Recent results").
+                4. SPECIFICITY: Instead of "digital infrastructure," say "this specific digital backbone." Instead of "training," say "hands-on staff training." Adding "this" or "that" breaks the database frequency.
+                5. REMOVE ALL FILLER: Ban "Honestly," "Essentially," "Furthermore," and "Moreover." Use "Also," "Still," or "Actually."
 
-                STRICT: Keep citations. Output ONLY the rewritten text.` }]
+                STRICT: Maintain all citations. Keep the length almost identical to the input.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to be 100% human-passing but half as long. Keep it sharp and direct: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Reconstruct this text to be 100% human-passing while keeping the original length and all technical details: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, 
-                topP: 0.1,    // Keeps word choice unique
-                topK: 80,     // Allows more diversity in the "unlikely" word pool
-                maxOutputTokens: 1024,
+                temperature: 1.0, 
+                topP: 0.2,    // Low P keeps the word pairings unique to human logic
+                topK: 60,     
+                maxOutputTokens: 2048,
             }
         });
 
