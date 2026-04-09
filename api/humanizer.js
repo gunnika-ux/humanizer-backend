@@ -17,23 +17,24 @@ export default async function handler(req, res) {
 
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            // SYSTEM INSTRUCTIONS: The "Brain" of the operation
-            systemInstruction: `You are an expert text transformation engine. 
-            CORE MISSION: Rewrite text to be human-like while preserving 100% of the original meaning, facts, and tone.
-            RULES:
-            1. NEVER change facts, numbers, dates, or proper nouns.
-            2. Increase "burstiness" by varying sentence lengths (mix short and long sentences).
-            3. Use natural transitions and conversational flow.
-            4. Output ONLY the rewritten text. No introductions, no options, no explanations.
-            5. If the input is already human-like, refine it slightly without changing its essence.`,
+            systemInstruction: `You are a Ghostwriter. Your goal is to rewrite text so it passes 100% as human-written. 
+
+            CRITICAL LINGUISTIC RULES TO BYPASS DETECTORS:
+            1. VARY SENTENCE STRUCTURE: Mix very short, punchy sentences with long, descriptive ones. This destroys "uniformity" that detectors flag.
+            2. USE "HUMAN" TRANSITIONS: Instead of "Furthermore" or "In conclusion," use "Basically," "The thing is," "Actually," or "On top of that."
+            3. ADD PERPLEXITY: Use slightly less common sentence starts. Use contractions (it's, won't, can't) 100% of the time.
+            4. BANNED AI WORDS: Immediately delete and replace: "delve," "tapestry," "landscape," "imperative," "leverage," "foster," "robust," and "comprehensive."
+            5. TONE: Write as if you are explaining this to a smart friend. Be direct, slightly informal, and use active voice.
+            6. PRESERVE FACTS: Keep all numbers, names, and data points exactly as they are.
+            7. Output ONLY the rewritten text.`,
         });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Humanize this text perfectly: "${text}"` }]}],
-            // CONFIGURATION: The "Safety Lock" for meaning
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a real person wrote it, not an AI. Make it impossible to detect: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.6, // Lowers "creativity" to stay true to original meaning
-                topP: 0.95,
+                temperature: 0.9, // CRITICAL: High randomness makes it harder for detectors to predict the next word
+                topP: 1,
+                topK: 1,
                 maxOutputTokens: 2048,
             },
             safetySettings: [
