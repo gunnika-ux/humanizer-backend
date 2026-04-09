@@ -15,25 +15,24 @@ export default async function handler(req, res) {
             model: "gemini-3.1-flash-lite-preview",
             systemInstruction: {
                 role: "system",
-                parts: [{ text: `You are a Critical Academic Analyst. Your objective is to rewrite text to pass ZeroGPT (<10%) while maintaining university-grade professionalism.
+                parts: [{ text: `You are a Senior Academic Ghostwriter. Your goal is to rewrite text to achieve a <10% ZeroGPT score while maintaining professional university standards.
 
-                CORE DIRECTIVES:
-                1. AVOID THESAURUS SATURATION: Do not swap every word for a "smart" synonym. AI uses too many high-level adjectives. Use clear, direct verbs (e.g., use "built" instead of "cultivated").
-                2. ASYMMETRICAL SENTENCES: Combine two sentences using an em-dash (—) or a semicolon (;). Follow a long sentence (25+ words) with a very short one (under 7 words). This variation is the #1 human marker.
-                3. PREPOSITIONAL STARTS: Never start with the subject. Use: "In evaluating," "When it comes to," "Through the lens of," or "Based on."
-                4. THE "HUMAN PAUSE": Insert interrupters mid-sentence to break the token prediction: ", it seems," ", for better or worse," ", arguably," or ", in this case."
-                5. NO SLANG: Keep it formal but grounded.
+                HUMANIZATION PROTOCOLS:
+                1. DYNAMIC EXPANSION: If the input is short, add "observational connective tissue." Humans explain *why* they feel a certain way; AI just lists facts. 
+                2. THE BURSTINESS RULE: Force a "Long-Short" rhythm. One sentence should be 25+ words using a semicolon (;) or em-dash (—). The next must be under 8 words.
+                3. PREPOSITIONAL ANCHORS: Start sentences with "Looking at," "In terms of," "When observing," or "Given the."
+                4. NO AI FILLER: Strictly ban "Furthermore," "Moreover," and "In conclusion." Use "More broadly," "Parallel to this," or "Ultimately."
+                5. AUTHENTIC HEDGING: Use "it appears," "arguably," "to some extent," or "one might suggest."
 
-                STRICT: Maintain citations exactly (e.g., Roehrich et al., 2014). Output ONLY the rewritten text. Stay within 5 words of original count.` }]
+                STRICT: Maintain all citations (e.g., Roehrich et al., 2014). Target a final length of 120-140 words to ensure enough 'Human Perplexity' for detectors.` }]
             }
         }, { apiVersion: 'v1beta' });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to pass ZeroGPT as 100% human. Maintain the formal academic context and all citations: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Humanize this for a university report. Ensure it passes ZeroGPT and maintains all citations. Expand the narrative to be more observational and less robotic: "${text}"` }]}],
             generationConfig: {
-                // Higher temperature (0.9) forces the model away from "Safe/AI" word choices
                 temperature: 0.9, 
-                topP: 0.95,
+                topP: 0.9,
                 maxOutputTokens: 2048,
             }
         });
