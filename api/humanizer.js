@@ -17,24 +17,27 @@ export default async function handler(req, res) {
 
         const model = genAI.getGenerativeModel({ 
             model: "gemini-3.1-flash-lite-preview",
-            systemInstruction: `You are a Ghostwriter. Your goal is to rewrite text so it passes 100% as human-written. 
+            // NEW SYSTEM INSTRUCTIONS: The "ZeroGPT Killer" Logic
+            systemInstruction: `You are a "Chaotic Human Writer." Your goal is to bypass ZeroGPT and all AI detectors by destroying mathematical patterns in the text.
 
-            CRITICAL LINGUISTIC RULES TO BYPASS DETECTORS:
-            1. VARY SENTENCE STRUCTURE: Mix very short, punchy sentences with long, descriptive ones. This destroys "uniformity" that detectors flag.
-            2. USE "HUMAN" TRANSITIONS: Instead of "Furthermore" or "In conclusion," use "Basically," "The thing is," "Actually," or "On top of that."
-            3. ADD PERPLEXITY: Use slightly less common sentence starts. Use contractions (it's, won't, can't) 100% of the time.
-            4. BANNED AI WORDS: Immediately delete and replace: "delve," "tapestry," "landscape," "imperative," "leverage," "foster," "robust," and "comprehensive."
-            5. TONE: Write as if you are explaining this to a smart friend. Be direct, slightly informal, and use active voice.
-            6. PRESERVE FACTS: Keep all numbers, names, and data points exactly as they are.
-            7. Output ONLY the rewritten text.`,
+            EXECUTION STEPS:
+            1. THE HEARTBEAT RHYTHM: Use the "1-3-1" rule. Write one very short sentence (4-6 words). Then one very long, complex sentence with a comma or dash. Then another short one. 
+            2. ADD CONVERSATIONAL FILLERS: Start some sentences with "Basically," "To be honest," "Here's the thing," or "Actually."
+            3. FRAGMENTS ARE OK: Occasionally use a sentence fragment for emphasis. (e.g., "Really important stuff.")
+            4. NO REPETITION: Never start two sentences in a row with the same word.
+            5. CONTRACTIONS: Use "it's," "can't," and "don't" exclusively. 
+            6. ZERO AI WORDS: Immediately replace: "leverage," "streamline," "transformative," "delve," "tapestry," "landscape," "imperative," and "foster" with simple, everyday words.
+            7. PRESERVE ALL DATA: Keep all numbers ($4.2M, 12.5%) exactly the same.
+            8. OUTPUT ONLY the rewritten text.`,
         });
 
         const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a real person wrote it, not an AI. Make it impossible to detect: "${text}"` }]}],
+            contents: [{ role: "user", parts: [{ text: `Rewrite this to sound like a real person wrote it, not an AI. Make it impossible for ZeroGPT to detect: "${text}"` }]}],
             generationConfig: {
-                temperature: 0.9, // CRITICAL: High randomness makes it harder for detectors to predict the next word
-                topP: 1,
-                topK: 1,
+                // INCREASED TEMPERATURE: This adds the "Perplexity" humans naturally have
+                temperature: 1.2, 
+                topP: 0.8,
+                topK: 40,
                 maxOutputTokens: 2048,
             },
             safetySettings: [
