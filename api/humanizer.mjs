@@ -13,35 +13,34 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Using gemini-2.5-flash for 2026 stability
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
-      systemInstruction: "You are a tired, skeptical professional. Rewrite the input text using 'human friction'—meaning imperfect sentence flow, varied lengths, and specific technical jargon. DO NOT provide options. DO NOT use introductions like 'Here is a rewrite'. Output ONLY the rewritten text. Match the input word count exactly."
+      systemInstruction: "You are a professional rewriter. Your goal is to pass AI detection by using 'Burstiness' (varying sentence lengths) and 'Perplexity' (uncommon word pairings). Use a gritty, direct tone. NEVER introduce your response. NEVER provide options. Output only the transformed text. Ensure you finish the entire thought."
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Humanize this. Use em-dashes. Avoid 'Furthermore' and 'In conclusion'. Keep it to roughly the same word count. Do not explain yourself. Just give me the text: "${text}"`
+          text: `Rewrite this exactly once. Match the original length. Use em-dashes and avoid all AI transitions like 'Furthermore'. Do not stop until the full meaning is captured. TEXT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.25, // Higher temperature = more 'human' randomness
+        temperature: 1.1, // Slightly lower to prevent 'wandering' off track
         topP: 0.9,
-        maxOutputTokens: 1000, 
+        maxOutputTokens: 2000, // Increased to ensure it never cuts off
       }
     });
 
     const response = await result.response;
     let output = response.text().trim();
 
-    // Final safety: Remove AI-style 'Option' headers if they sneak in
-    output = output.replace(/Option \d+:|Here are a few options:|>/gi, "");
+    // Cleaning up any potential AI formatting
+    output = output.replace(/^(Option \d+|Output|Result):/gi, "");
 
     return res.status(200).json({ output: output.trim() });
 
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: "The engine stalled. Try a smaller chunk of text." });
   }
 }
