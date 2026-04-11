@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,42 +13,52 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // BACK TO GEMINI 3 FLASH (The one that gave you 0% AI scores)
+    // Using gemini-3-flash-preview for the 0% AI score
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-level human ghostwriter. 
+      systemInstruction: `You are a professional editor. 
+      STRICT REQUIREMENT: You must maintain the exact semantic density and word count of the input. 
+      If you receive 300 words, you must output 270-330 words. 
       
-      CRITICAL COMMAND: You must NOT summarize. You must expand on ideas slightly to ensure the output word count matches the input. 
-      
-      DETECTOR BYPASS (0% AI Target):
-      1. RHYTHM: Mix very long sentences (35+ words) with short, punchy ones (4 words).
-      2. VOCABULARY: Use technical but "messy" human terms. (e.g., instead of 'foster,' use 'kickstart' or 'trigger').
-      3. FRICTION: Add em-dashes (—) and semicolons. Use parenthetical asides—like this—to break the robotic flow.
-      4. NO AI MARKERS: Never use 'In conclusion', 'Furthermore', or 'Additionally'.
-      
-      Output ONLY the rewritten text.`
+      HUMANIZATION RULES (For 0% AI Detection):
+      1. SENTENCE RHYTHM: Mix one 40-word sentence with a 5-word sentence immediately after.
+      2. VOCABULARY: Swap 30% of nouns/verbs for less common synonyms (e.g., 'usage' -> 'utilization').
+      3. FRICTION: Add em-dashes (—) and conversational asides (e.g., 'to put it bluntly').
+      4. DO NOT SUMMARIZE. DO NOT OMIT EXAMPLES.
+      5. Output ONLY the rewritten text.`
     });
+
+    // We calculate the word count to tell the AI exactly what to target
+    const targetWordCount = text.split(/\s+/).length;
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `MIRROR THIS TEXT. Do not lose any details. Ensure every single point from the original is represented in the rewrite. 
+          text: `[STRICT TARGET: ${targetWordCount} WORDS] 
+          Rewrite the following text sentence-by-sentence. 
+          Keep every single detail, fact, and example. 
+          Just change the 'flow' and 'voice' to be human.
           
-          ORIGINAL TEXT (approx ${text.split(' ').length} words): "${text}"`
+          TEXT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.35, // High temperature is REQUIRED for 0% AI scores
+        temperature: 1.3, // High enough to beat detectors
         topP: 0.95,
-        maxOutputTokens: 2500, 
+        maxOutputTokens: 3500, // Increased to ensure long texts aren't cut off
       }
     });
 
     const response = await result.response;
-    return res.status(200).json({ output: response.text().trim() });
+    let output = response.text().trim();
+
+    // Cleaning the response
+    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+
+    return res.status(200).json({ output: output.trim() });
 
   } catch (error) {
-    return res.status(500).json({ error: "Engine sync error. Try again." });
+    return res.status(500).json({ error: "Engine sync error. Please try again." });
   }
 }
