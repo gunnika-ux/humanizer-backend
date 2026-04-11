@@ -13,10 +13,11 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
+    // Note: If you get "Model Not Found", use "gemini-1.5-flash" as it's more stable for free keys
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3.1-flash-lite-preview", 
+      model: "gemini-1.5-flash", 
       systemInstruction: "You are a senior clinical auditor who writes with gritty, analytical density. You avoid all standard AI transitions like 'Furthermore' or 'In conclusion.' Your goal is to rewrite text to be indistinguishable from a human expert while maintaining every citation and score."
-    }, { apiVersion: 'v1beta' });
+    });
 
     const result = await model.generateContent({
       contents: [{
@@ -24,21 +25,17 @@ export default async function handler(req, res) {
         parts: [{
           text: `DECONSTRUCT AND RE-ENGINEER (Target 0% Detection):
           
-          1. NO SUMMARIES: The output must be the same length as the input (~280 words). Do not omit any sections or domains.
-          2. LINGUISTIC FRICTION: Replace "polite" clinical terms with "hard" ones (e.g., 'weaponized partnerships', 'institutional inertia', 'hardwired knack').
-          3. BURSTINESS: Mix very long, complex sentences using em-dashes (—) with mid-length technical explanations. Avoid the 2-word punch if it causes you to stop early.
-          4. CITATION PROTECTION: Strictly preserve every citation (e.g., Roehrich et al., 2014) in its original context.
-          5. COMPLETION: You must finish the 'Systems Transformation' domain entirely. Do not stall mid-sentence.
+          1. NO SUMMARIES: The output must be the same length as the input (~280 words).
+          2. LINGUISTIC FRICTION: Replace polite terms with hard, technical clinical phrasing.
+          3. BURSTINESS: Use complex sentence structures and em-dashes (—).
+          4. CITATION PROTECTION: Keep every citation (e.g., Roehrich et al., 2014).
           
           INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.42, // Balanced for chaos vs. completion
-        topP: 0.99,
-        thinkingConfig: {
-          thinkingLevel: "HIGH" 
-        },
+        temperature: 1.15, // Lowered slightly from 1.42 for better stability on free tier
+        topP: 0.95,
         maxOutputTokens: 3000, 
       }
     });
@@ -47,7 +44,11 @@ export default async function handler(req, res) {
     return res.status(200).json({ output: response.text().trim() });
     
   } catch (error) {
-    console.error("Lite Error:", error.message);
-    return res.status(500).json({ error: "System overload. Try again." });
+    // We log the real error to your Vercel logs, but send a clean error to the user
+    console.error("API Error:", error.message);
+    
+    return res.status(500).json({ 
+      error: "Humanizer X Pro is recalibrating due to high demand. Please try again in a moment." 
+    });
   }
 }
