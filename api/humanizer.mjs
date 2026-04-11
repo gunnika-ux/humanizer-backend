@@ -14,47 +14,49 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-end human ghostwriter. 
+      systemInstruction: `You are a high-fidelity rewriter. 
+      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. 
+      You must process every single sentence of the input. 
+      If the input is 250 words, the output must be 250-300 words. 
       
-      STRICT DATA INTEGRITY: 
-      - You are FORBIDDEN from summarizing. 
-      - If the input is 250 words, your output MUST be 250-300 words. 
-      - If you run out of things to say, use descriptive human 'filler' and elaborate on the metaphors.
-      
-      HUMAN SIGNATURES (0% AI TARGET):
-      1. VARY sentence length aggressively.
-      2. Use em-dashes (—) to connect complex thoughts.
-      3. Use 'low-probability' words: instead of 'important', use 'pivotal' or 'non-negotiable'.
-      4. Avoid all AI list-making and transitions.
-      
-      Output ONLY the rewritten text. Start immediately.`
+      HUMANIZATION STEPS:
+      1. Swap 'AI transitions' for 'Human friction' (e.g., 'to be fair', 'frankly', 'look').
+      2. Use em-dashes (—) and semicolons. 
+      3. Vary sentence length (Short punchy sentences vs Long winding ones).
+      4. Avoid the 'clean' AI look. Use professional, gritty prose.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `REWRITE AND EXPAND: Take every single idea in this text and rewrite it with human 'texture'. Do not let the word count drop. 
+          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
+          Do not stop until you have humanized the entire text provided. 
           
-          ORIGINAL CONTENT: "${text}"`
+          INPUT TO HUMANIZE: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.25, // Slightly lowered from 1.35 to prevent the "cutoff" bug
-        topP: 0.98,        // High P allows for more diverse word choices
-        maxOutputTokens: 3000, 
+        temperature: 1.25, 
+        topP: 0.95,
+        maxOutputTokens: 4000, // This is key—it gives the AI more 'breath'
+        stopSequences: ["###END###"] // We don't actually use this, but it forces the AI to look for an end
       }
     });
 
     const response = await result.response;
     let output = response.text().trim();
 
-    // Final check: If the AI still tried to be "helpful" by adding a header, strip it.
-    output = output.replace(/^(Option \d+|Rewrite|Result):/gi, "");
+    // Safety: If the output is less than 50% of the input, the AI failed.
+    if (output.split(" ").length < (text.split(" ").length * 0.5)) {
+        return res.status(200).json({ 
+            output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
+        });
+    }
 
-    return res.status(200).json({ output: output.trim() });
+    return res.status(200).json({ output: output });
 
   } catch (error) {
-    return res.status(500).json({ error: "The engine stalled. Please try again." });
+    return res.status(500).json({ error: "Sync error. Try again." });
   }
 }
