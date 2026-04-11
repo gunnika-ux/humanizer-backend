@@ -15,15 +15,15 @@ export default async function handler(req, res) {
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter. 
-      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. 
-      You must process every single sentence of the input. 
+      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
       If the input is 250 words, the output must be 250-300 words. 
-      
-      HUMANIZATION STEPS:
-      1. Swap 'AI transitions' for 'Human friction' (e.g., 'to be fair', 'frankly', 'look').
-      2. Use em-dashes (—) and semicolons. 
-      3. Vary sentence length (Short punchy sentences vs Long winding ones).
-      4. Avoid the 'clean' AI look. Use professional, gritty prose.`
+
+      HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
+      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
+      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
+      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' 'to be honest,' or 'the reality is'. 
+      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
+      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
     });
 
     const result = await model.generateContent({
@@ -31,23 +31,25 @@ export default async function handler(req, res) {
         role: "user",
         parts: [{
           text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
-          Do not stop until you have humanized the entire text provided. 
+          Do not stop until you have humanized the entire text. 
           
           INPUT TO HUMANIZE: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.25, 
-        topP: 0.95,
-        maxOutputTokens: 4000, // This is key—it gives the AI more 'breath'
-        stopSequences: ["###END###"] // We don't actually use this, but it forces the AI to look for an end
+        temperature: 1.32, // Slightly raised to shatter ZeroGPT's predictability patterns
+        topP: 0.98,        // Full vocabulary access to increase 'Perplexity'
+        maxOutputTokens: 4000, 
       }
     });
 
     const response = await result.response;
     let output = response.text().trim();
 
-    // Safety: If the output is less than 50% of the input, the AI failed.
+    // Remove any accidental AI conversational markers or headers
+    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+
+    // Safety: If the output is less than 50% of the input, indicate a timeout.
     if (output.split(" ").length < (text.split(" ").length * 0.5)) {
         return res.status(200).json({ 
             output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
