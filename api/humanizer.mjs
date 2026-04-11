@@ -8,25 +8,40 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    if (!req.body || !req.body.text) {
-      return res.status(400).json({ error: "No text provided." });
-    }
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: "No text" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // UPDATED FOR APRIL 2026 STABILITY
+    // Using gemini-2.5-flash for 2026 stability
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash" 
+      model: "gemini-2.5-flash",
+      systemInstruction: "You are a tired, skeptical professional. Rewrite the input text using 'human friction'—meaning imperfect sentence flow, varied lengths, and specific technical jargon. DO NOT provide options. DO NOT use introductions like 'Here is a rewrite'. Output ONLY the rewritten text. Match the input word count exactly."
     });
 
-    const result = await model.generateContent(`Rewrite this to be human-like: ${req.body.text}`);
+    const result = await model.generateContent({
+      contents: [{
+        role: "user",
+        parts: [{
+          text: `Humanize this. Use em-dashes. Avoid 'Furthermore' and 'In conclusion'. Keep it to roughly the same word count. Do not explain yourself. Just give me the text: "${text}"`
+        }]
+      }],
+      generationConfig: {
+        temperature: 1.25, // Higher temperature = more 'human' randomness
+        topP: 0.9,
+        maxOutputTokens: 1000, 
+      }
+    });
+
     const response = await result.response;
-    
-    return res.status(200).json({ output: response.text().trim() });
+    let output = response.text().trim();
+
+    // Final safety: Remove AI-style 'Option' headers if they sneak in
+    output = output.replace(/Option \d+:|Here are a few options:|>/gi, "");
+
+    return res.status(200).json({ output: output.trim() });
 
   } catch (error) {
-    console.error("Gemini Error:", error.message);
-    // This sends the actual Google error back to your extension so we can see it
-    return res.status(500).json({ error: `Engine Error: ${error.message}` });
+    return res.status(500).json({ error: error.message });
   }
 }
