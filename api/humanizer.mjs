@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// 1. Vercel Configuration (Required in 2026 for long AI calls)
+// This stays to prevent the "Too long to think" error without touching the model logic
 export const config = {
-  maxDuration: 60, // Extends the function limit to 60 seconds (Hobby limit)
+  maxDuration: 60, 
 };
 
 export default async function handler(req, res) {
@@ -14,42 +14,56 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "No text provided." });
+    if (!text) return res.status(400).json({ error: "No text" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
+    // BACK TO THE ORIGINAL MODEL WE TUNED
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are an expert editor. 
-      STRICT: Match input length (+/- 10%). Do not truncate.
-      
-      HUMANIZATION:
-      - Start some sentences with 'And', 'But', or 'So'.
-      - Use human rhythms: a very long sentence followed by a 4-word sentence.
-      - Use gritty synonyms (e.g., 'bottleneck' instead of 'problem').
-      - Break the AI flow with em-dashes (—).`
+      systemInstruction: `You are a high-fidelity rewriter. 
+      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
+      If the input is 250 words, the output must be 250-300 words. 
+
+      HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
+      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
+      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
+      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' 'to be honest,' or 'the reality is'. 
+      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
+      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
-        parts: [{ text: `Rewrite this to be human-like but keep the exact length: "${text}"` }]
+        parts: [{
+          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
+          Do not stop until you have humanized the entire text. 
+          
+          INPUT TO HUMANIZE: "${text}"`
+        }]
       }],
       generationConfig: {
-        temperature: 1.28, // Dropped from 1.35 to speed up the engine
-        topP: 0.90,        // Focused range to prevent "infinite thinking" loops
-        maxOutputTokens: 3000, 
+        temperature: 1.32, 
+        topP: 0.98,        
+        maxOutputTokens: 4000, 
       }
     });
 
     const response = await result.response;
     let output = response.text().trim();
-    output = output.replace(/^(Option \d+|Output|Result|Rewrite):/gi, "");
+
+    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+
+    if (output.split(" ").length < (text.split(" ").length * 0.5)) {
+        return res.status(200).json({ 
+            output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
+        });
+    }
 
     return res.status(200).json({ output: output });
 
   } catch (error) {
-    console.error("Fetch Error Detail:", error.message);
-    // If it's a timeout, give the user a clear message
-    return res.status(500).json({ error: "The AI took too long to think. Please try a shorter text or try again." });
+    return res.status(500).json({ error: "Sync error. Try again." });
   }
 }
