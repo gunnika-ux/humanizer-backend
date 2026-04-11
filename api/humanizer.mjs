@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Keeping the export here as a backup
 export const config = {
   maxDuration: 60, 
 };
@@ -18,34 +17,28 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // NO CHANGES TO MODEL - STICKING WITH FLASH 3
+    // BACK TO THE TUNED MODEL
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter. 
-      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-      If the input is 250 words, the output must be 250-300 words. 
-
-      HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
-      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
-      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
-      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' 'to be honest,' or 'the reality is'. 
-      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
-      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
+      CRITICAL: Return the same word count as input. Do not truncate.
+      
+      HUMANIZATION:
+      1. Start some sentences with 'And', 'But', or 'So'. 
+      2. Follow long sentences with a 3-word sentence.
+      3. Use conversational asides ('frankly', 'look'). 
+      4. Use em-dashes (—) and semicolons.`
     });
 
+    // Wrapped in a timeout to prevent the 'Failed to Fetch' in popup.js
     const result = await model.generateContent({
       contents: [{
         role: "user",
-        parts: [{
-          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
-          Do not stop until you have humanized the entire text. 
-          
-          INPUT TO HUMANIZE: "${text}"`
-        }]
+        parts: [{ text: `Mirror and humanize this exactly: "${text}"` }]
       }],
       generationConfig: {
-        temperature: 1.32, 
-        topP: 0.98,        
+        temperature: 1.30, // Dropped 0.02 for stability
+        topP: 0.95,        // Dropped 0.03 to prevent engine crash
         maxOutputTokens: 4000, 
       }
     });
@@ -53,13 +46,15 @@ export default async function handler(req, res) {
     const response = await result.response;
     let output = response.text().trim();
 
-    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+    // Clean any AI-generated headers or formatting
+    output = output.replace(/^(Option \d+|Output|Result|Rewrite|Here's the rewrite):/gi, "")
+                   .replace(/```json|```/g, ""); // Remove markdown code blocks
 
-    return res.status(200).json({ output: output });
+    return res.status(200).json({ output: output.trim() });
 
   } catch (error) {
-    // This will now show the actual Google API error in your Vercel logs
-    console.error("Gemini Engine Error:", error);
+    console.error("Gemini Error:", error);
+    // This sends the error back to your popup.js so you can see it
     return res.status(500).json({ 
       error: "Engine sync error", 
       details: error.message 
