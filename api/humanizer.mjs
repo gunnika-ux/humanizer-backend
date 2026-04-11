@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -12,48 +12,43 @@ export default async function handler(req, res) {
     if (!text) return res.status(400).json({ error: "No text provided." });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
+    // BACK TO GEMINI 3 FLASH (The one that gave you 0% AI scores)
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a clinical auditor. Your writing style is dense, analytical, and highly irregular. 
+      systemInstruction: `You are a high-level human ghostwriter. 
       
-      CORE PROTOCOLS:
-      - BURSTINESS: Every paragraph must contain one very long, complex sentence and one short, sharp sentence.
-      - LINGUISTIC FRICTION: Replace common AI words (ensure, foster, transition) with gritty alternatives (guarantee, spark, shift).
-      - NO SUMMARY: You must rewrite the input sentence-by-sentence to maintain exact length.
-      - NO INTROS: Start immediately with the text.
+      CRITICAL COMMAND: You must NOT summarize. You must expand on ideas slightly to ensure the output word count matches the input. 
       
-      To beat 2026 detectors: use em-dashes, semicolons, and occasional parenthetical asides.`
+      DETECTOR BYPASS (0% AI Target):
+      1. RHYTHM: Mix very long sentences (35+ words) with short, punchy ones (4 words).
+      2. VOCABULARY: Use technical but "messy" human terms. (e.g., instead of 'foster,' use 'kickstart' or 'trigger').
+      3. FRICTION: Add em-dashes (—) and semicolons. Use parenthetical asides—like this—to break the robotic flow.
+      4. NO AI MARKERS: Never use 'In conclusion', 'Furthermore', or 'Additionally'.
+      
+      Output ONLY the rewritten text.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `RE-ENGINEER THIS TEXT. Keep it roughly the same word count. Break the AI rhythm. 
-          INPUT: "${text}"`
+          text: `MIRROR THIS TEXT. Do not lose any details. Ensure every single point from the original is represented in the rewrite. 
+          
+          ORIGINAL TEXT (approx ${text.split(' ').length} words): "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.3, // Raised back up to break the 100% AI score
-        topP: 0.9,
-        topK: 40,
-        maxOutputTokens: 1500, // Reduced to save your laptop's memory
-      },
-      safetySettings: [
-        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
-      ]
+        temperature: 1.35, // High temperature is REQUIRED for 0% AI scores
+        topP: 0.95,
+        maxOutputTokens: 2500, 
+      }
     });
 
     const response = await result.response;
-    let output = response.text().trim();
-    
-    // Safety check to prevent huge overflows
-    output = output.split(" ").slice(0, text.split(" ").length + 50).join(" ");
-
-    return res.status(200).json({ output: output.trim() });
+    return res.status(200).json({ output: response.text().trim() });
 
   } catch (error) {
-    return res.status(500).json({ error: "Sync error. Try again." });
+    return res.status(500).json({ error: "Engine sync error. Try again." });
   }
 }
