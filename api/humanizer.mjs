@@ -5,45 +5,74 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  // CORS Handshake - Critical for Chrome Extensions
+  res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "No text" });
+    if (!text) return res.status(400).json({ error: "No text provided" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
+    // Using the tuned Gemini-3-Flash model
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter. 
-      CRITICAL: Match input length exactly. Do not truncate.
-      
-      HUMANIZATION:
-      1. Start occasional sentences with 'And', 'But', or 'So'. 
-      2. Follow a long sentence with a very short one.
-      3. Use conversational asides sparingly. 
-      4. Use em-dashes (—) and semicolons for human flow.`
+      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
+      If the input is 250 words, the output must be 250-300 words. 
+
+      HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
+      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
+      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
+      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' 'to be honest,' or 'the reality is'. 
+      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
+      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
     });
 
-    // We set a 55s timeout so we finish before Vercel kills us at 60s
-    const result = await Promise.race([
-      model.generateContent({
-        contents: [{ role: "user", parts: [{ text: `Mirror and humanize this exactly: "${text}"` }] }],
-        generationConfig: { temperature: 1.30, topP: 0.95, maxOutputTokens: 4000 }
-      }),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('AI Engine Timeout')), 55000))
-    ]);
+    const result = await model.generateContent({
+      contents: [{
+        role: "user",
+        parts: [{
+          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
+          Do not stop until you have humanized the entire text. 
+          
+          INPUT TO HUMANIZE: "${text}"`
+        }]
+      }],
+      generationConfig: {
+        temperature: 1.32, 
+        topP: 0.98,        
+        maxOutputTokens: 4000, 
+      }
+    });
 
     const response = await result.response;
     let output = response.text().trim();
-    output = output.replace(/^(Option \d+|Output|Result|Rewrite):/gi, "");
+
+    // Clean any auto-generated headers
+    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite|Rewrite):/gi, "");
+
+    // Safety check for truncation
+    if (output.split(" ").length < (text.split(" ").length * 0.5)) {
+        return res.status(200).json({ 
+            output: output + "... [Engine timed out. Please try again.]" 
+        });
+    }
 
     return res.status(200).json({ output: output });
 
   } catch (error) {
-    return res.status(500).json({ error: "Engine sync error", details: error.message });
+    console.error("Gemini Error:", error);
+    return res.status(500).json({ 
+      error: "Engine sync error", 
+      details: error.message 
+    });
   }
 }
