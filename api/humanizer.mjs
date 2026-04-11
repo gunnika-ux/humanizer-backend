@@ -14,32 +14,28 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-fidelity rewriter. 
-      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-      If the input is 250 words, the output must be 250-300 words. 
-
-      HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
-      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
-      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
-      3. HUMAN FRICTION: Use conversational asides sparingly—like 'frankly,' 'to be honest,' or 'the reality is'. 
-      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
-      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').
-      6. NATURAL PUNCTUATION: Use em-dashes (—) and semicolons only when they naturally enhance the flow, avoid over-using them.`
+      systemInstruction: `You are a professional editor. Your goal is to rewrite text so it is indistinguishable from human prose.
+      
+      STRICT RULES:
+      1. NO TRUNCATION: You must return the same word count as the input (+/- 10%).
+      2. RESTRUCTURE: Do not just swap words. Change the sentence order. Move the end of a sentence to the beginning.
+      3. CHAOS RHYTHM: Use 1-2 very short sentences (under 6 words) in every paragraph.
+      4. IMPERFECT FLOW: Start sentences with 'And', 'But', 'So', or 'Yet'. Use phrases like 'Think about it,' or 'The point is,'.
+      5. NO AI CLICHES: Ban words like 'Furthermore', 'Moreover', 'In conclusion', 'Essentially'.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
-          Do not stop until you have humanized the entire text. 
+          text: `DECONSTRUCT AND RE-EXPLAIN THIS. Keep the same length and details, but use a raw, human, and slightly informal professional voice.
           
-          INPUT TO HUMANIZE: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.32, 
-        topP: 0.98,        
+        temperature: 1.35, // High heat to break Scribbr's pattern recognition
+        topP: 0.99,        // Maximum vocabulary diversity
         maxOutputTokens: 4000, 
       }
     });
@@ -51,7 +47,7 @@ export default async function handler(req, res) {
 
     if (output.split(" ").length < (text.split(" ").length * 0.5)) {
         return res.status(200).json({ 
-            output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
+            output: output + "... [Engine timed out. Please try again.]" 
         });
     }
 
