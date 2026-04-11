@@ -1,5 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Keeping the export here as a backup
+export const config = {
+  maxDuration: 60, 
+};
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -12,6 +17,8 @@ export default async function handler(req, res) {
     if (!text) return res.status(400).json({ error: "No text" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    
+    // NO CHANGES TO MODEL - STICKING WITH FLASH 3
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter. 
@@ -37,8 +44,8 @@ export default async function handler(req, res) {
         }]
       }],
       generationConfig: {
-        temperature: 1.32, // Slightly raised to shatter ZeroGPT's predictability patterns
-        topP: 0.98,        // Full vocabulary access to increase 'Perplexity'
+        temperature: 1.32, 
+        topP: 0.98,        
         maxOutputTokens: 4000, 
       }
     });
@@ -46,19 +53,16 @@ export default async function handler(req, res) {
     const response = await result.response;
     let output = response.text().trim();
 
-    // Remove any accidental AI conversational markers or headers
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
-
-    // Safety: If the output is less than 50% of the input, indicate a timeout.
-    if (output.split(" ").length < (text.split(" ").length * 0.5)) {
-        return res.status(200).json({ 
-            output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
-        });
-    }
 
     return res.status(200).json({ output: output });
 
   } catch (error) {
-    return res.status(500).json({ error: "Sync error. Try again." });
+    // This will now show the actual Google API error in your Vercel logs
+    console.error("Gemini Engine Error:", error);
+    return res.status(500).json({ 
+      error: "Engine sync error", 
+      details: error.message 
+    });
   }
 }
