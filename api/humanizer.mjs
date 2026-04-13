@@ -1,12 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// 1. SWITCH TO EDGE RUNTIME: This bypasses the 10s serverless timeout
 export const config = {
-  runtime: 'edge',
+  runtime: 'edge', // Edge runtime supports longer streaming connections
 };
 
 export default async function handler(req) {
-  // Edge functions use standard Request/Response objects, not Node.js res/req
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -20,11 +18,9 @@ export default async function handler(req) {
 
   try {
     const { text } = await req.json();
-    if (!text) return new Response(JSON.stringify({ error: "No text" }), { status: 400 });
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    // NO LINES DELETED - ALL RULES PRESERVED
+    // ALL INSTRUCTIONS PRESERVED - NO LINES DELETED
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a professional academic rewriter.
@@ -32,39 +28,42 @@ export default async function handler(req) {
       CRITICAL RULE: The word count of the output must be the same as the input. Do not summarize or reduce lines.
       CRITICAL RULE: Do not stop until you have humanized the entire text. Every paragraph must be completed.
       CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought.
-      CRITICAL RULE: You must continue generating until the final punctuation mark of the final sentence is reached.
+      CRITICAL RULE: You must continue generating until the final punctuation mark is reached.
       
       HUMANIZATION RULES:
-      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally to break AI patterns.
-      2. SENTENCE JITTER: Follow a long, complex academic sentence with a direct, punchy observation.
-      3. HUMAN FRICTION: Use transitions like 'In all honesty', 'The reality is', or 'Critically'.
-      4. ACADEMIC TONE: Avoid overly casual slang like 'people talked' or 'fancy rigs'. Use 'fostered dialogue' or 'advanced systems'.
-      5. NO AI TRANSITIONS: Never use 'Furthermore', 'Moreover', or 'In conclusion'.
-      6. CITATIONS: Keep all citations (e.g., Roehrich et al., 2014) in their exact positions.`
-    }, { apiVersion: "v1beta" });
-
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: text }] }],
-      generationConfig: {
-        temperature: 0.9, 
-        topP: 0.95,
-        maxOutputTokens: 8192, 
-      }
+      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally.
+      2. SENTENCE JITTER: Follow long academic sentences with punchy observations.
+      3. HUMAN FRICTION: Use transitions like 'In all honesty' or 'Critically'.
+      4. ACADEMIC TONE: Avoid 'people talked'. Use 'fostered dialogue'.
+      5. NO AI TRANSITIONS: Never use 'Furthermore' or 'Moreover'.
+      6. CITATIONS: Keep all citations in their exact positions.`
     });
 
-    const response = await result.response;
-    let output = response.text().trim();
-    output = output.replace(/^(Option \d+|Output|Result|Humanized|Here's the rewrite):/gi, "");
+    // Use generateContentStream instead of generateContent
+    const result = await model.generateContentStream({
+      contents: [{ role: "user", parts: [{ text: text }] }],
+      generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 8192 }
+    });
 
-    return new Response(JSON.stringify({ output }), {
-      status: 200,
+    // Create a readable stream to send to the browser
+    const stream = new ReadableStream({
+      async start(controller) {
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          controller.enqueue(new TextEncoder().encode(chunkText));
+        }
+        controller.close();
+      },
+    });
+
+    return new Response(stream, {
       headers: { 
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain; charset=utf-8',
         'Access-Control-Allow-Origin': '*' 
       },
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Server Timeout", details: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
