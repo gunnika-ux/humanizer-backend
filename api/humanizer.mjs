@@ -9,51 +9,47 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "No text provided" });
+    if (!text) return res.status(400).json({ error: "No text" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    // Updated Model and Instructions for 2026
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash", 
+      model: "gemini-3-flash-preview", // RESTORED your original model
       systemInstruction: `You are a high-fidelity rewriter. 
-      CRITICAL: Match the input length exactly. If the input is 100 words, the output must be approximately 100 words. Do not add "filler" or unnecessary fluff.
+      CRITICAL: Match the input length. If the input is 50 words, the output must be approximately 50 words. 
+      Do NOT add extra paragraphs or filler content.
 
-      HUMANIZATION & BYPASS RULES:
-      1. NATURAL FLOW: Mix short, punchy sentences with mid-length ones. 
-      2. REMOVE AI SIGNATURES: Strictly avoid "In conclusion," "Moreover," or "Furthermore."
-      3. CONVERSATIONAL FRICTION: Use subtle human-like transitions like 'the thing is,' 'frankly,' or 'actually.'
-      4. ACTIVE VOICE: Replace passive, robotic phrasing with direct, active verbs.
-      5. VOCABULARY: Use common, slightly informal synonyms (e.g., 'start' instead of 'commence').`
+      HUMANIZATION & DETECTOR BYPASS:
+      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
+      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
+      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' or 'the reality is'. 
+      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
+      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Humanize this text while keeping the length roughly the same as the original. 
-          Do not add extra paragraphs. 
+          text: `TASK: Humanize this text. Keep the output length nearly identical to the input.
           
-          INPUT: "${text}"`
+          INPUT TO HUMANIZE: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.15, // Lowered from 1.32 to reduce rambling/wordiness
-        topP: 0.95,
-        maxOutputTokens: 2000, // Reduced to prevent excessive output
+        temperature: 1.25, // Adjusted slightly to keep it tight but unpredictable
+        topP: 0.98,
+        maxOutputTokens: 4000, 
       }
     });
 
     const response = await result.response;
     let output = response.text().trim();
 
-    // Clean up common AI prefixes
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite|Humanized Text):/gi, "");
 
     return res.status(200).json({ output: output });
 
   } catch (error) {
-    console.error("API Error:", error);
-    return res.status(500).json({ error: "Processing error", details: error.message });
+    return res.status(500).json({ error: "Sync error", details: error.message });
   }
 }
