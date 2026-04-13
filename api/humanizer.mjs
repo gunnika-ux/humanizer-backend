@@ -37,8 +37,8 @@ export default async function handler(req, res) {
         }]
       }],
       generationConfig: {
-        temperature: 0.9, // Reduced temperature for more controlled, stable output
-        topP: 0.95,       // Slightly tightened to keep output concise
+        temperature: 0.8, // Reduced temperature for more controlled, stable output
+        topP: 0.9,       // Slightly tightened to keep output concise
         maxOutputTokens: 4000, 
       }
     });
