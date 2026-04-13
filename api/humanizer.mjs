@@ -39,8 +39,7 @@ export default async function handler(req, res) {
   temperature: 1.0, 
   topP: 0.95,       
   maxOutputTokens: 2000, // Lowering this from 4000 to 2000 helps the engine finish faster
-}
-      }
+    }
     });
 
     const response = await result.response;
