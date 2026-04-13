@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview", // RESTORED your original model
+      model: "gemini-3-flash", // RESTORED your original model
       systemInstruction: `You are a high-fidelity rewriter. 
       CRITICAL: Match the input length. If the input is 50 words, the output must be approximately 50 words. 
       Do NOT add extra paragraphs or filler content.
