@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// This tells the server to allow the AI up to 60 seconds to finish
+// Standard Vercel Timeout Fix - Keeps the connection alive for long rewrites
 export const config = {
   maxDuration: 60, 
 };
@@ -29,7 +29,8 @@ export default async function handler(req, res) {
           
           CRITICAL RULE: The word count of the output must be the same as the input. Do not summarize or reduce lines.
           CRITICAL RULE: Do not stop until you have humanized the entire text. Every paragraph must be completed.
-          CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought.
+          CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought. No half-finished thoughts.
+          CRITICAL RULE: You must continue generating until the final punctuation mark of the final sentence is reached.
           
           HUMANIZATION RULES:
           1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally to break AI patterns.
@@ -53,7 +54,7 @@ export default async function handler(req, res) {
           }]
         }],
         generationConfig: {
-          temperature: 1.0, 
+          temperature: 0.9, 
           topP: 0.95,
           maxOutputTokens: 8192, 
         }
@@ -72,14 +73,5 @@ export default async function handler(req, res) {
     const response = await result.response;
     let output = response.text().trim();
 
+    // Cleaning the response to ensure only the rewrite is returned
     output = output.replace(/^(Option \d+|Output|Result|Humanized|Here's the rewrite):/gi, "");
-
-    return res.status(200).json({ output: output });
-
-  } catch (error) {
-    return res.status(500).json({ 
-      error: "Optimization in Progress", 
-      details: "System is busy. Please try again." 
-    });
-  }
-}
