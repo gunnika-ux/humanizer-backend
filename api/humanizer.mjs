@@ -16,7 +16,7 @@ export default async function handler(req, res) {
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter. 
       CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-      If the input is 250 words, the output must be 250-300 words. 
+      CRITICAL: The output word count must closely match the input word count. Do not add unnecessary fluff or extra paragraphs.
 
       HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
       1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
@@ -31,14 +31,14 @@ export default async function handler(req, res) {
         role: "user",
         parts: [{
           text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
-          Do not stop until you have humanized the entire text. 
+          Do not stop until you have humanized the entire text. Keep the output length similar to the original.
           
           INPUT TO HUMANIZE: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.32, // Slightly raised to shatter ZeroGPT's predictability patterns
-        topP: 0.98,        // Full vocabulary access to increase 'Perplexity'
+        temperature: 0.9, // Reduced temperature for more controlled, stable output
+        topP: 0.95,       // Slightly tightened to keep output concise
         maxOutputTokens: 4000, 
       }
     });
