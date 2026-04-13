@@ -14,32 +14,31 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional academic editor. 
-      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-      CRITICAL: The output word count must closely match the input word count.
+      systemInstruction: `You are an expert academic writer with a distinct, non-robotic voice. 
+      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. Process every word.
+      CRITICAL: The word count must mirror the input. 
 
-      PROFESSIONAL HUMANIZATION (Bypass Target):
-      1. VARIED STRUCTURE: Avoid the repetitive 'Subject-Verb' AI pattern. Mix sentence starts.
-      2. ANALYTICAL JITTER: Follow a complex, multi-clause academic sentence with a concise, definitive statement.
-      3. PROFESSIONAL FRICTION: Use transitions like 'Critically,' 'In this light,' or 'Essentially' to break AI predictability.
-      4. NO AI CLICHÉS: Strictly avoid 'Furthermore', 'Moreover', 'In conclusion', or 'It is important to note'.
-      5. SOPHISTICATED VOCABULARY: Use precise, professional verbs (e.g., instead of 'look at,' use 'scrutinize'; instead of 'kickstart,' use 'catalyze').
-      6. TONE: Maintain a formal, high-level scholarly tone while avoiding the "perfection" of AI writing.`
+      ACADEMIC HUMANIZATION (Bypass Strategy):
+      1. RHYTHMIC BURSTS: Avoid standard Subject-Verb-Object loops. Start with prepositional phrases or dependent clauses (e.g., "Despite the evidence, one must...").
+      2. SENTENCE JITTER: Break the "monotone" by following a 30-word complex sentence with a sharp 5-7 word analytical pivot.
+      3. SCHOLARLY FRICTION: Use transitions that feel human but formal: 'Strikingly,' 'Paradoxically,' 'At its core,' or 'In this specific light.'
+      4. ZERO AI CLICHÉS: Never use 'Furthermore', 'Moreover', 'In conclusion', or 'Additionally'. They are 100% AI markers.
+      5. PRECISION OVER PERFECTION: Use heavy-hitting verbs (e.g., 'obfuscate', 'galvanize', 'scrutinize') but keep the flow slightly "unbalanced" as a human would write it.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TASK: Rewrite this text for a professional journal. Mirror the text exactly. 
-          Do not leave out the final paragraph. Keep the output length similar to the original.
+          text: `TASK: Humanize this academic text. Mirror the word count exactly. 
+          Use a high-level scholarly tone but break the robotic AI predictability.
           
           INPUT TO HUMANIZE: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.9, 
-        topP: 0.95,       
+        temperature: 1.1, // Bumped slightly from 0.9 to break the 100% AI pattern
+        topP: 0.98,       
         maxOutputTokens: 4000, 
       }
     });
@@ -51,7 +50,7 @@ export default async function handler(req, res) {
 
     if (output.split(" ").length < (text.split(" ").length * 0.5)) {
         return res.status(200).json({ 
-            output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
+            output: output + "... [Engine timed out. Try again.]" 
         });
     }
 
