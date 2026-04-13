@@ -1,12 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Force Edge Runtime to prevent the 10-second Hobby Tier timeout
 export const config = {
-  runtime: 'edge',
+  runtime: 'edge', // Essential for Streaming
 };
 
 export default async function handler(req) {
-  // CORS Support
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -20,11 +18,9 @@ export default async function handler(req) {
 
   try {
     const { text } = await req.json();
-    if (!text) return new Response(JSON.stringify({ error: "No text" }), { status: 400 });
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    // --- ZERO LINES DELETED - ALL RULES PRESERVED ---
+    // --- ALL ORIGINAL RULES PRESERVED ---
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a professional academic rewriter.
@@ -43,17 +39,8 @@ export default async function handler(req) {
       6. CITATIONS: Keep all citations (e.g., Roehrich et al., 2014) in their exact positions.`
     }, { apiVersion: "v1beta" });
 
-    // Using generateContentStream to allow long processing times (1000+ words)
     const result = await model.generateContentStream({
-      contents: [{
-        role: "user",
-        parts: [{
-          text: `TASK: Rewrite the following university-level text to sound human. 
-          Mirror the length exactly. Do not skip any sections. Do not stop until finished.
-          
-          INPUT: "${text}"`
-        }]
-      }],
+      contents: [{ role: "user", parts: [{ text: text }] }],
       generationConfig: {
         temperature: 0.9, 
         topP: 0.95,
@@ -64,16 +51,10 @@ export default async function handler(req) {
     const stream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
-        try {
-          for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            controller.enqueue(encoder.encode(chunkText));
-          }
-        } catch (err) {
-          console.error("Stream error:", err);
-        } finally {
-          controller.close();
+        for await (const chunk of result.stream) {
+          controller.enqueue(encoder.encode(chunk.text()));
         }
+        controller.close();
       },
     });
 
@@ -81,12 +62,10 @@ export default async function handler(req) {
       headers: { 
         'Content-Type': 'text/plain; charset=utf-8',
         'Access-Control-Allow-Origin': '*',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
       },
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Server error", details: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
 }
