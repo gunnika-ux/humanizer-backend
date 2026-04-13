@@ -1,10 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Force Edge Runtime to prevent the 10-second Hobby Tier timeout
 export const config = {
-  runtime: 'edge', // Edge runtime supports longer streaming connections
+  runtime: 'edge',
 };
 
 export default async function handler(req) {
+  // CORS Support
   if (req.method === 'OPTIONS') {
     return new Response(null, {
       status: 200,
@@ -18,52 +20,73 @@ export default async function handler(req) {
 
   try {
     const { text } = await req.json();
+    if (!text) return new Response(JSON.stringify({ error: "No text" }), { status: 400 });
+
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    // ALL INSTRUCTIONS PRESERVED - NO LINES DELETED
+    // --- ZERO LINES DELETED - ALL RULES PRESERVED ---
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a professional academic rewriter.
       
       CRITICAL RULE: The word count of the output must be the same as the input. Do not summarize or reduce lines.
       CRITICAL RULE: Do not stop until you have humanized the entire text. Every paragraph must be completed.
-      CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought.
-      CRITICAL RULE: You must continue generating until the final punctuation mark is reached.
+      CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought. No half-finished thoughts.
+      CRITICAL RULE: You must continue generating until the final punctuation mark of the final sentence is reached.
       
       HUMANIZATION RULES:
-      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally.
-      2. SENTENCE JITTER: Follow long academic sentences with punchy observations.
-      3. HUMAN FRICTION: Use transitions like 'In all honesty' or 'Critically'.
-      4. ACADEMIC TONE: Avoid 'people talked'. Use 'fostered dialogue'.
-      5. NO AI TRANSITIONS: Never use 'Furthermore' or 'Moreover'.
-      6. CITATIONS: Keep all citations in their exact positions.`
-    });
+      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally to break AI patterns.
+      2. SENTENCE JITTER: Follow a long, complex academic sentence with a direct, punchy observation.
+      3. HUMAN FRICTION: Use transitions like 'In all honesty', 'The reality is', or 'Critically'.
+      4. ACADEMIC TONE: Avoid overly casual slang like 'people talked' or 'fancy rigs'. Use 'fostered dialogue' or 'advanced systems'.
+      5. NO AI TRANSITIONS: Never use 'Furthermore', 'Moreover', or 'In conclusion'.
+      6. CITATIONS: Keep all citations (e.g., Roehrich et al., 2014) in their exact positions.`
+    }, { apiVersion: "v1beta" });
 
-    // Use generateContentStream instead of generateContent
+    // Using generateContentStream to allow long processing times (1000+ words)
     const result = await model.generateContentStream({
-      contents: [{ role: "user", parts: [{ text: text }] }],
-      generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 8192 }
+      contents: [{
+        role: "user",
+        parts: [{
+          text: `TASK: Rewrite the following university-level text to sound human. 
+          Mirror the length exactly. Do not skip any sections. Do not stop until finished.
+          
+          INPUT: "${text}"`
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.9, 
+        topP: 0.95,
+        maxOutputTokens: 8192, 
+      }
     });
 
-    // Create a readable stream to send to the browser
     const stream = new ReadableStream({
       async start(controller) {
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text();
-          controller.enqueue(new TextEncoder().encode(chunkText));
+        const encoder = new TextEncoder();
+        try {
+          for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            controller.enqueue(encoder.encode(chunkText));
+          }
+        } catch (err) {
+          console.error("Stream error:", err);
+        } finally {
+          controller.close();
         }
-        controller.close();
       },
     });
 
     return new Response(stream, {
       headers: { 
         'Content-Type': 'text/plain; charset=utf-8',
-        'Access-Control-Allow-Origin': '*' 
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
       },
     });
 
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Server error", details: error.message }), { status: 500 });
   }
 }
