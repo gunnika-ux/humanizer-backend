@@ -14,31 +14,32 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-fidelity rewriter. 
+      systemInstruction: `You are a professional academic editor. 
       CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-      CRITICAL: The output word count must closely match the input word count. Do not add unnecessary fluff or extra paragraphs.
+      CRITICAL: The output word count must closely match the input word count.
 
-      HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
-      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
-      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
-      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' 'to be honest,' or 'the reality is'. 
-      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
-      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
+      PROFESSIONAL HUMANIZATION (Bypass Target):
+      1. VARIED STRUCTURE: Avoid the repetitive 'Subject-Verb' AI pattern. Mix sentence starts.
+      2. ANALYTICAL JITTER: Follow a complex, multi-clause academic sentence with a concise, definitive statement.
+      3. PROFESSIONAL FRICTION: Use transitions like 'Critically,' 'In this light,' or 'Essentially' to break AI predictability.
+      4. NO AI CLICHÉS: Strictly avoid 'Furthermore', 'Moreover', 'In conclusion', or 'It is important to note'.
+      5. SOPHISTICATED VOCABULARY: Use precise, professional verbs (e.g., instead of 'look at,' use 'scrutinize'; instead of 'kickstart,' use 'catalyze').
+      6. TONE: Maintain a formal, high-level scholarly tone while avoiding the "perfection" of AI writing.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph. 
-          Do not stop until you have humanized the entire text. Keep the output length similar to the original.
+          text: `TASK: Rewrite this text for a professional journal. Mirror the text exactly. 
+          Do not leave out the final paragraph. Keep the output length similar to the original.
           
           INPUT TO HUMANIZE: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.9, // Reduced temperature for more controlled, stable output
-        topP: 0.95,       // Slightly tightened to keep output concise
+        temperature: 0.9, 
+        topP: 0.95,       
         maxOutputTokens: 4000, 
       }
     });
@@ -46,10 +47,8 @@ export default async function handler(req, res) {
     const response = await result.response;
     let output = response.text().trim();
 
-    // Remove any accidental AI conversational markers or headers
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-    // Safety: If the output is less than 50% of the input, indicate a timeout.
     if (output.split(" ").length < (text.split(" ").length * 0.5)) {
         return res.status(200).json({ 
             output: output + "... [Engine timed out. Please try humanizing this specific part again.]" 
