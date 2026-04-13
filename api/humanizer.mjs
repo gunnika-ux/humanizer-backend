@@ -12,31 +12,24 @@ export default async function handler(req, res) {
     if (!text) return res.status(400).json({ error: "No text" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash", // RESTORED your original model
-      systemInstruction: `You are a high-fidelity rewriter. 
-      CRITICAL: Match the input length. If the input is 50 words, the output must be approximately 50 words. 
-      Do NOT add extra paragraphs or filler content.
-
-      HUMANIZATION & DETECTOR BYPASS:
-      1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'. 
-      2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
-      3. HUMAN FRICTION: Use conversational asides—like 'frankly,' or 'the reality is'. 
-      4. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
-      5. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
-    });
+    
+    // FOR BILLING USERS: Use gemini-3-flash and force the v1 API version
+    const model = genAI.getGenerativeModel(
+      { model: "gemini-3-flash" },
+      { apiVersion: "v1" } 
+    );
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TASK: Humanize this text. Keep the output length nearly identical to the input.
+          text: `TASK: Rewrite this text to bypass AI detectors. Use human-like rhythm, sentence jitter, and natural asides. Keep the word count roughly the same.
           
-          INPUT TO HUMANIZE: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.25, // Adjusted slightly to keep it tight but unpredictable
+        temperature: 1.25, 
         topP: 0.98,
         maxOutputTokens: 4000, 
       }
@@ -45,11 +38,13 @@ export default async function handler(req, res) {
     const response = await result.response;
     let output = response.text().trim();
 
-    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite|Humanized Text):/gi, "");
+    // Clean up headers if AI adds them
+    output = output.replace(/^(Option \d+|Output|Result|Humanized):/gi, "");
 
     return res.status(200).json({ output: output });
 
   } catch (error) {
-    return res.status(500).json({ error: "Sync error", details: error.message });
+    console.error("API Error:", error.message);
+    return res.status(500).json({ error: "Handshake Failed", details: error.message });
   }
 }
