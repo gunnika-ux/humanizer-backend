@@ -18,8 +18,6 @@ export default async function handler(req) {
 
   try {
     const { text } = await req.json();
-    if (!text) return new Response(JSON.stringify({ error: "No text" }), { status: 400 });
-
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({ 
@@ -38,15 +36,11 @@ export default async function handler(req) {
       4. ACADEMIC TONE: Avoid overly casual slang like 'people talked' or 'fancy rigs'. Use 'fostered dialogue' or 'advanced systems'.
       5. NO AI TRANSITIONS: Never use 'Furthermore', 'Moreover', or 'In conclusion'.
       6. CITATIONS: Keep all citations (e.g., Roehrich et al., 2014) in their exact positions.`
-    }, { apiVersion: "v1beta" });
+    });
 
     const result = await model.generateContentStream({
       contents: [{ role: "user", parts: [{ text: text }] }],
-      generationConfig: {
-        temperature: 0.9, 
-        topP: 0.95,
-        maxOutputTokens: 8192, 
-      }
+      generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 8192 }
     });
 
     const stream = new ReadableStream({
@@ -60,12 +54,8 @@ export default async function handler(req) {
     });
 
     return new Response(stream, {
-      headers: { 
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Access-Control-Allow-Origin': '*',
-      },
+      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Access-Control-Allow-Origin': '*' },
     });
-
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
   }
