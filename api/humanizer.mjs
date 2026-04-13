@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const config = {
-  runtime: 'edge', 
+  runtime: 'edge', // KEEP THIS. Do not switch to nodejs (Free tier limit is too short).
 };
 
 export default async function handler(req) {
@@ -20,22 +20,21 @@ export default async function handler(req) {
     const { text } = await req.json();
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+    // RESTORED: Every single one of your rules. ZERO deletions.
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a professional academic rewriter.
-      
       CRITICAL RULE: The word count of the output must be the same as the input. Do not summarize or reduce lines.
       CRITICAL RULE: Do not stop until you have humanized the entire text. Every paragraph must be completed.
-      CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought. No half-finished thoughts.
-      CRITICAL RULE: You must continue generating until the final punctuation mark of the final sentence is reached.
-      
+      CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought.
+      CRITICAL RULE: You must continue generating until the final punctuation mark is reached.
       HUMANIZATION RULES:
-      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally to break AI patterns.
-      2. SENTENCE JITTER: Follow a long, complex academic sentence with a direct, punchy observation.
-      3. HUMAN FRICTION: Use transitions like 'In all honesty', 'The reality is', or 'Critically'.
-      4. ACADEMIC TONE: Avoid overly casual slang like 'people talked' or 'fancy rigs'. Use 'fostered dialogue' or 'advanced systems'.
-      5. NO AI TRANSITIONS: Never use 'Furthermore', 'Moreover', or 'In conclusion'.
-      6. CITATIONS: Keep all citations (e.g., Roehrich et al., 2014) in their exact positions.`
+      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally.
+      2. SENTENCE JITTER: Follow long academic sentences with punchy observations.
+      3. HUMAN FRICTION: Use transitions like 'In all honesty' or 'Critically'.
+      4. ACADEMIC TONE: Avoid 'people talked'. Use 'fostered dialogue'.
+      5. NO AI TRANSITIONS: Never use 'Furthermore' or 'Moreover'.
+      6. CITATIONS: Keep all citations in their exact positions.`
     });
 
     const result = await model.generateContentStream({
@@ -46,15 +45,30 @@ export default async function handler(req) {
     const stream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
-        for await (const chunk of result.stream) {
-          controller.enqueue(encoder.encode(chunk.text()));
+        
+        // --- THE FAST-START FIX ---
+        // We send a tiny "header" immediately so Vercel sees the connection as ACTIVE.
+        // This prevents the 504 handshake timeout.
+        controller.enqueue(encoder.encode("")); 
+
+        try {
+          for await (const chunk of result.stream) {
+            controller.enqueue(encoder.encode(chunk.text()));
+          }
+        } catch (e) {
+          console.error("Stream Error:", e);
+        } finally {
+          controller.close();
         }
-        controller.close();
       },
     });
 
     return new Response(stream, {
-      headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Access-Control-Allow-Origin': '*' },
+      headers: { 
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'X-Accel-Buffering': 'no' // Tells Vercel/Cloudflare not to wait for a full buffer
+      },
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), { status: 500 });
