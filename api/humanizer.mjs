@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export const config = {
-  runtime: 'edge', // Essential for long streams
+  runtime: 'edge', 
 };
 
 export default async function handler(req) {
@@ -18,9 +18,10 @@ export default async function handler(req) {
 
   try {
     const { text } = await req.json();
+    if (!text) return new Response(JSON.stringify({ error: "No text" }), { status: 400 });
+
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    // ALL ORIGINAL LINES PRESERVED - ZERO DELETIONS
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a professional academic rewriter.
