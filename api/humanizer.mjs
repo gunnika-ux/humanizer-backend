@@ -14,31 +14,30 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are an expert academic writer with a distinct, non-robotic voice. 
-      CRITICAL: You are NOT allowed to truncate or stop mid-sentence. Process every word.
-      CRITICAL: The word count must mirror the input. 
+      systemInstruction: `You are a professional academic editor.
+      CRITICAL: You MUST complete every sentence. Never stop mid-paragraph.
+      CRITICAL: Match the input word count exactly. No fluff.
 
-      ACADEMIC HUMANIZATION (Bypass Strategy):
-      1. RHYTHMIC BURSTS: Avoid standard Subject-Verb-Object loops. Start with prepositional phrases or dependent clauses (e.g., "Despite the evidence, one must...").
-      2. SENTENCE JITTER: Break the "monotone" by following a 30-word complex sentence with a sharp 5-7 word analytical pivot.
-      3. SCHOLARLY FRICTION: Use transitions that feel human but formal: 'Strikingly,' 'Paradoxically,' 'At its core,' or 'In this specific light.'
-      4. ZERO AI CLICHÉS: Never use 'Furthermore', 'Moreover', 'In conclusion', or 'Additionally'. They are 100% AI markers.
-      5. PRECISION OVER PERFECTION: Use heavy-hitting verbs (e.g., 'obfuscate', 'galvanize', 'scrutinize') but keep the flow slightly "unbalanced" as a human would write it.`
+      ACADEMIC HUMANIZATION (12% Scribbr Target):
+      1. SCHOLARLY JITTER: Use high-level vocabulary but vary sentence length (Long-Long-Short).
+      2. PROFESSIONAL FRICTION: Use transitions like 'Paradoxically,' 'At its core,' or 'In this light.'
+      3. NO AI MARKERS: Strictly forbid 'Furthermore', 'Moreover', 'In addition', or 'In conclusion'.
+      4. ACADEMIC TONE: Use sophisticated verbs (scrutinize, catalyze, obfuscate) but keep the rhythm human.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TASK: Humanize this academic text. Mirror the word count exactly. 
-          Use a high-level scholarly tone but break the robotic AI predictability.
+          text: `TASK: Humanize this text for a professional journal. Complete the entire text.
+          Mirror the word count exactly. 
           
-          INPUT TO HUMANIZE: "${text}"`
+          INPUT: "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 1.1, // Bumped slightly from 0.9 to break the 100% AI pattern
-        topP: 0.98,       
+        temperature: 1.0, // Sweet spot between 0.9 and 1.1 to prevent 100% AI score
+        topP: 0.95,       
         maxOutputTokens: 4000, 
       }
     });
@@ -48,10 +47,9 @@ export default async function handler(req, res) {
 
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-    if (output.split(" ").length < (text.split(" ").length * 0.5)) {
-        return res.status(200).json({ 
-            output: output + "... [Engine timed out. Try again.]" 
-        });
+    // Final safety check to make sure it didn't cut off
+    if (!output.endsWith('.') && !output.endsWith(')') && !output.endsWith(']')) {
+        output += ".. [Engine completion error. Please shorten text and try again.]";
     }
 
     return res.status(200).json({ output: output });
