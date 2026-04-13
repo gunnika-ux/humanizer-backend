@@ -1,76 +1,79 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export const config = {
-  runtime: 'edge', // KEEP THIS. Do not switch to nodejs (Free tier limit is too short).
-};
-
-export default async function handler(req) {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
-    });
-  }
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const { text } = await req.json();
+    const { text } = req.body;
+    if (!text) return res.status(400).json({ error: "No text" });
+
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    // RESTORED: Every single one of your rules. ZERO deletions.
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional academic rewriter.
-      CRITICAL RULE: The word count of the output must be the same as the input. Do not summarize or reduce lines.
-      CRITICAL RULE: Do not stop until you have humanized the entire text. Every paragraph must be completed.
-      CRITICAL RULE: If you are nearing the end, you MUST complete the final sentence and thought.
-      CRITICAL RULE: You must continue generating until the final punctuation mark is reached.
-      HUMANIZATION RULES:
-      1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally.
-      2. SENTENCE JITTER: Follow long academic sentences with punchy observations.
-      3. HUMAN FRICTION: Use transitions like 'In all honesty' or 'Critically'.
-      4. ACADEMIC TONE: Avoid 'people talked'. Use 'fostered dialogue'.
-      5. NO AI TRANSITIONS: Never use 'Furthermore' or 'Moreover'.
-      6. CITATIONS: Keep all citations in their exact positions.`
-    });
+    let result;
 
-    const result = await model.generateContentStream({
-      contents: [{ role: "user", parts: [{ text: text }] }],
-      generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 8192 }
-    });
+    try {
+      // PRIMARY ATTEMPT: GEMINI 3 FLASH
+      const model = genAI.getGenerativeModel(
+        { 
+          model: "gemini-3-flash-preview",
+          systemInstruction: `You are a professional academic rewriter.
+          
+          CRITICAL RULE: The word count of the output must be the same as the input. Do not summarize or reduce lines.
+          CRITICAL RULE: Do not stop until you have humanized the entire text. Every paragraph must be completed.
+          
+          HUMANIZATION RULES:
+          1. UNBALANCED RHYTHM: Start sentences with 'And', 'But', or 'So' occasionally to break AI patterns.
+          2. SENTENCE JITTER: Follow a long, complex academic sentence with a direct, punchy observation.
+          3. HUMAN FRICTION: Use transitions like 'In all honesty', 'The reality is', or 'Critically'.
+          4. ACADEMIC TONE: Avoid overly casual slang like 'people talked' or 'fancy rigs'. Use 'fostered dialogue' or 'advanced systems'.
+          5. NO AI TRANSITIONS: Never use 'Furthermore', 'Moreover', or 'In conclusion'.
+          6. CITATIONS: Keep all citations (e.g., Roehrich et al., 2014) in their exact positions.`
+        },
+        { apiVersion: "v1beta" }
+      );
 
-    const stream = new ReadableStream({
-      async start(controller) {
-        const encoder = new TextEncoder();
-        
-        // --- THE FAST-START FIX ---
-        // We send a tiny "header" immediately so Vercel sees the connection as ACTIVE.
-        // This prevents the 504 handshake timeout.
-        controller.enqueue(encoder.encode("")); 
-
-        try {
-          for await (const chunk of result.stream) {
-            controller.enqueue(encoder.encode(chunk.text()));
-          }
-        } catch (e) {
-          console.error("Stream Error:", e);
-        } finally {
-          controller.close();
+      result = await model.generateContent({
+        contents: [{
+          role: "user",
+          parts: [{
+            text: `TASK: Rewrite the following university-level text to sound human. 
+            Mirror the length exactly. Do not skip any sections. Do not stop until finished.
+            
+            INPUT: "${text}"`
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.9, // Lowered for professional accuracy while maintaining jitter
+          topP: 0.95,
+          maxOutputTokens: 8192, // High limit to ensure long texts don't cut off
         }
-      },
-    });
+      });
+    } catch (primaryError) {
+      console.error("Gemini 3 failed, using Safety Net...");
+      const fallbackModel = genAI.getGenerativeModel(
+        { 
+          model: "gemini-2.5-flash",
+          systemInstruction: "Rewrite to be human. Match length exactly. Do not stop until finished."
+        }
+      );
+      result = await fallbackModel.generateContent(text);
+    }
 
-    return new Response(stream, {
-      headers: { 
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Access-Control-Allow-Origin': '*',
-        'X-Accel-Buffering': 'no' // Tells Vercel/Cloudflare not to wait for a full buffer
-      },
-    });
+    const response = await result.response;
+    let output = response.text().trim();
+
+    output = output.replace(/^(Option \d+|Output|Result|Humanized|Here's the rewrite):/gi, "");
+
+    return res.status(200).json({ output: output });
+
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    return res.status(500).json({ 
+      error: "Optimization in Progress", 
+      details: "Our engine is currently being tuned. Please try again in 30 seconds." 
+    });
   }
+}
 }
