@@ -35,10 +35,11 @@ export default async function handler(req, res) {
           INPUT: "${text}"`
         }]
       }],
-      generationConfig: {
-        temperature: 1.0, // Sweet spot between 0.9 and 1.1 to prevent 100% AI score
-        topP: 0.95,       
-        maxOutputTokens: 4000, 
+    generationConfig: {
+  temperature: 1.0, 
+  topP: 0.95,       
+  maxOutputTokens: 2000, // Lowering this from 4000 to 2000 helps the engine finish faster
+}
       }
     });
 
