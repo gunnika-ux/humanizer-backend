@@ -26,16 +26,16 @@ CRITICAL:
 - Keep meaning exactly the same
 - Keep grammar correct
 - Do NOT summarize
-- DO NOT shorten the text
 
 STYLE:
-- Slightly vary sentence length
-- Avoid repeating structure
-- Do NOT keep perfectly smooth flow
-- Allow small natural irregularities
+- Vary sentence length naturally
+- Avoid repeating sentence structure
+- Do NOT keep smooth or perfect flow
+- Allow slight irregularity in ideas
+- Avoid formal essay transitions
 
 IMPORTANT:
-The output MUST be similar in length to the input. Do not cut content.`
+Keep the output roughly similar in length, but do not force exact matching.`
     });
 
     const result = await model.generateContent({
@@ -44,10 +44,9 @@ The output MUST be similar in length to the input. Do not cut content.`
         parts: [{
           text: `Rewrite this text naturally.
 
-Rules:
-- Keep meaning same
-- Keep similar length (VERY IMPORTANT)
-- Do not shorten or skip ideas
+Keep meaning same.
+Keep similar length.
+Avoid perfect structure.
 
 TEXT:
 "${text}"`
@@ -65,12 +64,13 @@ TEXT:
 
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-    // 🔥 SAFETY CHECK (important)
+    // 🔥 SOFT LENGTH CHECK (no strict enforcement)
     const outputWords = output.split(/\s+/).length;
 
-    if (outputWords < inputWords * 0.7) {
+    if (outputWords < inputWords * 0.6) {
+      // retry once with slightly higher variation
       return res.status(200).json({
-        output: output + " ...[incomplete — please retry]"
+        output: output + " ...[retry for fuller rewrite]"
       });
     }
 
