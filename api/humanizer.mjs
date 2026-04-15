@@ -31,6 +31,7 @@ STYLE:
 - Mix short and long sentences
 - Avoid perfect structure
 - Avoid predictable structure
+- Avoid overly formal tone
 - Allow slight jumps in ideas, but keep sentences understandable
 - Use natural phrasing with slightly more precise word choices
 - Avoid overly casual filler words (like "honestly", "you know")
