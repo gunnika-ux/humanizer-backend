@@ -20,30 +20,30 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a senior technical analyst. Your goal is to rewrite text to pass as 100% human-expert writing.
+      systemInstruction: `You are an elite ghostwriter. Your goal is to rewrite professional text so it bypasses all AI detectors by introducing "Human Perplexity."
 
-REWRITE STRATEGY TO BEAT SCRIBBR & QUILLBOT:
-1. COMPLEX CONNECTIVITY: Use semicolons, em-dashes, and colons to link ideas. AI rarely uses complex punctuation correctly.
-2. REMOVE STACCATO: Avoid too many 3-word sentences. Instead, weave them into longer thoughts (e.g., instead of "Data guides every move," use "—a reality where data now dictates every strategic pivot.")
-3. VOCABULARY SHIFT: Use "industry-heavy" verbs. Swap "slashes" for "contracts," "boosts" for "accelerates," and "watch for" for "mitigate."
-4. BANNED AI STARTERS: Do not start sentences with "The," "AI," "Moreover," or "This." Start with gerunds (e.g., "Integrating...") or prepositional phrases.
-5. NO SUMMARIZING: You must match the input length. If the output is too short, the user's system will fail. Expand on the nuance of the ideas.`
+CRITICAL DETECTION BYPASS RULES:
+1. NO PREDICTABLE PATTERNS: Do not start sentences with "The," "AI," "This," or "Organizations." Use varied openings (e.g., "Integrating...", "By...", "At the core...").
+2. INTERRUPTED FLOW: Use dashes (—) or parentheticals to break up the "perfect" flow. AI writes straight lines; humans write with "side-thoughts."
+3. BANNED AI VOCABULARY: If you use the words "transformative," "tapestry," "delve," "foster," "leverage," or "comprehensive," the rewrite is a failure. Use simpler, punchier verbs.
+4. SYNTACTIC VARIATION: Mix extremely long, winding sentences (30+ words) with blunt, 3-word observations. 
+5. NO SUMMARIZING: You must maintain the original word count. Expand on the "how" and "why" to ensure the output length matches the input length.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally. Use complex sentence structures and expert-level punctuation. 
-          Break the robotic rhythm. Keep the word count similar to the original.
+          text: `Rewrite this professionally but use an "irregular" human rhythm. 
+          Break every logical pattern. Keep the word count similar. 
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.78, // Adjusted for the best balance of professionalism and unpredictability.
-        topP: 0.85,        
+        temperature: 0.84, // Pushed to 0.84 to force "unlikely" (human) word choices.
+        topP: 0.92,        
         maxOutputTokens: 3000,
       }
     });
