@@ -34,6 +34,7 @@ STYLE:
 - Use natural phrasing
 - Avoid overly casual filler words (like "honestly", "you know"), but keep natural tone
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
+- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
 
 IMPORTANT:
 The text should NOT feel like a structured article.
@@ -57,7 +58,7 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.91,
+          temperature: 0.90,
           topP: 0.98,
           maxOutputTokens: 3000,
         }
@@ -73,23 +74,18 @@ TEXT:
       generate()
     ]);
 
-    // 🔥 HUMAN SCORE (balanced for all detectors)
+    // 🔥 HUMAN SCORE
     function humanScore(text) {
       let score = 0;
 
-      // sentence variation
       if (text.match(/\./g)?.length > 5) score += 1;
 
-      // slight repetition (human trait)
       if (/(this|these).{0,20}\1/i.test(text)) score += 1;
 
-      // natural connectors
       if (text.includes("But ") || text.includes("And ")) score += 1;
 
-      // avoid formal transitions
       if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
 
-      // uneven sentence lengths
       if (text.split(". ").some(s => s.length < 40)) score += 1;
 
       return score;
@@ -102,25 +98,25 @@ TEXT:
       ""
     );
 
-    // 🔥 STRUCTURE BREAK (balanced, not aggressive)
+    // 🔥 STRUCTURE BREAK (final tuned)
     function breakStructure(text) {
       return text
-        // merge some paragraphs
         .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
 
-        // slight sentence variation
         .replace(/\. ([A-Z])/g, (m, p1) =>
-          Math.random() > 0.6 ? `. ${p1}` : m
+          Math.random() > 0.5 ? `. ${p1}` : m
         )
 
-        // mild interruption (safe for Scribbr)
         .replace(/, /g, (m) =>
           Math.random() > 0.85 ? ", which " : m
         )
 
-        // slight wording variation
         .replace(/because/g, (m) =>
           Math.random() > 0.7 ? "since" : m
+        )
+
+        .replace(/ and /g, (m) =>
+          Math.random() > 0.7 ? " & " : m
         );
     }
 
