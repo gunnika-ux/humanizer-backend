@@ -26,14 +26,15 @@ CRITICAL:
 - Do NOT summarize
 
 STYLE:
-- Do NOT follow the same structure as the input
-- Change how ideas are arranged slightly
-- Avoid clean transitions (no "However", "In conclusion", etc.)
-- Mix short and long sentences
-- Allow slight breaks in flow
+- Slightly vary sentence length (mix short and long)
+- Avoid repeating the same sentence structure
+- Do NOT keep a perfectly smooth flow
+- Avoid formal essay transitions
+- Allow small tone shifts between sentences
+- Keep it natural but still readable
 
 IMPORTANT:
-The output should NOT feel like a structured essay. It should feel naturally written and slightly uneven.`
+The text should feel slightly uneven and human, not structured like a clean article.`
     });
 
     const result = await model.generateContent({
@@ -43,14 +44,15 @@ The output should NOT feel like a structured essay. It should feel naturally wri
           text: `Rewrite this text naturally.
 
 Keep meaning same.
-Avoid structured flow.
+Keep similar length.
+Avoid perfect structure.
 
 TEXT:
 "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.8,
+        temperature: 0.7,
         topP: 0.92,
         maxOutputTokens: 2000,
       }
