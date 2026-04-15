@@ -9,21 +9,33 @@ export default async function handler(req, res) {
 
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "No text provided" });
+
+    if (!text) {
+      return res.status(400).json({ error: "No text provided" });
+    }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      // 🔥 TARGETING PERPLEXITY: We force the AI to avoid "Corporate AI" words
-      systemInstruction: `You are an expert ghostwriter. Rewrite the provided text to bypass high-level AI detectors.
-      
-      CRITICAL RULES:
-      1. NO AI-WORDS: Do not use 'transformative', 'foster', 'leverage', 'comprehensive', 'integration', or 'significant'. 
-      2. JAGGED RHYTHM: Alternate between very long, descriptive sentences and tiny, blunt sentences (3-5 words).
-      3. STARTING WORDS: Never start sentences with "The", "This", or "AI". Use "Since...", "By...", "While...", or start with a verb.
-      4. HUMAN LOGIC: Avoid a perfect flow. Humans repeat an idea or use dashes (—) to add a side-thought.
-      6. MATCH LENGTH: Do not summarize. Match the input word count almost exactly.`
+      systemInstruction: `Rewrite the text like a real person explaining ideas.
+
+CRITICAL:
+- Keep meaning exactly the same
+- Do NOT summarize
+- Keep similar length
+
+STYLE:
+- Keep grammar mostly correct
+- Mix short and long sentences
+- Avoid perfect structure
+- Allow slight jumps in ideas
+- Avoid textbook flow
+- Use natural phrasing
+
+IMPORTANT:
+The text should NOT feel like a structured article.
+It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
     const generate = async () => {
@@ -31,14 +43,19 @@ export default async function handler(req, res) {
         contents: [{
           role: "user",
           parts: [{
-            text: `Explain this like a person who is slightly in a hurry but knows their stuff. 
-            Break the intro/body/conclusion mold. 
-            Original Text: "${text}"`
+            text: `Rewrite this text naturally.
+
+Keep meaning same.
+Keep similar length.
+Do NOT follow a perfect introduction → explanation → conclusion structure.
+
+TEXT:
+"${text}"`
           }]
         }],
         generationConfig: {
-          temperature: 0.92, // 🚀 High enough to beat logic-matching, low enough to stay professional
-          topP: 0.98,        // 🚀 Nearly open vocabulary to avoid "Generic Language"
+          temperature: 0.92,
+          topP: 0.98,
           maxOutputTokens: 3000,
         }
       });
@@ -49,22 +66,27 @@ export default async function handler(req, res) {
     let output1 = await generate();
     let output2 = await generate();
 
-    // 🔹 SELECTION LOGIC: Pick the one that is "messier" (more punctuation diversity)
-    const getComplexity = (str) => (str.match(/[,;:\-—()]/g) || []).length;
-    let finalOutput = getComplexity(output1) > getComplexity(output2) ? output1 : output2;
+    let finalOutput =
+      output1.length > output2.length ? output1 : output2;
 
-    finalOutput = finalOutput.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+    finalOutput = finalOutput.replace(
+      /^(Option \d+|Output|Result|Here's the rewrite):/gi,
+      ""
+    );
 
-    // 🔹 THE "MANUAL" HUMANIZER (REWRITING YOUR BREAKSTRUCTURE)
-    function humanizeFlow(text) {
+    // 🔥 STRUCTURE BREAK (KEY FIX)
+    function breakStructure(text) {
       return text
-        // AI hates em-dashes. Let's add them where commas are.
-        .replace(/, /g, (m) => (Math.random() > 0.8 ? " — " : m))
-        // Randomly merge paragraphs to look less "formatted"
-        .replace(/\n\n/g, (m) => (Math.random() > 0.4 ? " " : m));
+        // merge paragraphs randomly
+        .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
+
+        // split some sentences awkwardly
+        .replace(/\. ([A-Z])/g, (m, p1) =>
+          Math.random() > 0.7 ? `. ${p1}` : m
+        );
     }
 
-    finalOutput = humanizeFlow(finalOutput);
+    finalOutput = breakStructure(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
