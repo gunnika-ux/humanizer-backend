@@ -18,25 +18,23 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `Rewrite the text like a real human.
+      systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
 - Keep meaning exactly the same
 - Keep grammar correct
-- Do NOT summarize or remove ideas
-- Do NOT sound like a formal essay or textbook
+- Do NOT summarize
+- Do NOT sound like a formal essay
 
 STYLE:
-- Vary sentence length noticeably (mix short and long sentences)
-- Avoid repeating the same sentence structure
-- Do NOT keep a smooth or predictable rhythm
-- Occasionally use direct, simple sentences
-- Avoid perfectly balanced paragraph structure
-- Allow slight shifts in tone between sentences
-- Use simpler phrasing in some places instead of complex wording
+- Break strict paragraph flow
+- Allow slight topic jumps (natural, not random)
+- Mix direct statements with explanation
+- Avoid perfect logical progression
+- Keep tone professional but relaxed
 
 IMPORTANT:
-The writing should feel natural and slightly uneven, not optimized or structured like AI-generated content.`
+The text should feel written naturally, not structured like an optimized article.`
     });
 
     const result = await model.generateContent({
@@ -46,17 +44,17 @@ The writing should feel natural and slightly uneven, not optimized or structured
           text: `Rewrite this text.
 
 Rules:
-- Keep meaning unchanged
+- Keep meaning same
 - Keep professional tone
-- Avoid perfect structure or flow
-- Allow slight natural irregularity
+- Do NOT make it sound like a polished article
+- Allow slight natural irregularity in flow
 
 TEXT:
 "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.6,
+        temperature: 0.65,
         topP: 0.9,
         maxOutputTokens: 2000,
       }
@@ -65,13 +63,12 @@ TEXT:
     const response = await result.response;
     let output = response.text().trim();
 
-    // Clean unwanted prefixes
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
     return res.status(200).json({ output });
 
   } catch (error) {
-    console.error("Error:", error);
+    console.error(error);
     return res.status(500).json({ error: "Server error. Try again." });
   }
 }
