@@ -37,6 +37,7 @@ STYLE:
 - Avoid generic policy-style phrasing (e.g., "it is important to", "we need to")
 - Do not make every sentence logically connect smoothly; allow slight jumps in flow
 - Avoid heavy technical phrasing; keep explanations simple and natural
+- Avoid vague or generic phrasing; be slightly more specific and direct when expressing ideas
 
 IMPORTANT:
 The text should feel naturally written, slightly imperfect, but still clear and readable.`
