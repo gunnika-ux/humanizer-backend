@@ -35,6 +35,7 @@ STYLE:
 - Avoid repeating patterns
 - Avoid generic conclusion phrases like "Ultimately" or "Moving forward"
 - Avoid generic policy-style phrasing (e.g., "it is important to", "we need to")
+- Do not make every sentence logically connect smoothly; allow slight jumps in flow
 
 IMPORTANT:
 The text should feel naturally written, slightly imperfect, but still clear and readable.`
