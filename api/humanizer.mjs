@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
-- Keep meaning exactly the same
+- Keep the original meaning and key ideas, but allow natural rewording
 - Do NOT summarize
 - Keep similar length
 
