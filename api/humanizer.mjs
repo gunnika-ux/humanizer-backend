@@ -26,22 +26,19 @@ CRITICAL:
 - Do NOT summarize or remove ideas
 - Keep output length close to input
 
-STYLE:
-- Use burstiness: mix long sentences with short ones
-- Avoid repeating sentence structure
-- Do NOT keep a smooth or predictable rhythm
-- Avoid overly polished or academic tone
-- Occasionally use direct, simple sentences
-
-IMPORTANT:
-The writing should feel natural, slightly uneven, and human — not structured like an AI-generated article.`
+HUMANIZING RULES (TO BEAT DETECTORS):
+1. BANNED WORDS: Do not use "furthermore," "moreover," "additionally," "in conclusion," "leverage," "foster," or "unprecedented."
+2. BURSTINESS: Mix very long, descriptive sentences with very short, 4-word sentences.
+3. VARY STARTING WORDS: Never start two sentences in a row with the same word or "The/It."
+4. UNSTABLE RHYTHM: Do not use a predictable flow. Humans are slightly messy in how they connect ideas.
+5. NO OVER-POLISHING: Keep the tone professional but avoid that "perfect" corporate AI shimmer.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this text naturally.
+          text: `Rewrite this naturally.
 
 Requirements:
 - Keep meaning unchanged
@@ -54,8 +51,8 @@ TEXT:
         }]
       }],
       generationConfig: {
-        temperature: 0.7,   // 🔥 fixed (very important)
-        topP: 0.9,
+        temperature: 0.78,   // Increased to add "human" unpredictability
+        topP: 0.85,         // Keeps the word count tight and professional
         maxOutputTokens: 2000,
       }
     });
