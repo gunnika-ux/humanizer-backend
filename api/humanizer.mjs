@@ -21,38 +21,30 @@ export default async function handler(req, res) {
       systemInstruction: `You are a high-fidelity rewriter.
 
 CRITICAL:
-- Rewrite the text fully while preserving meaning.
-- Keep a semi-professional tone (not casual, not academic).
-- Avoid perfectly structured or overly polished writing.
-- Do NOT sound like a formal essay or textbook.
+- Rewrite fully while preserving meaning.
+- Keep a semi-professional tone.
+- Avoid perfect structure or overly polished writing.
 - Do NOT summarize or remove details.
-- Keep output length close to input, but do not add fluff.
 
-HUMAN STYLE RULES:
-1. Mix sentence lengths unevenly.
-2. Occasionally break flow slightly between sentences.
-3. Allow mild redundancy or natural rephrasing.
-4. Use simpler phrasing in some places instead of complex wording.
-5. Avoid consistently perfect transitions.
-6. Insert occasional short sentences (3–6 words).
-7. Keep tone professional, but not overly refined.
-
-IMPORTANT:
-The writing should feel like a real person explaining ideas clearly, not like an optimized AI-generated article.`
+STYLE:
+- Mix sentence lengths unevenly.
+- Slightly vary tone between sentences.
+- Avoid predictable transitions.
+- Occasionally use direct phrasing.
+- Keep it natural, not academic.`
     });
 
     let output = "";
 
-    // 🔁 Retry loop (ensures good length + quality)
     for (let attempt = 0; attempt < 2; attempt++) {
       const result = await model.generateContent({
         contents: [{
           role: "user",
           parts: [{
-            text: `Rewrite the text naturally while preserving all ideas.
+            text: `Rewrite naturally and clearly.
 
-Keep the tone clear and professional, but not overly polished.
-Allow slight imperfections and variation in flow.
+Avoid overly polished structure.
+Keep tone professional but human.
 
 PREVIOUS CONTEXT:
 "${context || ''}"
@@ -71,17 +63,16 @@ INPUT:
       const response = await result.response;
       output = response.text().trim();
 
-      // Clean unwanted prefixes
       output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-      // ✅ Length check (avoid too short outputs)
       const inputWords = text.split(/\s+/).length;
       const outputWords = output.split(/\s+/).length;
 
-      if (outputWords >= inputWords * 0.75) {
-        break;
-      }
+      if (outputWords >= inputWords * 0.75) break;
     }
+
+    // 🔥 POST-PROCESSING (KEY STEP FOR LOW AI DETECTION)
+    output = addHumanVariation(output);
 
     return res.status(200).json({ output });
 
@@ -89,4 +80,29 @@ INPUT:
     console.error("Backend error:", error);
     return res.status(500).json({ error: "Sync error. Try again." });
   }
+}
+
+// 🔥 HUMAN VARIATION FUNCTION
+function addHumanVariation(text) {
+  let sentences = text.split(/(?<=[.!?])\s+/);
+
+  return sentences.map((s, i) => {
+    // Occasionally shorten sentences
+    if (i % 4 === 0 && s.length > 120) {
+      return s.replace(/, and /, '. ');
+    }
+
+    // Occasionally simplify phrasing
+    if (i % 5 === 0) {
+      s = s.replace(/In order to/g, 'To');
+      s = s.replace(/It is important to note that/g, '');
+    }
+
+    // Slight randomness in tone
+    if (i % 6 === 0 && s.length > 60) {
+      s = s.replace(/\. /, '. ');
+    }
+
+    return s;
+  }).join(' ');
 }
