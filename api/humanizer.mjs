@@ -33,7 +33,7 @@ STYLE:
 - Avoid textbook flow
 - Use natural phrasing
 - Avoid overly casual filler words (like "honestly", "you know"), but keep natural tone
-
+- Slightly vary tone between sentences (some more direct, some more descriptive)
 IMPORTANT:
 The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`
