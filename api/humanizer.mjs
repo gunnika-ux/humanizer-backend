@@ -32,7 +32,7 @@ STYLE:
 - Allow slight jumps in ideas
 - Avoid textbook flow
 - Use natural phrasing
-- Avoid overly casual filler words (like "honestly", "you know"), but keep natural tone
+
 
 IMPORTANT:
 The text should NOT feel like a structured article.
