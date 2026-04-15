@@ -29,7 +29,7 @@ export default async function handler(req, res) {
         }]
       }],
       generationConfig: {
-        temperature: 0.5,
+        temperature: 0.7,
         topP: 0.9,
         maxOutputTokens: 3000,
       }
@@ -56,7 +56,7 @@ TEXT:
         }]
       }],
       generationConfig: {
-        temperature: 0.72,
+        temperature: 0.8,
         topP: 0.92,
         maxOutputTokens: 3000,
       }
