@@ -31,10 +31,9 @@ STYLE:
 - Mix short and long sentences
 - Avoid perfect structure
 - Avoid predictable structure
-- Avoid overly formal tone
-- Avoid technical language and jargon
 - Allow slight jumps in ideas, but keep sentences understandable
-- Use natural phrasing with slightly more precise word choices
+- Use simple, clear language instead of technical jargon
+- Avoid overly formal tone, but maintain clear and professional wording
 - Avoid overly casual filler words (like "honestly", "you know")
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
 - Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
@@ -95,53 +94,35 @@ TEXT:
       ""
     );
 
+    // 🔥 SAFE STRUCTURE BREAK (minimal)
     function breakStructure(text) {
       return text
-        .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
+        .replace(/\n\n/g, (m) => (Math.random() > 0.6 ? " " : m))
         .replace(/\. ([A-Z])/g, (m, p1) =>
-          Math.random() > 0.5 ? `. ${p1}` : m
-        )
-        .replace(/, /g, (m) =>
-          Math.random() > 0.85 ? ", which " : m
-        )
-        .replace(/because/g, (m) =>
-          Math.random() > 0.7 ? "since" : m
-        )
-        .replace(/ and /g, (m) =>
-          Math.random() > 0.7 ? " & " : m
+          Math.random() > 0.85 ? `. ${p1}` : m
         );
     }
 
-    // 🔥 COMPACT CLEANER (ALL-IN-ONE)
+    // 🔥 COMPACT CLEANER (safe + focused)
     function cleanText(text) {
       return text
         // duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
 
-        // broken phrases
-        .replace(/\bwhich which\b/gi, "which")
-        .replace(/\bwhich you get\b/gi, "which gives you")
-        .replace(/\bwhich you can\b/gi, "which allows you")
-        .replace(/\bwhich but\b/gi, "but")
-
-        // joins
-        .replace(/,\s*which\s+/gi, ". This ")
-        .replace(/\.\s*which\s+/gi, ". This ")
-        .replace(/\bnow,\s*which\b/gi, "Now,")
+        // broken joins
+        .replace(/\bThis\.\s*This\b/gi, "This")
+        .replace(/\bThis and\b/gi, "This, and")
 
         // grammar fixes
-        .replace(/\bincreasing much higher\b/gi, "significantly higher")
-        .replace(/\bincreasing such a jump\b/gi, "a significant increase")
-        .replace(/\bgo way up\b/gi, "increase significantly")
+        .replace(/\bcreates many transparency\b/gi, "creates greater transparency")
         .replace(/\bsince of that\b/gi, "because of that")
+        .replace(/\bgo way up\b/gi, "increase significantly")
 
-        // tone polish
+        // tone control (light)
         .replace(/\bpretty\b/gi, "")
         .replace(/\ba lot of\b/gi, "many")
         .replace(/\bhuge\b/gi, "significant")
         .replace(/\bmassive\b/gi, "substantial")
-        .replace(/\bget serious about\b/gi, "focus on")
-        .replace(/\bhooked up\b/gi, "integrated")
 
         // contractions
         .replace(/\bthere's\b/gi, "there is")
