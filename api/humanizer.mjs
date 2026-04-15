@@ -20,23 +20,27 @@ export default async function handler(req, res) {
       model: "gemini-3-flash-preview",
       systemInstruction: `Rewrite the text clearly and professionally.
 
-Do NOT sound like a perfect essay.
-Do NOT use consistent sentence structure.
-Avoid predictable phrasing.
+CRITICAL:
+- Keep meaning exactly the same.
+- Maintain correct grammar.
+- Avoid overly perfect or academic tone.
+- Do NOT repeat phrases unnaturally.
+- Do NOT follow predictable sentence patterns.
 
-Keep meaning exactly the same.
-Keep grammar correct.`
+STYLE:
+- Vary sentence length naturally.
+- Keep flow slightly uneven but readable.
+- Use subtle variation, not obvious tricks.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this naturally.
+          text: `Rewrite naturally.
 
-Vary sentence structure strongly.
-Some sentences can be short. Some longer.
-Do not keep uniform rhythm.
+Keep it professional and human.
+Avoid repetition patterns.
 
 Text:
 "${text}"`
@@ -52,7 +56,7 @@ Text:
     const response = await result.response;
     let output = response.text().trim();
 
-    output = breakPatterns(output);
+    output = cleanText(output);
 
     return res.status(200).json({ output });
 
@@ -63,28 +67,18 @@ Text:
 }
 
 
-// 🔥 KEY FUNCTION (THIS FIXES YOUR 100% ISSUE)
-function breakPatterns(text) {
+// 🔥 CLEAN HUMANIZER (NO FAKE PATTERNS)
+function cleanText(text) {
   let sentences = text.split(/(?<=[.!?])\s+/);
 
-  return sentences.map((s, i) => {
+  return sentences.map(s => {
+    // Remove accidental repetition
+    s = s.replace(/\b(It works\.)+/g, '');
 
-    // Force variation in length
-    if (i % 2 === 0 && s.length > 100) {
-      s = s.replace(/,/, '.');
-    }
+    // Light natural variation (safe)
+    s = s.replace(/In order to/g, 'To');
+    s = s.replace(/It is important to note that/g, '');
 
-    // Introduce short sentences
-    if (i % 3 === 0) {
-      s = s + " It works.";
-    }
-
-    // Slight variation without breaking grammar
-    if (i % 4 === 0) {
-      s = s.replace("This", "In many cases, this");
-    }
-
-    return s;
-
+    return s.trim();
   }).join(' ');
 }
