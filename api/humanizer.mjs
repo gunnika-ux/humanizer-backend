@@ -32,10 +32,12 @@ STYLE:
 - Allow slight jumps in ideas
 - Avoid textbook flow
 - Use natural phrasing
+- Keep tone semi-professional (avoid slang like "honestly", "you know", "pretty cool")
+- Use clear but not overly formal wording
 
 IMPORTANT:
 The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way.`
+It should feel like someone explaining things in a natural, slightly uneven way, but still suitable for a university assignment.`
     });
 
     const generate = async () => {
@@ -48,6 +50,7 @@ It should feel like someone explaining things in a natural, slightly uneven way.
 Keep meaning same.
 Keep similar length.
 Do NOT follow a perfect introduction → explanation → conclusion structure.
+Avoid overly casual phrases, but do not make it sound like a formal essay.
 
 TEXT:
 "${text}"`
@@ -74,13 +77,10 @@ TEXT:
       ""
     );
 
-    // 🔥 STRUCTURE BREAK (KEY FIX)
+    // 🔥 STRUCTURE BREAK (unchanged)
     function breakStructure(text) {
       return text
-        // merge paragraphs randomly
         .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
-
-        // split some sentences awkwardly
         .replace(/\. ([A-Z])/g, (m, p1) =>
           Math.random() > 0.7 ? `. ${p1}` : m
         );
