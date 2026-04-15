@@ -34,6 +34,7 @@ STYLE:
 - Vary sentence openings naturally
 - Avoid repeating patterns
 - Avoid generic conclusion phrases like "Ultimately" or "Moving forward"
+- Avoid generic policy-style phrasing (e.g., "it is important to", "we need to")
 
 IMPORTANT:
 The text should feel naturally written, slightly imperfect, but still clear and readable.`
