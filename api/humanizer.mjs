@@ -26,8 +26,8 @@ CRITICAL:
 - Keep similar length
 
 STYLE:
-- Keep grammar mostly correct
-- Ensure sentences are grammatically complete and logically clear, while keeping the flow slightly uneven and natural
+- Keep grammar mostly correct, but avoid obvious grammatical errors
+- Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
 - Mix short and long sentences
 - Avoid perfect structure
 - Avoid predictable structure
@@ -131,6 +131,7 @@ TEXT:
         .replace(/\bincreasing much higher\b/gi, "significantly higher")
         .replace(/\bincreasing such a jump\b/gi, "a significant increase")
         .replace(/\bgo way up\b/gi, "increase significantly")
+        .replace(/\bsince of that\b/gi, "because of that")
 
         // tone polish
         .replace(/\bpretty\b/gi, "")
@@ -144,7 +145,7 @@ TEXT:
         .replace(/\bthere's\b/gi, "there is")
         .replace(/\byou've got\b/gi, "there are")
 
-        // punctuation
+        // punctuation fixes
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
 
