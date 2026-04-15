@@ -56,8 +56,8 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.88
-          topP: 0.98
+          temperature: 0.88,
+          topP: 0.98,
           maxOutputTokens: 3000,
         }
       });
@@ -65,23 +65,21 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    let outputs = [
-      await generate(),
-      await generate(),
-      await generate() // 🔥 generate 3 times
-    ];
+    // 🔥 RUN IN PARALLEL (fix timeout)
+    let outputs = await Promise.all([
+      generate(),
+      generate(),
+      generate()
+    ]);
 
-    // 🔥 HUMAN SCORE (key fix)
+    // 🔥 HUMAN SCORE
     function humanScore(text) {
       let score = 0;
 
-      // shorter sentences mix
       if (text.match(/\./g)?.length > 5) score += 1;
 
-      // informal connectors
       if (text.includes("But ") || text.includes("And ")) score += 1;
 
-      // less perfect transitions
       if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
 
       return score;
@@ -94,6 +92,7 @@ TEXT:
       ""
     );
 
+    // 🔥 STRUCTURE BREAK
     function breakStructure(text) {
       return text
         .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
