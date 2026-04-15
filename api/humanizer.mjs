@@ -90,13 +90,9 @@ TEXT:
       let score = 0;
 
       if (text.match(/\./g)?.length > 5) score += 1;
-
       if (/(this|these).{0,20}\1/i.test(text)) score += 1;
-
       if (text.includes("But ") || text.includes("And ")) score += 1;
-
       if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
-
       if (text.split(". ").some(s => s.length < 40)) score += 1;
 
       return score;
@@ -109,7 +105,6 @@ TEXT:
       ""
     );
 
-    // 🔥 SAFE STRUCTURE BREAK (minimal, no damage)
     function breakStructure(text) {
       return text
         .replace(/\n\n/g, (m) => (Math.random() > 0.6 ? " " : m))
@@ -118,11 +113,20 @@ TEXT:
         );
     }
 
-    // 🔥 COMPACT CLEANER (focused + safe)
     function cleanText(text) {
       return text
         // duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
+
+        // 🔥 NEW grammar improvements
+        .replace(/\bmany that\b/gi, "a lot of that")
+        .replace(/\bmany that repetitive\b/gi, "a lot of that repetitive")
+        .replace(/\bthere's many\b/gi, "there is a lot of")
+        .replace(/\bthere’s many\b/gi, "there is a lot of")
+        .replace(/\bacross much every\b/gi, "across almost every")
+
+        // capitalization fix
+        .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
 
         // broken joins
         .replace(/\bThis\.\s*This\b/gi, "This")
@@ -133,9 +137,11 @@ TEXT:
         .replace(/\bsince of that\b/gi, "because of that")
         .replace(/\bgo way up\b/gi, "increase significantly")
 
-        // tone balance (not too simple, not too formal)
+        // tone balance
         .replace(/\bpretty\b/gi, "")
-        .replace(/\ba lot of\b/gi, "many")
+        // ❌ removed bad rule that caused errors:
+        // .replace(/\ba lot of\b/gi, "many")
+
         .replace(/\bhuge\b/gi, "significant")
         .replace(/\bmassive\b/gi, "substantial")
 
