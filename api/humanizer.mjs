@@ -24,34 +24,31 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `Rewrite the text like a real person explaining ideas.
+      systemInstruction: `Rewrite the text like a real university student explaining ideas clearly.
 
 CRITICAL:
-- Keep the original meaning and key ideas, but allow natural rewording
+- Keep the original meaning and key ideas
 - Do NOT summarize
 - Keep similar length
 
 STYLE:
-- Keep grammar correct
-- Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
-- Mix short and long sentences
-- Avoid perfect structure
-- Avoid predictable structure
-- Allow slight jumps in ideas, but keep sentences understandable
-- Use clear language, but include some specific and descriptive wording where appropriate
-- Add slight variation in expression and emphasis to avoid flat or generic tone
-- Avoid overly formal tone, but maintain clear and professional wording
-- Avoid overly casual filler words (like "honestly", "you know")
-- Avoid generic language
-- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
-- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
-- Occasionally vary sentence openings and avoid uniform phrasing patterns
-- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
-- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
+- Keep grammar correct and natural (no obvious mistakes)
+- Avoid overly formal or academic tone
+- Avoid generic AI-style phrasing and textbook language
+- Avoid technical jargon unless necessary; simplify where possible
+- Use clear, natural wording instead of complex or abstract phrases
+
+HUMANIZATION:
+- Mix short and long sentences naturally
+- Allow slight uneven flow, but keep sentences understandable
+- Occasionally include mild emphasis or clarification (e.g., "you can see this", "in practice")
+- Avoid perfect structure and predictable phrasing patterns
+- Do not make every sentence flow perfectly; allow small shifts in rhythm
 
 IMPORTANT:
-The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way.`
+- The writing should feel like a thoughtful explanation, not a formal essay
+- It should sound natural, slightly varied, and realistic
+- Avoid sounding too polished, robotic, or overly structured`
     });
 
     const generate = async () => {
@@ -61,10 +58,10 @@ It should feel like someone explaining things in a natural, slightly uneven way.
           parts: [{
             text: `Rewrite this text naturally.
 
-Keep the original meaning and key ideas, but allow natural rewording.
-Keep similar length.
-Do NOT follow a perfect introduction → explanation → conclusion structure.
-Avoid overly casual filler words, but do not make it sound like a formal essay.
+Keep the meaning the same and maintain similar length.
+Do NOT make it sound like a formal essay or textbook.
+Avoid technical jargon and overly complex phrasing.
+Use clear, natural wording with slight variation in sentence structure.
 
 TEXT:
 "${text}"`
@@ -118,7 +115,7 @@ TEXT:
         // duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
 
-        // 🔥 NEW grammar improvements
+        // grammar improvements
         .replace(/\bmany that\b/gi, "a lot of that")
         .replace(/\bmany that repetitive\b/gi, "a lot of that repetitive")
         .replace(/\bthere's many\b/gi, "there is a lot of")
@@ -139,9 +136,6 @@ TEXT:
 
         // tone balance
         .replace(/\bpretty\b/gi, "")
-        // ❌ removed bad rule that caused errors:
-        // .replace(/\ba lot of\b/gi, "many")
-
         .replace(/\bhuge\b/gi, "significant")
         .replace(/\bmassive\b/gi, "substantial")
 
