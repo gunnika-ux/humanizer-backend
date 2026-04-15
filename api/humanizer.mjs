@@ -8,7 +8,9 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const { text } = req.body;
+    // ✅ accept context
+    const { text, context } = req.body;
+
     if (!text) return res.status(400).json({ error: "No text" });
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -35,13 +37,19 @@ HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
           text: `TASK: Mirror this text exactly. Do not leave out the final paragraph.
 Do not stop until you have humanized the entire text. Keep the output length similar to the original.
 
-INPUT TO HUMANIZE: "${text}"`
+If previous context is provided, maintain the same tone, style, and flow.
+
+PREVIOUS CONTEXT:
+"${context || ''}"
+
+INPUT TO HUMANIZE:
+"${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.6,        // 🔽 reduced for stability
+        temperature: 0.6,
         topP: 0.9,
-        maxOutputTokens: 3000,   // 🔥 reduced from 4000 (main fix)
+        maxOutputTokens: 3000,
       }
     });
 
@@ -58,7 +66,7 @@ INPUT TO HUMANIZE: "${text}"`
       });
     }
 
-    return res.status(200).json({ output: output });
+    return res.status(200).json({ output });
 
   } catch (error) {
     return res.status(500).json({ error: "Sync error. Try again." });
