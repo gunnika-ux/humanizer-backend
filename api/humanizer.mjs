@@ -110,22 +110,31 @@ TEXT:
         );
     }
 
-    // 🔥 NEW: light grammar fix (VERY IMPORTANT)
+    // 🔥 IMPROVED GRAMMAR FIX
     function fixGrammar(text) {
       return text
         .replace(/\bwhich which\b/gi, "which")
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // removes repeated words
+        .replace(/\b(\w+)\s+\1\b/gi, "$1")
+        .replace(/,\s*which\s+we\s+are\s+seeing/gi, ". We are seeing")
+        .replace(/\bnow,\s*which\b/gi, "Now,")
+        .replace(/\bwhich but\b/gi, "but")
+        .replace(/\bthere's\b/gi, "there is")
+        .replace(/\byou've got\b/gi, "there are")
         .replace(/\s{2,}/g, " ");
     }
 
     function lightPolish(text) {
       return text
         .replace(/\bpretty huge deal\b/gi, "a significant step")
+        .replace(/\bbiggest thing\b/gi, "a critical priority")
         .replace(/\bbasically\b/gi, "")
         .replace(/\bwe're seeing\b/gi, "there is increasing")
+        .replace(/\bhooked up\b/gi, "integrated")
         .replace(/\bcan't\b/gi, "cannot")
         .replace(/\bdoesn't\b/gi, "does not")
         .replace(/\bmoney-related\b/gi, "financial")
+        .replace(/\bcosts a ton of money\b/gi, "requires substantial investment")
+        .replace(/\bmassive logistical mess\b/gi, "significant logistical challenge")
         .replace(/\bphysical stuff\b/gi, "infrastructure")
         .replace(/\bput their cash into\b/gi, "invest in")
         .replace(/\breally\b/gi, "")
