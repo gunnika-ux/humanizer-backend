@@ -14,32 +14,46 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "No text provided" });
     }
 
-    const inputWords = text.split(/\s+/).length;
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-fidelity human editor. 
-      
-      DETECTOR BYPASS RULES:
-      1. BURSTINESS: Mix 25-word complex sentences with 4-word punchy ones.
-      2. NO TRANSITIONS: Ban 'Moreover', 'Furthermore', 'Additionally'. Use direct connections.
-      3. VOCABULARY: Use specific verbs. Swap 'utilize' for 'use', 'foster' for 'build', 'comprehensive' for 'full'.
-      4. STARTING WORDS: Never start consecutive sentences with the same word.
-      5. NO SUMMARIZING: Match input length exactly.`
+      systemInstruction: `Rewrite the text like a real person explaining ideas.
+
+CRITICAL:
+- Keep meaning exactly the same
+- Do NOT summarize
+- Keep similar length
+
+STYLE:
+- Keep grammar mostly correct (small imperfections are okay)
+- Mix short and long sentences
+- Allow slight shifts in tone
+- Avoid perfectly smooth or academic flow
+- Use natural phrasing, not textbook wording
+
+IMPORTANT:
+The text should feel naturally written, slightly imperfect, but still clear and readable.`
     });
 
-    const generate = async (stylePrompt, temp) => {
+    const generate = async () => {
       const result = await model.generateContent({
         contents: [{
           role: "user",
           parts: [{
-            text: `${stylePrompt}: "${text}"`
+            text: `Rewrite this text naturally.
+
+Keep meaning same.
+Keep similar length.
+Do not make it sound like a perfect essay.
+
+TEXT:
+"${text}"`
           }]
         }],
         generationConfig: {
-          temperature: temp, // Varying temp between calls breaks the pattern
-          topP: 0.9,
+          temperature: 0.75,
+          topP: 0.92,
           maxOutputTokens: 3000,
         }
       });
@@ -47,28 +61,18 @@ export default async function handler(req, res) {
       return (await result.response).text().trim();
     };
 
-    // 🔹 Generate two distinct styles
-    // Call 1: Professional but jagged
-    let output1 = await generate("Rewrite this as a direct expert, avoid flowery AI language", 0.82);
-    // Call 2: Narrative and descriptive
-    let output2 = await generate("Rewrite this with varied sentence structures and high perplexity", 0.78);
+    // 🔥 Generate twice (reduces bad outputs)
+    let output1 = await generate();
+    let output2 = await generate();
 
-    // 🔹 Selection Logic: Pick the one that deviates most from "AI-smoothness"
-    // Usually, the one with more punctuation (commas/dashes) is more human.
-    const getPunctuationCount = (str) => (str.match(/[,;:\-—]/g) || []).length;
-    
-    let finalOutput = 
-      getPunctuationCount(output1) > getPunctuationCount(output2) ? output1 : output2;
+    // pick more "human-like" one (longer + less rigid)
+    let finalOutput =
+      output1.length > output2.length ? output1 : output2;
 
     finalOutput = finalOutput.replace(
-      /^(Option \d+|Output|Result|Here's the rewrite|Natural Rewrite):/gi,
+      /^(Option \d+|Output|Result|Here's the rewrite):/gi,
       ""
     );
-
-    // Final safety check for length
-    if (finalOutput.split(/\s+/).length < inputWords * 0.7) {
-        finalOutput = output1.length > output2.length ? output1 : output2;
-    }
 
     return res.status(200).json({ output: finalOutput });
 
