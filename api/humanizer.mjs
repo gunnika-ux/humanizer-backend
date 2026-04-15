@@ -36,6 +36,7 @@ STYLE:
 - Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
 - Avoid overly casual filler words (like "honestly", "you know")
+- Avoid casual or conversational phrasing, while keeping the tone natural and clear
 - Occasionally vary sentence openings and avoid uniform phrasing patterns
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
 - Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
