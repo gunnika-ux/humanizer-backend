@@ -18,24 +18,23 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You rewrite text like a real human.
+      systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
-- Keep the meaning exactly the same.
-- Keep grammar correct.
-- Do NOT summarize or remove ideas.
-- Avoid sounding like a perfect essay.
+- Keep meaning exactly the same
+- Keep grammar correct
+- Do NOT summarize
+- Do NOT sound like a formal essay
 
-STYLE RULES:
-- Vary sentence length significantly.
-- Some sentences should be short. Some longer.
-- Do NOT keep consistent rhythm.
-- Avoid predictable transitions.
-- Occasionally use direct, simple sentences.
-- Do NOT over-polish the writing.
+STYLE:
+- Break strict paragraph flow
+- Allow slight topic jumps (natural, not random)
+- Mix direct statements with explanation
+- Avoid perfect logical progression
+- Keep tone professional but relaxed
 
 IMPORTANT:
-The text must feel naturally written, not optimized or uniform.`
+The text should feel written naturally, not structured like an optimized article.`
     });
 
     const result = await model.generateContent({
@@ -44,18 +43,18 @@ The text must feel naturally written, not optimized or uniform.`
         parts: [{
           text: `Rewrite this text.
 
-Requirements:
-- Keep meaning unchanged
+Rules:
+- Keep meaning same
 - Keep professional tone
-- Break uniform sentence structure
-- Do not make all sentences flow smoothly
+- Do NOT make it sound like a polished article
+- Allow slight natural irregularity in flow
 
 TEXT:
 "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.6,
+        temperature: 0.65,
         topP: 0.9,
         maxOutputTokens: 2000,
       }
