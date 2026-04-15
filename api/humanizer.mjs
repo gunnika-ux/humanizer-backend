@@ -26,7 +26,7 @@ CRITICAL:
 - Keep similar length
 
 STYLE:
-- Keep grammar correct and avoid awkward or incorrect phrasing
+- Keep grammar correct 
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
 - Mix short and long sentences
 - Avoid perfect structure
@@ -64,7 +64,7 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.88,
+          temperature: 0.87,
           topP: 0.98,
           maxOutputTokens: 3000,
         }
