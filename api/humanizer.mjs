@@ -32,6 +32,7 @@ STYLE:
 - Allow slight jumps in ideas
 - Avoid textbook flow
 - Use natural phrasing
+- Avoid predictable structure
 - Avoid overly casual filler words (like "honestly", "you know")
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
 - Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
