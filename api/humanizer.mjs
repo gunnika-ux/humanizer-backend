@@ -59,7 +59,7 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.88,
+          temperature: 0.89,
           topP: 0.98,
           maxOutputTokens: 3000,
         }
@@ -126,12 +126,16 @@ TEXT:
         .replace(/\s{2,}/g, " ");
     }
 
-    // 🔥 CLARITY FIX
+    // 🔥 CLARITY FIX (FINAL)
     function refineClarity(text) {
       return text
         .replace(/\bincreasing much higher\b/gi, "significantly higher")
+        .replace(/\bincreasing such a jump\b/gi, "a significant increase")
         .replace(/\ba big deal for\b/gi, "important for")
         .replace(/\bpretty high\b/gi, "relatively high")
+        .replace(/\bthis is huge for\b/gi, "this is important for")
+        .replace(/\bway down\b/gi, "significantly reduced")
+        .replace(/\byou've got to\b/gi, "it is necessary to")
         .replace(/\bThis gives you\b/gi, "This provides")
         .replace(/\bThis lets\b/gi, "This allows")
         .replace(/\bBecause of that,\s*/gi, "")
