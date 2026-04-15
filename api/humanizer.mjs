@@ -7,6 +7,12 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
+  // 🔐 AUTH CHECK (only addition)
+  const auth = req.headers.authorization;
+  if (auth !== process.env.SECRET_KEY) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
   try {
     const { text } = req.body;
 
@@ -26,7 +32,7 @@ CRITICAL:
 - Keep similar length
 
 STYLE:
-- Keep grammar correct 
+- Keep grammar correct
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
 - Mix short and long sentences
 - Avoid perfect structure
@@ -84,9 +90,13 @@ TEXT:
       let score = 0;
 
       if (text.match(/\./g)?.length > 5) score += 1;
+
       if (/(this|these).{0,20}\1/i.test(text)) score += 1;
+
       if (text.includes("But ") || text.includes("And ")) score += 1;
+
       if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
+
       if (text.split(". ").some(s => s.length < 40)) score += 1;
 
       return score;
