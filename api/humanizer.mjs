@@ -20,31 +20,41 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-level professional editor. Rewrite this text to be 100% human-passing.
+      systemInstruction: `Rewrite the text like a human writer.
 
-HUMANIZING PROTOCOLS:
-1. FRAGMENTATION: Occasionally use a sentence fragment for emphasis. (e.g., "The reality? It's complicated.")
-2. ASYMMETRIC SENTENCES: Write one very long, descriptive sentence followed by two very short ones. This "chaos" is how humans write.
-3. BANNED VOCABULARY: Do not use: 'Furthermore', 'Moreover', 'Consequently', 'Paradigm', 'Leverage', 'Foster'.
-4. NO REPETITION: Never start two sentences with the same word. 
-5. WORD COUNT: You must match the length of the input. If you are too short, the system fails. Expand on the "why" and "how" to keep the word count up.`
+CRITICAL:
+- Keep meaning exactly the same
+- Keep grammar correct
+- Do NOT summarize
+
+STYLE:
+- Vary sentence length naturally (short + long)
+- Avoid repeating sentence structure
+- Use occasional interruptions (dashes or side notes)
+- Keep tone professional but slightly informal
+
+IMPORTANT:
+Keep the output roughly similar in length, but do not force exact matching.
+Avoid overly perfect or overly chaotic structure.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally but with heavy "human friction." 
-          Break the predictable AI rhythm entirely. 
-          Keep the word count close to the original.
+          text: `Rewrite this text naturally.
 
-          TEXT:
-          "${text}"`
+Keep meaning same.
+Keep similar length.
+Avoid predictable patterns.
+
+TEXT:
+"${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.88, // Pushing for more randomness to beat 100% scores
-        topP: 0.95,        
+        temperature: 0.72,   // 🔥 lowered from 0.84
+        topP: 0.92,
         maxOutputTokens: 3000,
       }
     });
@@ -56,9 +66,10 @@ HUMANIZING PROTOCOLS:
 
     const outputWords = output.split(/\s+/).length;
 
+    // softer check (no aggressive retry message)
     if (outputWords < inputWords * 0.6) {
       return res.status(200).json({
-        output: output + " ...[retry for fuller rewrite]"
+        output: output
       });
     }
 
