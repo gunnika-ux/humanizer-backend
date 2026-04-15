@@ -20,30 +20,31 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are an elite ghostwriter. Your goal is to rewrite professional text so it bypasses all AI detectors by introducing "Human Perplexity."
+      systemInstruction: `You are a high-level professional editor. Rewrite this text to be 100% human-passing.
 
-CRITICAL DETECTION BYPASS RULES:
-1. NO PREDICTABLE PATTERNS: Do not start sentences with "The," "AI," "This," or "Organizations." Use varied openings (e.g., "Integrating...", "By...", "At the core...").
-2. INTERRUPTED FLOW: Use dashes (—) or parentheticals to break up the "perfect" flow. AI writes straight lines; humans write with "side-thoughts."
-3. BANNED AI VOCABULARY: If you use the words "transformative," "tapestry," "delve," "foster," "leverage," or "comprehensive," the rewrite is a failure. Use simpler, punchier verbs.
-4. SYNTACTIC VARIATION: Mix extremely long, winding sentences (30+ words) with blunt, 3-word observations. 
-5. NO SUMMARIZING: You must maintain the original word count. Expand on the "how" and "why" to ensure the output length matches the input length.`
+HUMANIZING PROTOCOLS:
+1. FRAGMENTATION: Occasionally use a sentence fragment for emphasis. (e.g., "The reality? It's complicated.")
+2. ASYMMETRIC SENTENCES: Write one very long, descriptive sentence followed by two very short ones. This "chaos" is how humans write.
+3. BANNED VOCABULARY: Do not use: 'Furthermore', 'Moreover', 'Consequently', 'Paradigm', 'Leverage', 'Foster'.
+4. NO REPETITION: Never start two sentences with the same word. 
+5. WORD COUNT: You must match the length of the input. If you are too short, the system fails. Expand on the "why" and "how" to keep the word count up.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally but use an "irregular" human rhythm. 
-          Break every logical pattern. Keep the word count similar. 
+          text: `Rewrite this professionally but with heavy "human friction." 
+          Break the predictable AI rhythm entirely. 
+          Keep the word count close to the original.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.84, // Pushed to 0.84 to force "unlikely" (human) word choices.
-        topP: 0.92,        
+        temperature: 0.88, // Pushing for more randomness to beat 100% scores
+        topP: 0.95,        
         maxOutputTokens: 3000,
       }
     });
