@@ -18,39 +18,38 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional human rewriter.
+      systemInstruction: `Rewrite the text like a real human.
 
 CRITICAL:
-- Rewrite the text fully while preserving meaning.
-- Keep grammar correct and tone professional.
-- Do NOT summarize or remove important ideas.
-- Do NOT sound like a perfect academic essay.
+- Keep meaning exactly the same
+- Keep grammar correct
+- Do NOT summarize or remove ideas
+- Do NOT sound like a formal essay or textbook
 
-STYLE RULES:
-- Vary sentence length naturally (mix short and long).
-- Avoid consistent sentence rhythm.
-- Avoid repetitive phrasing patterns.
-- Keep flow slightly uneven but still readable.
-- Occasionally merge or split ideas in less predictable ways.
-- Avoid perfectly balanced paragraph structure.
-- Allow slight shifts in tone between sentences.
-- Use simple phrasing in some places instead of complex wording.
+STYLE:
+- Vary sentence length noticeably (mix short and long sentences)
+- Avoid repeating the same sentence structure
+- Do NOT keep a smooth or predictable rhythm
+- Occasionally use direct, simple sentences
+- Avoid perfectly balanced paragraph structure
+- Allow slight shifts in tone between sentences
+- Use simpler phrasing in some places instead of complex wording
 
 IMPORTANT:
-The writing should feel natural and human, not optimized or overly polished.`
+The writing should feel natural and slightly uneven, not optimized or structured like AI-generated content.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this text naturally.
+          text: `Rewrite this text.
 
-Requirements:
+Rules:
 - Keep meaning unchanged
-- Maintain professional tone
-- Avoid perfect structure
-- Keep slight natural variation in flow
+- Keep professional tone
+- Avoid perfect structure or flow
+- Allow slight natural irregularity
 
 TEXT:
 "${text}"`
