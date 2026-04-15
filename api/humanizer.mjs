@@ -20,30 +20,30 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional editor. Rewrite the text to be human-passing while maintaining an elite professional and technical tone.
+      systemInstruction: `You are a professional senior consultant. Rewrite the text to pass high-level AI detection while remaining strictly professional.
 
-STRICT REQUIREMENTS:
-1. WORD COUNT: You must provide a full-length rewrite. Do not summarize. Ensure the output length is at least 90% of the input length to avoid system errors.
-2. BEAT DETECTION: Use "Burstiness"—alternate between long, sophisticated sentences and short, punchy ones.
-3. PROFESSIONAL VOCABULARY: Use high-level terms, but avoid "AI-speak" (e.g., instead of 'foster,' use 'cultivate'; instead of 'leverage,' use 'utilize').
-4. CONNECTORS: BANNED words: 'Moreover', 'Furthermore', 'Additionally', 'In conclusion'. Start sentences directly with the subject or use 'Beyond this,' or 'In practice,'.
-5. FLOW: Avoid the "robotic rhythm." Humans vary how they connect ideas. Make the transitions feel earned, not automatic.`
+RULES TO BEAT 80% SCORES:
+1. THE "SHORT-LONG" RULE: Follow every long, technical sentence with a short, punchy sentence (5 words or less). This is the strongest human signal.
+2. REMOVE AI ADJECTIVES: Delete words like "profound," "comprehensive," "essential," "imperative," and "fundamental." These are AI flags. Use direct verbs instead.
+3. NO PREDICTABLE STARTS: Never start two sentences in a row with the same word (like "The" or "AI").
+4. ACTIVE VOICE ONLY: Do not say "The change was initiated by..."; say "The company started the change."
+5. FINISH THE THOUGHT: You must provide a full rewrite. If you are too brief, the system will error out. Match the input length.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally. Match the input length almost exactly. 
-          Do not condense the ideas. Provide a full, detailed version.
+          text: `Rewrite this professionally. Break the "smooth" rhythm of the original. 
+          Make it sound like a direct human expert. Keep the word count similar.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.75, // The "Golden Ratio" for professional-yet-unpredictable text
-        topP: 0.9,         
+        temperature: 0.8, // Raised slightly from 0.7 to introduce human-like word choice variety.
+        topP: 0.88,        
         maxOutputTokens: 3000,
       }
     });
@@ -55,7 +55,6 @@ STRICT REQUIREMENTS:
 
     const outputWords = output.split(/\s+/).length;
 
-    // This block triggers the [retry] message. I've updated the prompt above to ensure the AI stays long enough to pass this check.
     if (outputWords < inputWords * 0.6) {
       return res.status(200).json({
         output: output + " ...[retry for fuller rewrite]"
