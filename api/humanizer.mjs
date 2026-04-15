@@ -68,11 +68,10 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    // 🔥 Generate twice (reduces bad outputs)
+    // 🔥 Generate twice
     let output1 = await generate();
     let output2 = await generate();
 
-    // pick more "human-like" one (longer + less rigid)
     let finalOutput =
       output1.length > output2.length ? output1 : output2;
 
@@ -80,6 +79,23 @@ TEXT:
       /^(Option \d+|Output|Result|Here's the rewrite):/gi,
       ""
     );
+
+    // 🔥 FINAL FIX: slight imperfection
+    function slightlyMessUp(text) {
+      return text
+        // randomly remove commas
+        .replace(/, /g, (m) => (Math.random() > 0.7 ? " " : m))
+
+        // slightly vary sentence breaks
+        .replace(/\. ([A-Z])/g, (m, p1) =>
+          Math.random() > 0.75 ? `. ${p1}` : m
+        )
+
+        // randomly remove "that"
+        .replace(/\bthat\b/g, (m) => (Math.random() > 0.7 ? "" : m));
+    }
+
+    finalOutput = slightlyMessUp(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
