@@ -53,7 +53,7 @@ TEXT:
         }]
       }],
       generationConfig: {
-        temperature: 0.72,   // 🔥 lowered from 0.84
+        temperature: 0.8,   // 🔥 lowered from 0.84
         topP: 0.92,
         maxOutputTokens: 3000,
       }
