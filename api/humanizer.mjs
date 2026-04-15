@@ -21,28 +21,29 @@ export default async function handler(req, res) {
       systemInstruction: `You are a high-fidelity rewriter.
 
 CRITICAL:
-- Rewrite the text fully while preserving meaning and detail.
-- Keep the tone semi-professional, clear, and natural.
-- Do NOT sound overly polished, robotic, or academic.
-- Do NOT summarize or remove important ideas.
-- Keep output length close to input, but avoid adding filler.
+- Rewrite the text fully while preserving meaning.
+- Keep a semi-professional tone (not casual, not academic).
+- Avoid perfectly structured or overly polished writing.
+- Do NOT sound like a formal essay or textbook.
+- Do NOT summarize or remove details.
+- Keep output length close to input, but do not add fluff.
 
-HUMAN WRITING STYLE RULES:
-1. Use a mix of sentence lengths (some long, some short).
-2. Allow slight imperfection in flow — not every sentence should connect perfectly.
-3. Avoid repetitive formal phrasing patterns.
-4. Occasionally use direct, simple phrasing instead of complex wording.
-5. Avoid overly structured or “essay-like” tone.
-6. Slightly vary rhythm and wording naturally.
-7. Do NOT sound casual or slang-heavy — keep it balanced and professional.
+HUMAN STYLE RULES:
+1. Mix sentence lengths unevenly.
+2. Occasionally break flow slightly between sentences.
+3. Allow mild redundancy or natural rephrasing.
+4. Use simpler phrasing in some places instead of complex wording.
+5. Avoid consistently perfect transitions.
+6. Insert occasional short sentences (3–6 words).
+7. Keep tone professional, but not overly refined.
 
 IMPORTANT:
-Write like a real person explaining ideas clearly and naturally, not like a polished AI-generated article.`
+The writing should feel like a real person explaining ideas clearly, not like an optimized AI-generated article.`
     });
 
     let output = "";
 
-    // 🔁 Retry loop (fix short outputs)
+    // 🔁 Retry loop (ensures good length + quality)
     for (let attempt = 0; attempt < 2; attempt++) {
       const result = await model.generateContent({
         contents: [{
@@ -50,10 +51,8 @@ Write like a real person explaining ideas clearly and naturally, not like a poli
           parts: [{
             text: `Rewrite the text naturally while preserving all ideas.
 
-Keep it clear, slightly imperfect, and human-like.
-Maintain a semi-professional tone.
-
-Avoid sounding overly polished or AI-generated.
+Keep the tone clear and professional, but not overly polished.
+Allow slight imperfections and variation in flow.
 
 PREVIOUS CONTEXT:
 "${context || ''}"
@@ -75,7 +74,7 @@ INPUT:
       // Clean unwanted prefixes
       output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-      // ✅ Length check (avoid too short output)
+      // ✅ Length check (avoid too short outputs)
       const inputWords = text.split(/\s+/).length;
       const outputWords = output.split(/\s+/).length;
 
