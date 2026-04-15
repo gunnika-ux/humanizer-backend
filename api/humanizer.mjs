@@ -110,79 +110,50 @@ TEXT:
         );
     }
 
-    // 🔥 GRAMMAR FIX
-    function fixGrammar(text) {
+    // 🔥 COMPACT CLEANER (ALL-IN-ONE)
+    function cleanText(text) {
       return text
+        // duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
+
+        // broken phrases
         .replace(/\bwhich which\b/gi, "which")
         .replace(/\bwhich you get\b/gi, "which gives you")
         .replace(/\bwhich you can\b/gi, "which allows you")
-        .replace(/\bnow,\s*which\b/gi, "Now,")
         .replace(/\bwhich but\b/gi, "but")
+
+        // joins
         .replace(/,\s*which\s+/gi, ". This ")
         .replace(/\.\s*which\s+/gi, ". This ")
-        .replace(/\bthere's\b/gi, "there is")
-        .replace(/\byou've got\b/gi, "there are")
-        .replace(/\s{2,}/g, " ");
-    }
+        .replace(/\bnow,\s*which\b/gi, "Now,")
 
-    // 🔥 SENTENCE NORMALIZER
-    function normalizeSentences(text) {
-      return text
+        // grammar fixes
         .replace(/\bincreasing much higher\b/gi, "significantly higher")
         .replace(/\bincreasing such a jump\b/gi, "a significant increase")
         .replace(/\bgo way up\b/gi, "increase significantly")
-        .replace(/\bis ([^\.]+) go\b/gi, "has $1 gone")
-        .replace(/\b(is|are)\s+(\w+)\s+go\b/gi, "$1 $2")
-        .replace(/\s{2,}/g, " ");
-    }
 
-    // 🔥 CLARITY FIX
-    function refineClarity(text) {
-      return text
-        .replace(/\ba big deal for\b/gi, "important for")
-        .replace(/\bpretty high\b/gi, "relatively high")
-        .replace(/\bthis is huge for\b/gi, "this is important for")
-        .replace(/\bway down\b/gi, "significantly reduced")
-        .replace(/\byou've got to\b/gi, "it is necessary to")
-        .replace(/\bThis gives you\b/gi, "This provides")
-        .replace(/\bThis lets\b/gi, "This allows")
-        .replace(/\bBecause of that,\s*/gi, "")
-        .replace(/\bIn the end,\s*/gi, "")
-        .replace(/;\s*/g, ". ")
-        .replace(/\s{2,}/g, " ");
-    }
-
-    // 🔥 HIGH DISTINCTION POLISH
-    function lightPolish(text) {
-      return text
-        .replace(/\bpretty huge deal\b/gi, "a significant step")
-        .replace(/\bbiggest thing\b/gi, "a critical priority")
-        .replace(/\bbasically\b/gi, "")
-        .replace(/\bwe're seeing\b/gi, "there is increasing")
-        .replace(/\bhooked up\b/gi, "integrating")
-        .replace(/\bflipped the whole\b/gi, "significantly transformed the")
-        .replace(/\ba lot more\b/gi, "significantly more")
+        // tone polish
+        .replace(/\bpretty\b/gi, "")
+        .replace(/\ba lot of\b/gi, "many")
+        .replace(/\bhuge\b/gi, "significant")
+        .replace(/\bmassive\b/gi, "substantial")
         .replace(/\bget serious about\b/gi, "focus on")
-        .replace(/\bhuge\b/gi, "substantial")
-        .replace(/\bmassive\b/gi, "significant")
-        .replace(/\bdefinitely going to\b/gi, "expected to")
-        .replace(/\bcan't\b/gi, "cannot")
-        .replace(/\bdoesn't\b/gi, "does not")
-        .replace(/\bmoney-related\b/gi, "financial")
-        .replace(/\bcosts a ton of money\b/gi, "requires substantial investment")
-        .replace(/\bmassive logistical mess\b/gi, "significant logistical challenge")
-        .replace(/\bphysical stuff\b/gi, "infrastructure")
-        .replace(/\bput their cash into\b/gi, "invest in")
-        .replace(/\breally\b/gi, "")
+        .replace(/\bhooked up\b/gi, "integrated")
+
+        // contractions
+        .replace(/\bthere's\b/gi, "there is")
+        .replace(/\byou've got\b/gi, "there are")
+
+        // punctuation
+        .replace(/,\s*\./g, ".")
+        .replace(/\.\./g, ".")
+
+        // spacing
         .replace(/\s{2,}/g, " ");
     }
 
     finalOutput = breakStructure(finalOutput);
-    finalOutput = fixGrammar(finalOutput);
-    finalOutput = normalizeSentences(finalOutput);
-    finalOutput = refineClarity(finalOutput);
-    finalOutput = lightPolish(finalOutput);
+    finalOutput = cleanText(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
