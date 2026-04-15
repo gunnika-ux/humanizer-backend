@@ -56,15 +56,10 @@ INPUT TO HUMANIZE:
     const response = await result.response;
     let output = response.text().trim();
 
-    // Clean unwanted prefixes
+    // ✅ Clean unwanted prefixes
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-    // Safety check for incomplete output
-    if (output.split(" ").length < (text.split(" ").length * 0.5)) {
-      return res.status(200).json({
-        output: output + "... [Engine timed out. Please try humanizing this specific part again.]"
-      });
-    }
+    // ❌ REMOVED faulty timeout check (was causing false errors)
 
     return res.status(200).json({ output });
 
