@@ -20,44 +20,50 @@ export default async function handler(req, res) {
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter.
 
-CRITICAL: You are NOT allowed to truncate or stop mid-sentence.
-CRITICAL: You must process every sentence fully.
-CRITICAL: The output MUST match the input length.
-CRITICAL: Do NOT shorten, summarize, or compress content.
-CRITICAL: Preserve ALL ideas, details, and structure.
+CRITICAL:
+- Rewrite the text fully while preserving meaning and detail.
+- Keep the tone semi-professional, clear, and natural.
+- Do NOT sound overly polished, robotic, or academic.
+- Do NOT summarize or remove important ideas.
+- Keep output length close to input, but avoid adding filler.
 
-HUMANIZATION RULES:
-1. Use natural, slightly imperfect human phrasing.
-2. Mix long and short sentences.
-3. Avoid robotic transitions.
-4. Keep tone consistent with previous context if provided.`
+HUMAN WRITING STYLE RULES:
+1. Use a mix of sentence lengths (some long, some short).
+2. Allow slight imperfection in flow — not every sentence should connect perfectly.
+3. Avoid repetitive formal phrasing patterns.
+4. Occasionally use direct, simple phrasing instead of complex wording.
+5. Avoid overly structured or “essay-like” tone.
+6. Slightly vary rhythm and wording naturally.
+7. Do NOT sound casual or slang-heavy — keep it balanced and professional.
+
+IMPORTANT:
+Write like a real person explaining ideas clearly and naturally, not like a polished AI-generated article.`
     });
 
     let output = "";
 
-    // 🔥 Retry loop to fix short outputs
+    // 🔁 Retry loop (fix short outputs)
     for (let attempt = 0; attempt < 2; attempt++) {
       const result = await model.generateContent({
         contents: [{
           role: "user",
           parts: [{
-            text: `TASK: Rewrite the text fully while preserving meaning.
+            text: `Rewrite the text naturally while preserving all ideas.
 
-The output MUST match the input length.
-Do NOT shorten or summarize under any condition.
-If the output becomes shorter, continue writing until length matches.
+Keep it clear, slightly imperfect, and human-like.
+Maintain a semi-professional tone.
 
-Maintain tone and flow using previous context if provided.
+Avoid sounding overly polished or AI-generated.
 
 PREVIOUS CONTEXT:
 "${context || ''}"
 
-INPUT TEXT:
+INPUT:
 "${text}"`
           }]
         }],
         generationConfig: {
-          temperature: 0.8,
+          temperature: 0.65,
           topP: 0.9,
           maxOutputTokens: 3000,
         }
@@ -69,11 +75,11 @@ INPUT TEXT:
       // Clean unwanted prefixes
       output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-      // ✅ Check if length is acceptable (80%+)
+      // ✅ Length check (avoid too short output)
       const inputWords = text.split(/\s+/).length;
       const outputWords = output.split(/\s+/).length;
 
-      if (outputWords >= inputWords * 0.8) {
+      if (outputWords >= inputWords * 0.75) {
         break;
       }
     }
