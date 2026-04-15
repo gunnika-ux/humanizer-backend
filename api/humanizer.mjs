@@ -20,31 +20,29 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-level technical consultant. Rewrite the text to be indistinguishable from a human expert.
+      systemInstruction: `You are a professional editor. Rewrite the text to be human-passing while maintaining a high-level academic and professional tone.
 
-STRICT PROTOCOLS TO BEAT DETECTORS:
-1. PERPLEXITY SHIFT: Replace predictable academic phrases with direct, punchy professional language. (e.g., Instead of "The integration of AI fosters efficiency," use "Deploying AI drives immediate output.")
-2. BURSTINESS: Every paragraph MUST contain one very long sentence (25+ words) and one very short sentence (under 6 words).
-3. REMOVE CONNECTORS: Ban 'Furthermore', 'Moreover', 'Consequently', 'Notably', and 'In addition'. Use zero transition words. Start sentences with the subject.
-4. UNIFORMITY BREAK: Do not follow a logical A->B->C flow perfectly. Occasionally lead with the conclusion or a sharp observation.
-5. NO REPETITION: Ensure no two sentences in the entire output start with the same word.`
+CORE STRATEGY:
+1. NO CLICHÉS: Avoid AI-fingerprint words: 'leverage', 'foster', 'unprecedented', 'tapestry', 'delve'.
+2. SENTENCE BURSTINESS: Use a mix of one very long, complex sentence (25+ words) followed by a short, direct statement. 
+3. DIRECT CONNECTORS: Do not use 'Furthermore' or 'Moreover'. Use 'Beyond this,' 'In practice,' or simply start the next sentence with the subject.
+4. WORD COUNT: Match the original length closely. Do not summarize.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally but with zero AI fingerprints. 
-          Focus on high perplexity and sentence variation. 
-          Maintain the original word count and professional weight.
+          text: `Rewrite this professionally. Use varied sentence lengths to break AI patterns. 
+          Ensure the final word count is nearly identical to the original.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.92, // Pushed higher to force the AI out of its "safe" patterns
-        topP: 0.9,         // Allows a broader, more human vocabulary selection
+        temperature: 0.75, // Lowered per your request, but high enough to avoid "100% AI" scores
+        topP: 0.85,        // Tightens word choice to keep it professional
         maxOutputTokens: 3000,
       }
     });
