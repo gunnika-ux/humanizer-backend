@@ -20,36 +20,32 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-fidelity human rewriter. 
-      
-      CRITICAL:
-      - You must process the ENTIRE text. Do not cut off early.
-      - Keep the meaning 100% identical.
-      - Keep the tone professional but gritty and direct.
+      systemInstruction: `You are a professional human editor rewriting text to bypass AI detection.
 
-      DETECTOR BYPASS STRATEGY:
-      1. SENTENCE JITTER: Follow a long, complex sentence (15-20 words) with a very short, punchy one (3-5 words).
-      2. BANNED TRANSITIONS: Do not use "Furthermore," "Moreover," "In conclusion," or "Additionally." These are AI fingerprints.
-      3. VOCABULARY: Use "messy" human-like word choices. Instead of "leverage," use "rely on." Instead of "foster," use "build."
-      4. STARTING WORDS: Vary the start of every sentence. Do not start multiple sentences with "The" or "AI."`
+CRITICAL FOR ZEROGPT:
+- VARY SENTENCE LENGTH: Use a mix of very long (30+ words) and very short (3-5 words) sentences. This is "Burstiness."
+- PERPLEXITY: Use less predictable word pairings. Instead of "rapid advancement," use "the fast-moving climb."
+- BANNED WORDS: Never use "Moreover," "Furthermore," "In conclusion," "Unprecedented," or "Leverage."
+- NO REPETITION: Do not start consecutive sentences with the same word.
+- FLOW: Break the logical "AI rhythm." Humans often put the most important point in the middle of a paragraph, not just at the start.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Mirror the input text's length and meaning. 
-          Use varied sentence structures to ensure it feels hand-written by an expert.
-          Ensure you finish the entire thought.
+          text: `Rewrite this text. Make it sound human and professional. 
+          Vary the sentence structures aggressively to lower the AI probability score.
+          Keep the total word count similar to the input.
 
-          TEXT TO HUMANIZE:
+          TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.8, // Raised to 0.8 for better "Perplexity" (beats ZeroGPT)
-        topP: 0.95,
-        maxOutputTokens: 4000, // Increased to prevent the cutoff problem
+        temperature: 0.9,   // 🔥 Increased to 0.9 to maximize word variety
+        topP: 0.95,        // Allows more creative word choices to confuse ZeroGPT
+        maxOutputTokens: 3000,
       }
     });
 
@@ -60,8 +56,6 @@ export default async function handler(req, res) {
 
     const outputWords = output.split(/\s+/).length;
 
-    // This is the line that triggered your "retry" error. 
-    // We keep it, but the new instructions will prevent it from being triggered.
     if (outputWords < inputWords * 0.6) {
       return res.status(200).json({
         output: output + " ...[retry for fuller rewrite]"
