@@ -37,6 +37,7 @@ STYLE:
 - Avoid overly formal tone, but maintain clear and professional wording
 - Avoid overly casual filler words (like "honestly", "you know")
 - Avoid generic language
+- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
 - Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
 - Occasionally vary sentence openings and avoid uniform phrasing patterns
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
