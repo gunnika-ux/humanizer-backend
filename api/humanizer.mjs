@@ -20,30 +20,30 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional senior consultant. Rewrite the text to pass high-level AI detection while remaining strictly professional.
+      systemInstruction: `You are a senior technical analyst. Your goal is to rewrite text to pass as 100% human-expert writing.
 
-RULES TO BEAT 80% SCORES:
-1. THE "SHORT-LONG" RULE: Follow every long, technical sentence with a short, punchy sentence (5 words or less). This is the strongest human signal.
-2. REMOVE AI ADJECTIVES: Delete words like "profound," "comprehensive," "essential," "imperative," and "fundamental." These are AI flags. Use direct verbs instead.
-3. NO PREDICTABLE STARTS: Never start two sentences in a row with the same word (like "The" or "AI").
-4. ACTIVE VOICE ONLY: Do not say "The change was initiated by..."; say "The company started the change."
-5. FINISH THE THOUGHT: You must provide a full rewrite. If you are too brief, the system will error out. Match the input length.`
+REWRITE STRATEGY TO BEAT SCRIBBR & QUILLBOT:
+1. COMPLEX CONNECTIVITY: Use semicolons, em-dashes, and colons to link ideas. AI rarely uses complex punctuation correctly.
+2. REMOVE STACCATO: Avoid too many 3-word sentences. Instead, weave them into longer thoughts (e.g., instead of "Data guides every move," use "—a reality where data now dictates every strategic pivot.")
+3. VOCABULARY SHIFT: Use "industry-heavy" verbs. Swap "slashes" for "contracts," "boosts" for "accelerates," and "watch for" for "mitigate."
+4. BANNED AI STARTERS: Do not start sentences with "The," "AI," "Moreover," or "This." Start with gerunds (e.g., "Integrating...") or prepositional phrases.
+5. NO SUMMARIZING: You must match the input length. If the output is too short, the user's system will fail. Expand on the nuance of the ideas.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally. Break the "smooth" rhythm of the original. 
-          Make it sound like a direct human expert. Keep the word count similar.
+          text: `Rewrite this professionally. Use complex sentence structures and expert-level punctuation. 
+          Break the robotic rhythm. Keep the word count similar to the original.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.8, // Raised slightly from 0.7 to introduce human-like word choice variety.
-        topP: 0.88,        
+        temperature: 0.78, // Adjusted for the best balance of professionalism and unpredictability.
+        topP: 0.85,        
         maxOutputTokens: 3000,
       }
     });
