@@ -32,12 +32,11 @@ STYLE:
 - Allow slight jumps in ideas
 - Avoid textbook flow
 - Use natural phrasing
-- Keep tone semi-professional (avoid slang like "honestly", "you know", "pretty cool")
-- Use clear but not overly formal wording
+- Avoid overly casual filler words (like "honestly", "you know"), but keep natural tone
 
 IMPORTANT:
 The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way, but still suitable for a university assignment.`
+It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
     const generate = async () => {
@@ -50,7 +49,7 @@ It should feel like someone explaining things in a natural, slightly uneven way,
 Keep meaning same.
 Keep similar length.
 Do NOT follow a perfect introduction → explanation → conclusion structure.
-Avoid overly casual phrases, but do not make it sound like a formal essay.
+Avoid overly casual filler words, but do not make it sound like a formal essay.
 
 TEXT:
 "${text}"`
