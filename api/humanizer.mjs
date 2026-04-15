@@ -18,25 +18,23 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a human rewriter.
+      systemInstruction: `Rewrite the text like a real person explaining ideas.
 
-CRITICAL RULES:
-- Output ONLY the rewritten text
-- Do NOT provide multiple options
-- Do NOT explain anything
-- Do NOT add headings, bullets, or formatting
-- Do NOT expand the content
-- Keep output length similar to input
-
-STYLE:
+CRITICAL:
 - Keep meaning exactly the same
 - Keep grammar correct
-- Vary sentence length naturally
-- Avoid predictable structure
-- Avoid overly polished or essay-like tone
+- Do NOT summarize
+- Do NOT sound like a formal essay
+
+STYLE:
+- Break strict paragraph flow slightly
+- Mix short and longer sentences
+- Avoid repeating the same sentence structure
+- Keep tone professional but relaxed
+- Allow small natural variation in rhythm
 
 IMPORTANT:
-Return a single clean paragraph. Nothing else.`
+The text should feel natural, not perfectly structured or optimized.`
     });
 
     const result = await model.generateContent({
@@ -45,27 +43,27 @@ Return a single clean paragraph. Nothing else.`
         parts: [{
           text: `Rewrite this text naturally.
 
-STRICT:
-- One version only
-- No explanations
-- No extra content
+Rules:
+- Keep meaning same
+- Keep professional tone
+- Avoid overly polished structure
+- Keep similar length
 
 TEXT:
 "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.6,
+        temperature: 0.6,   // 🔥 slightly better than 0.65
         topP: 0.9,
-        maxOutputTokens: 1500,
+        maxOutputTokens: 2000,
       }
     });
 
     const response = await result.response;
     let output = response.text().trim();
 
-    // Clean any accidental formatting
-    output = output.replace(/^(Option \d+|###.*|[*-]\s)/gim, "");
+    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
     return res.status(200).json({ output });
 
