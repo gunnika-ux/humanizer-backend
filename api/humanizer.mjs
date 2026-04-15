@@ -33,6 +33,7 @@ STYLE:
 - Use natural phrasing, not textbook wording
 - Vary sentence openings naturally
 - Avoid repeating patterns
+- Avoid generic conclusion phrases like "Ultimately" or "Moving forward"
 
 IMPORTANT:
 The text should feel naturally written, slightly imperfect, but still clear and readable.`
