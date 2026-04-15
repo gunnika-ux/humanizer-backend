@@ -20,29 +20,30 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional editor. Rewrite the text to be human-passing while maintaining a high-level academic and professional tone.
+      systemInstruction: `You are a professional editor. Rewrite the text to be human-passing while maintaining an elite professional and technical tone.
 
-CORE STRATEGY:
-1. NO CLICHÉS: Avoid AI-fingerprint words: 'leverage', 'foster', 'unprecedented', 'tapestry', 'delve'.
-2. SENTENCE BURSTINESS: Use a mix of one very long, complex sentence (25+ words) followed by a short, direct statement. 
-3. DIRECT CONNECTORS: Do not use 'Furthermore' or 'Moreover'. Use 'Beyond this,' 'In practice,' or simply start the next sentence with the subject.
-4. WORD COUNT: Match the original length closely. Do not summarize.`
+STRICT REQUIREMENTS:
+1. WORD COUNT: You must provide a full-length rewrite. Do not summarize. Ensure the output length is at least 90% of the input length to avoid system errors.
+2. BEAT DETECTION: Use "Burstiness"—alternate between long, sophisticated sentences and short, punchy ones.
+3. PROFESSIONAL VOCABULARY: Use high-level terms, but avoid "AI-speak" (e.g., instead of 'foster,' use 'cultivate'; instead of 'leverage,' use 'utilize').
+4. CONNECTORS: BANNED words: 'Moreover', 'Furthermore', 'Additionally', 'In conclusion'. Start sentences directly with the subject or use 'Beyond this,' or 'In practice,'.
+5. FLOW: Avoid the "robotic rhythm." Humans vary how they connect ideas. Make the transitions feel earned, not automatic.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this professionally. Use varied sentence lengths to break AI patterns. 
-          Ensure the final word count is nearly identical to the original.
+          text: `Rewrite this professionally. Match the input length almost exactly. 
+          Do not condense the ideas. Provide a full, detailed version.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.75, // Lowered per your request, but high enough to avoid "100% AI" scores
-        topP: 0.85,        // Tightens word choice to keep it professional
+        temperature: 0.75, // The "Golden Ratio" for professional-yet-unpredictable text
+        topP: 0.9,         
         maxOutputTokens: 3000,
       }
     });
@@ -54,6 +55,7 @@ CORE STRATEGY:
 
     const outputWords = output.split(/\s+/).length;
 
+    // This block triggers the [retry] message. I've updated the prompt above to ensure the AI stays long enough to pass this check.
     if (outputWords < inputWords * 0.6) {
       return res.status(200).json({
         output: output + " ...[retry for fuller rewrite]"
