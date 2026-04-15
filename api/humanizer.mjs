@@ -65,18 +65,35 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    let output1 = await generate();
-    let output2 = await generate();
+    let outputs = [
+      await generate(),
+      await generate(),
+      await generate() // 🔥 generate 3 times
+    ];
 
-    let finalOutput =
-      output1.length > output2.length ? output1 : output2;
+    // 🔥 HUMAN SCORE (key fix)
+    function humanScore(text) {
+      let score = 0;
+
+      // shorter sentences mix
+      if (text.match(/\./g)?.length > 5) score += 1;
+
+      // informal connectors
+      if (text.includes("But ") || text.includes("And ")) score += 1;
+
+      // less perfect transitions
+      if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
+
+      return score;
+    }
+
+    let finalOutput = outputs.sort((a, b) => humanScore(b) - humanScore(a))[0];
 
     finalOutput = finalOutput.replace(
       /^(Option \d+|Output|Result|Here's the rewrite):/gi,
       ""
     );
 
-    // 🔥 STRUCTURE BREAK (unchanged)
     function breakStructure(text) {
       return text
         .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
