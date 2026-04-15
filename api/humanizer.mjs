@@ -41,7 +41,7 @@ INPUT TO HUMANIZE: "${text}"`
       generationConfig: {
         temperature: 0.6,        // 🔽 reduced for stability
         topP: 0.9,
-        maxOutputTokens: 2000,   // 🔥 reduced from 4000 (main fix)
+        maxOutputTokens: 3000,   // 🔥 reduced from 4000 (main fix)
       }
     });
 
