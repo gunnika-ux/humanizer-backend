@@ -10,7 +10,9 @@ export default async function handler(req, res) {
   try {
     const { text, context } = req.body;
 
-    if (!text) return res.status(400).json({ error: "No text" });
+    if (!text) {
+      return res.status(400).json({ error: "No text" });
+    }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -18,52 +20,68 @@ export default async function handler(req, res) {
       model: "gemini-3-flash-preview",
       systemInstruction: `You are a high-fidelity rewriter.
 
-CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-CRITICAL: The output MUST match the input length. Do NOT shorten, summarize, or compress the content.
-CRITICAL: Every idea, sentence, and detail must be preserved and rewritten fully.
+CRITICAL: You are NOT allowed to truncate or stop mid-sentence.
+CRITICAL: You must process every sentence fully.
+CRITICAL: The output MUST match the input length.
+CRITICAL: Do NOT shorten, summarize, or compress content.
+CRITICAL: Preserve ALL ideas, details, and structure.
 
-HUMANIZATION & DETECTOR BYPASS:
-1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'.
-2. SENTENCE JITTER: Follow a long sentence with a very short one (3-5 words).
-3. NO AI TRANSITIONS: Replace robotic transitions with direct, human phrasing.
-4. VOCABULARY: Use natural, slightly imperfect human wording.`
+HUMANIZATION RULES:
+1. Use natural, slightly imperfect human phrasing.
+2. Mix long and short sentences.
+3. Avoid robotic transitions.
+4. Keep tone consistent with previous context if provided.`
     });
 
-    const result = await model.generateContent({
-      contents: [{
-        role: "user",
-        parts: [{
-          text: `TASK: Rewrite the text fully while preserving meaning.
+    let output = "";
 
-The output MUST be equal in length to the input.
+    // 🔥 Retry loop to fix short outputs
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const result = await model.generateContent({
+        contents: [{
+          role: "user",
+          parts: [{
+            text: `TASK: Rewrite the text fully while preserving meaning.
+
+The output MUST match the input length.
 Do NOT shorten or summarize under any condition.
-If the output becomes shorter, continue writing until full length is matched.
+If the output becomes shorter, continue writing until length matches.
 
-If previous context is provided, maintain the same tone, style, and flow.
+Maintain tone and flow using previous context if provided.
 
 PREVIOUS CONTEXT:
 "${context || ''}"
 
-INPUT TO HUMANIZE:
+INPUT TEXT:
 "${text}"`
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.7, // slightly higher = more natural + fuller output
-        topP: 0.9,
-        maxOutputTokens: 3000,
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topP: 0.9,
+          maxOutputTokens: 3000,
+        }
+      });
+
+      const response = await result.response;
+      output = response.text().trim();
+
+      // Clean unwanted prefixes
+      output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+
+      // ✅ Check if length is acceptable (80%+)
+      const inputWords = text.split(/\s+/).length;
+      const outputWords = output.split(/\s+/).length;
+
+      if (outputWords >= inputWords * 0.8) {
+        break;
       }
-    });
-
-    const response = await result.response;
-    let output = response.text().trim();
-
-    // Clean unwanted prefixes
-    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+    }
 
     return res.status(200).json({ output });
 
   } catch (error) {
+    console.error("Backend error:", error);
     return res.status(500).json({ error: "Sync error. Try again." });
   }
 }
