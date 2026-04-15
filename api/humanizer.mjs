@@ -26,21 +26,16 @@ CRITICAL:
 - Keep similar length
 
 STYLE:
-- Keep grammar mostly correct (small imperfections are okay)
+- Keep grammar mostly correct
 - Mix short and long sentences
-- Allow slight shifts in tone
-- Avoid perfectly smooth or academic flow
-- Use natural phrasing, not textbook wording
-- Vary sentence openings naturally
-- Avoid repeating patterns
-- Avoid generic conclusion phrases like "Ultimately" or "Moving forward"
-- Avoid generic policy-style phrasing (e.g., "it is important to", "we need to")
-- Do not make every sentence logically connect smoothly; allow slight jumps in flow
-- Avoid heavy technical phrasing; keep explanations simple and natural
-- Avoid vague or generic phrasing; be slightly more specific and direct when expressing ideas
+- Avoid perfect structure
+- Allow slight jumps in ideas
+- Avoid textbook flow
+- Use natural phrasing
 
 IMPORTANT:
-The text should feel naturally written, slightly imperfect, but still clear and readable.`
+The text should NOT feel like a structured article.
+It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
     const generate = async () => {
@@ -52,7 +47,7 @@ The text should feel naturally written, slightly imperfect, but still clear and 
 
 Keep meaning same.
 Keep similar length.
-Do not make it sound like a perfect essay.
+Do NOT follow a perfect introduction → explanation → conclusion structure.
 
 TEXT:
 "${text}"`
@@ -68,7 +63,6 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    // 🔥 Generate twice
     let output1 = await generate();
     let output2 = await generate();
 
@@ -80,16 +74,19 @@ TEXT:
       ""
     );
 
-    // ✅ LIGHT VARIATION (safe, no damage)
-    function addLightVariation(text) {
+    // 🔥 STRUCTURE BREAK (KEY FIX)
+    function breakStructure(text) {
       return text
-        .replace(/\bHowever\b/g, "But")
-        .replace(/\bTherefore\b/g, "So")
-        .replace(/\bAdditionally\b/g, "Also")
-        .replace(/\bit is\b/g, "it's");
+        // merge paragraphs randomly
+        .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
+
+        // split some sentences awkwardly
+        .replace(/\. ([A-Z])/g, (m, p1) =>
+          Math.random() > 0.7 ? `. ${p1}` : m
+        );
     }
 
-    finalOutput = addLightVariation(finalOutput);
+    finalOutput = breakStructure(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
