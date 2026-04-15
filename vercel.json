@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/humanizer.mjs": {
-      "maxDuration": 60
+      "maxDuration": 90
     }
   },
   "rewrites": [
