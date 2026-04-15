@@ -54,7 +54,7 @@ TEXT:
         }]
       }],
       generationConfig: {
-        temperature: 0.6,   // 🔥 fixed (very important)
+        temperature: 0.7,   // 🔥 fixed (very important)
         topP: 0.9,
         maxOutputTokens: 2000,
       }
