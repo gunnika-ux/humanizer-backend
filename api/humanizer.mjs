@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+ import { GoogleGenerativeAI } from "@google/generative-ai"; 
 
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -58,8 +58,8 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.92,
-          topP: 0.95,
+          temperature: 0.89,
+          topP: 0.98,
           maxOutputTokens: 3000,
         }
       });
@@ -67,19 +67,25 @@ TEXT:
       return (await result.response).text().trim();
     };
 
+    // 🔥 PARALLEL GENERATION
     let outputs = await Promise.all([
       generate(),
       generate(),
       generate()
     ]);
 
+    // 🔥 HUMAN SCORE
     function humanScore(text) {
       let score = 0;
 
       if (text.match(/\./g)?.length > 5) score += 1;
+
       if (/(this|these).{0,20}\1/i.test(text)) score += 1;
+
       if (text.includes("But ") || text.includes("And ")) score += 1;
+
       if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
+
       if (text.split(". ").some(s => s.length < 40)) score += 1;
 
       return score;
@@ -92,36 +98,37 @@ TEXT:
       ""
     );
 
+    // 🔥 STRUCTURE BREAK
     function breakStructure(text) {
       return text
         .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
+
         .replace(/\. ([A-Z])/g, (m, p1) =>
           Math.random() > 0.5 ? `. ${p1}` : m
         )
+
         .replace(/, /g, (m) =>
           Math.random() > 0.85 ? ", which " : m
         )
+
         .replace(/because/g, (m) =>
           Math.random() > 0.7 ? "since" : m
         )
+
         .replace(/ and /g, (m) =>
           Math.random() > 0.7 ? " & " : m
         );
     }
 
-    // 🔥 IMPROVED PROFESSIONAL POLISH (key upgrade)
+    // 🔥 LIGHT PROFESSIONAL POLISH (safe)
     function lightPolish(text) {
       return text
         .replace(/\bpretty huge deal\b/gi, "a significant step")
-        .replace(/\bbiggest thing\b/gi, "a critical priority")
         .replace(/\bbasically\b/gi, "")
         .replace(/\bwe're seeing\b/gi, "there is increasing")
-        .replace(/\bhooked up\b/gi, "integrated")
         .replace(/\bcan't\b/gi, "cannot")
         .replace(/\bdoesn't\b/gi, "does not")
         .replace(/\bmoney-related\b/gi, "financial")
-        .replace(/\bcosts a ton of money\b/gi, "requires substantial investment")
-        .replace(/\bmassive logistical mess\b/gi, "significant logistical challenge")
         .replace(/\bphysical stuff\b/gi, "infrastructure")
         .replace(/\bput their cash into\b/gi, "invest in")
         .replace(/\breally\b/gi, "")
