@@ -8,7 +8,6 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    // ✅ accept context
     const { text, context } = req.body;
 
     if (!text) return res.status(400).json({ error: "No text" });
@@ -20,22 +19,25 @@ export default async function handler(req, res) {
       systemInstruction: `You are a high-fidelity rewriter.
 
 CRITICAL: You are NOT allowed to truncate or stop mid-sentence. You must process every single sentence.
-CRITICAL: The output word count must closely match the input word count.
-CRITICAL: Do not expand the text. Keep output length equal to or slightly shorter.
+CRITICAL: The output MUST match the input length. Do NOT shorten, summarize, or compress the content.
+CRITICAL: Every idea, sentence, and detail must be preserved and rewritten fully.
 
-HUMANIZATION & DETECTOR BYPASS (ZeroGPT/Scribbr Target):
+HUMANIZATION & DETECTOR BYPASS:
 1. UNBALANCED RHYTHM: Start occasional sentences with 'And', 'But', or 'So'.
-2. SENTENCE JITTER: Follow a long, winding sentence with a very short, sharp one (3-5 words).
-3. NO AI TRANSITIONS: Replace 'Furthermore' or 'Moreover' with gritty, direct links.
-4. VOCABULARY: Use technical but "messy" human terms (e.g., instead of 'foster,' use 'kickstart').`
+2. SENTENCE JITTER: Follow a long sentence with a very short one (3-5 words).
+3. NO AI TRANSITIONS: Replace robotic transitions with direct, human phrasing.
+4. VOCABULARY: Use natural, slightly imperfect human wording.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `TASK: Mirror this text exactly. Do not leave out the final paragraph.
-Do not stop until you have humanized the entire text. Keep the output length similar to the original.
+          text: `TASK: Rewrite the text fully while preserving meaning.
+
+The output MUST be equal in length to the input.
+Do NOT shorten or summarize under any condition.
+If the output becomes shorter, continue writing until full length is matched.
 
 If previous context is provided, maintain the same tone, style, and flow.
 
@@ -47,7 +49,7 @@ INPUT TO HUMANIZE:
         }]
       }],
       generationConfig: {
-        temperature: 0.6,
+        temperature: 0.7, // slightly higher = more natural + fuller output
         topP: 0.9,
         maxOutputTokens: 3000,
       }
@@ -56,10 +58,8 @@ INPUT TO HUMANIZE:
     const response = await result.response;
     let output = response.text().trim();
 
-    // ✅ Clean unwanted prefixes
+    // Clean unwanted prefixes
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
-
-    // ❌ REMOVED faulty timeout check (was causing false errors)
 
     return res.status(200).json({ output });
 
