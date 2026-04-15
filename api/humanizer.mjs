@@ -110,31 +110,37 @@ TEXT:
         );
     }
 
-    // 🔥 FINAL GRAMMAR FIX (clean + safe)
+    // 🔥 GRAMMAR FIX
     function fixGrammar(text) {
       return text
-        // remove duplicate words
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
-
-        // fix common broken patterns
         .replace(/\bwhich which\b/gi, "which")
         .replace(/\bwhich you get\b/gi, "which gives you")
         .replace(/\bwhich you can\b/gi, "which allows you")
-
-        // fix awkward connectors
         .replace(/\bnow,\s*which\b/gi, "Now,")
         .replace(/\bwhich but\b/gi, "but")
         .replace(/,\s*which\s+/gi, ". This ")
         .replace(/\.\s*which\s+/gi, ". This ")
-
-        // normalize casual contractions
         .replace(/\bthere's\b/gi, "there is")
         .replace(/\byou've got\b/gi, "there are")
-
-        // clean spacing
         .replace(/\s{2,}/g, " ");
     }
 
+    // 🔥 CLARITY FIX
+    function refineClarity(text) {
+      return text
+        .replace(/\bincreasing much higher\b/gi, "significantly higher")
+        .replace(/\ba big deal for\b/gi, "important for")
+        .replace(/\bpretty high\b/gi, "relatively high")
+        .replace(/\bThis gives you\b/gi, "This provides")
+        .replace(/\bThis lets\b/gi, "This allows")
+        .replace(/\bBecause of that,\s*/gi, "")
+        .replace(/\bIn the end,\s*/gi, "")
+        .replace(/;\s*/g, ". ")
+        .replace(/\s{2,}/g, " ");
+    }
+
+    // 🔥 LIGHT PROFESSIONAL POLISH
     function lightPolish(text) {
       return text
         .replace(/\bpretty huge deal\b/gi, "a significant step")
@@ -155,6 +161,7 @@ TEXT:
 
     finalOutput = breakStructure(finalOutput);
     finalOutput = fixGrammar(finalOutput);
+    finalOutput = refineClarity(finalOutput);
     finalOutput = lightPolish(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
