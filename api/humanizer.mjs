@@ -18,24 +18,25 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a high-fidelity rewriter.
+      systemInstruction: `You are a professional human rewriter.
 
 CRITICAL:
-- Rewrite fully while preserving meaning.
-- Keep a semi-professional tone.
-- Avoid perfect structure or overly polished writing.
+- Rewrite the text fully without changing meaning.
+- Keep grammar correct and tone professional.
+- Avoid overly perfect or academic writing.
 - Do NOT summarize or remove details.
 
-STYLE:
-- Mix sentence lengths unevenly.
-- Slightly vary tone between sentences.
-- Avoid predictable transitions.
-- Occasionally use direct phrasing.
-- Keep it natural, not academic.`
+STYLE RULES:
+- Vary sentence lengths naturally.
+- Avoid repetitive phrasing patterns.
+- Do not make every sentence flow perfectly.
+- Keep tone slightly uneven but still professional.
+- Avoid predictable transitions.`
     });
 
     let output = "";
 
+    // Retry loop
     for (let attempt = 0; attempt < 2; attempt++) {
       const result = await model.generateContent({
         contents: [{
@@ -43,8 +44,7 @@ STYLE:
           parts: [{
             text: `Rewrite naturally and clearly.
 
-Avoid overly polished structure.
-Keep tone professional but human.
+Keep it professional but not overly polished.
 
 PREVIOUS CONTEXT:
 "${context || ''}"
@@ -71,8 +71,8 @@ INPUT:
       if (outputWords >= inputWords * 0.75) break;
     }
 
-    // 🔥 POST-PROCESSING (KEY STEP FOR LOW AI DETECTION)
-    output = addHumanVariation(output);
+    // 🔥 ANTI-DETECTION LAYER (IMPORTANT)
+    output = humanizeStructure(output);
 
     return res.status(200).json({ output });
 
@@ -82,27 +82,35 @@ INPUT:
   }
 }
 
-// 🔥 HUMAN VARIATION FUNCTION
-function addHumanVariation(text) {
+
+// 🔥 CORE HUMANIZATION FUNCTION
+function humanizeStructure(text) {
   let sentences = text.split(/(?<=[.!?])\s+/);
 
   return sentences.map((s, i) => {
-    // Occasionally shorten sentences
-    if (i % 4 === 0 && s.length > 120) {
-      return s.replace(/, and /, '. ');
+
+    // Break overly long sentences occasionally
+    if (s.length > 140 && i % 3 === 0) {
+      s = s.replace(/, and /, '. ');
     }
 
-    // Occasionally simplify phrasing
-    if (i % 5 === 0) {
+    // Slight phrasing variation
+    if (i % 4 === 0) {
       s = s.replace(/In order to/g, 'To');
       s = s.replace(/It is important to note that/g, '');
     }
 
-    // Slight randomness in tone
+    // Reduce perfect transitions
+    if (i % 5 === 0) {
+      s = s.replace(/Furthermore,|Moreover,/g, '');
+    }
+
+    // Slight natural variation (no grammar break)
     if (i % 6 === 0 && s.length > 60) {
       s = s.replace(/\. /, '. ');
     }
 
-    return s;
+    return s.trim();
+
   }).join(' ');
 }
