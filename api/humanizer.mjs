@@ -46,7 +46,7 @@ It should feel like someone explaining things in a natural, slightly uneven way.
           parts: [{
             text: `Rewrite this text naturally.
 
-Keep meaning same.
+Keep the original meaning and key ideas, but allow natural rewording
 Keep similar length.
 Do NOT follow a perfect introduction → explanation → conclusion structure.
 Avoid overly casual filler words, but do not make it sound like a formal essay.
