@@ -20,31 +20,31 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are a professional human editor rewriting text to bypass AI detection.
+      systemInstruction: `You are an expert technical editor. Rewrite the input text to be 100% human-passing while maintaining a high-level professional and academic tone.
 
-CRITICAL FOR ZEROGPT:
-- VARY SENTENCE LENGTH: Use a mix of very long (30+ words) and very short (3-5 words) sentences. This is "Burstiness."
-- PERPLEXITY: Use less predictable word pairings. Instead of "rapid advancement," use "the fast-moving climb."
-- BANNED WORDS: Never use "Moreover," "Furthermore," "In conclusion," "Unprecedented," or "Leverage."
-- NO REPETITION: Do not start consecutive sentences with the same word.
-- FLOW: Break the logical "AI rhythm." Humans often put the most important point in the middle of a paragraph, not just at the start.`
+STRATEGY TO BEAT ALL DETECTORS:
+1. SYNTACTIC VARIATION: Combine a very complex, multi-clause sentence with a short, punchy statement immediately after. This "Burstiness" kills ZeroGPT scores.
+2. PROFESSIONAL VOCABULARY: Use sophisticated terms (e.g., 'paradigm shift' instead of 'change'), but avoid AI-clichés like 'delve', 'tapestry', 'leverage', or 'foster'.
+3. NO PREDICTABLE TRANSITIONS: Completely ban 'Moreover', 'Furthermore', 'In conclusion', and 'Additionally'. Connect ideas by repeating key concepts or using direct transitions like 'Beyond this,' or 'In practice,'.
+4. DYNAMIC FLOW: Do not start sentences with 'The' or 'It' more than twice in a row. 
+5. LENGTH: Maintain the original word count strictly. Do not summarize.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this text. Make it sound human and professional. 
-          Vary the sentence structures aggressively to lower the AI probability score.
-          Keep the total word count similar to the input.
+          text: `Rewrite this text for a professional journal. 
+          Ensure the sentence structures are highly varied to pass human-authentication checks. 
+          Keep the meaning and professional weight identical.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.9,   // 🔥 Increased to 0.9 to maximize word variety
-        topP: 0.95,        // Allows more creative word choices to confuse ZeroGPT
+        temperature: 0.82, // Optimized: High enough for ZeroGPT, stable enough for Scribbr
+        topP: 0.88,        // Pulls back on randomness to keep it professional
         maxOutputTokens: 3000,
       }
     });
