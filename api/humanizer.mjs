@@ -32,7 +32,8 @@ STYLE:
 - Avoid perfect structure
 - Avoid predictable structure
 - Allow slight jumps in ideas, but keep sentences understandable
-- Use simple, clear language instead of technical jargon
+- Use clear language, but include some specific and descriptive wording where appropriate
+- Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
 - Avoid overly casual filler words (like "honestly", "you know")
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
@@ -60,7 +61,7 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.91,
+          temperature: 0.89,
           topP: 0.98,
           maxOutputTokens: 3000,
         }
@@ -94,7 +95,7 @@ TEXT:
       ""
     );
 
-    // 🔥 SAFE STRUCTURE BREAK (minimal)
+    // 🔥 SAFE STRUCTURE BREAK (minimal, no damage)
     function breakStructure(text) {
       return text
         .replace(/\n\n/g, (m) => (Math.random() > 0.6 ? " " : m))
@@ -103,7 +104,7 @@ TEXT:
         );
     }
 
-    // 🔥 COMPACT CLEANER (safe + focused)
+    // 🔥 COMPACT CLEANER (focused + safe)
     function cleanText(text) {
       return text
         // duplicates
@@ -118,7 +119,7 @@ TEXT:
         .replace(/\bsince of that\b/gi, "because of that")
         .replace(/\bgo way up\b/gi, "increase significantly")
 
-        // tone control (light)
+        // tone balance (not too simple, not too formal)
         .replace(/\bpretty\b/gi, "")
         .replace(/\ba lot of\b/gi, "many")
         .replace(/\bhuge\b/gi, "significant")
