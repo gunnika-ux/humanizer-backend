@@ -17,57 +17,55 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview"
+      model: "gemini-3-flash-preview",
+      systemInstruction: `You are a human rewriter.
+
+CRITICAL RULES:
+- Output ONLY the rewritten text
+- Do NOT provide multiple options
+- Do NOT explain anything
+- Do NOT add headings, bullets, or formatting
+- Do NOT expand the content
+- Keep output length similar to input
+
+STYLE:
+- Keep meaning exactly the same
+- Keep grammar correct
+- Vary sentence length naturally
+- Avoid predictable structure
+- Avoid overly polished or essay-like tone
+
+IMPORTANT:
+Return a single clean paragraph. Nothing else.`
     });
 
-    // 🔹 PASS 1: clean rewrite
-    const firstPass = await model.generateContent({
+    const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this text clearly and professionally without changing meaning:
+          text: `Rewrite this text naturally.
 
+STRICT:
+- One version only
+- No explanations
+- No extra content
+
+TEXT:
 "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.5,
+        temperature: 0.6,
         topP: 0.9,
-        maxOutputTokens: 2000,
+        maxOutputTokens: 1500,
       }
     });
 
-    let intermediate = (await firstPass.response).text().trim();
+    const response = await result.response;
+    let output = response.text().trim();
 
-    // 🔹 PASS 2: human variation pass
-    const secondPass = await model.generateContent({
-      contents: [{
-        role: "user",
-        parts: [{
-          text: `Rewrite this again to sound more naturally human.
-
-Rules:
-- Vary sentence length strongly
-- Break predictable flow
-- Avoid consistent structure
-- Keep meaning identical
-- Keep grammar correct
-- Do NOT make it overly polished
-
-TEXT:
-"${intermediate}"`
-        }]
-      }],
-      generationConfig: {
-        temperature: 0.7,
-        topP: 0.9,
-        maxOutputTokens: 2000,
-      }
-    });
-
-    let output = (await secondPass.response).text().trim();
-
-    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
+    // Clean any accidental formatting
+    output = output.replace(/^(Option \d+|###.*|[*-]\s)/gim, "");
 
     return res.status(200).json({ output });
 
