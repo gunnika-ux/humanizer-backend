@@ -98,7 +98,7 @@ TEXT:
       ""
     );
 
-    // 🔥 STRUCTURE BREAK (final tuned)
+    // 🔥 STRUCTURE BREAK
     function breakStructure(text) {
       return text
         .replace(/\n\n/g, (m) => (Math.random() > 0.5 ? " " : m))
@@ -120,7 +120,23 @@ TEXT:
         );
     }
 
+    // 🔥 LIGHT PROFESSIONAL POLISH (safe)
+    function lightPolish(text) {
+      return text
+        .replace(/\bpretty huge deal\b/gi, "a significant step")
+        .replace(/\bbasically\b/gi, "")
+        .replace(/\bwe're seeing\b/gi, "there is increasing")
+        .replace(/\bcan't\b/gi, "cannot")
+        .replace(/\bdoesn't\b/gi, "does not")
+        .replace(/\bmoney-related\b/gi, "financial")
+        .replace(/\bphysical stuff\b/gi, "infrastructure")
+        .replace(/\bput their cash into\b/gi, "invest in")
+        .replace(/\breally\b/gi, "")
+        .replace(/\s{2,}/g, " ");
+    }
+
     finalOutput = breakStructure(finalOutput);
+    finalOutput = lightPolish(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
