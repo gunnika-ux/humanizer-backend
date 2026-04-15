@@ -80,22 +80,16 @@ TEXT:
       ""
     );
 
-    // 🔥 FINAL FIX: slight imperfection
-    function slightlyMessUp(text) {
+    // ✅ LIGHT VARIATION (safe, no damage)
+    function addLightVariation(text) {
       return text
-        // randomly remove commas
-        .replace(/, /g, (m) => (Math.random() > 0.7 ? " " : m))
-
-        // slightly vary sentence breaks
-        .replace(/\. ([A-Z])/g, (m, p1) =>
-          Math.random() > 0.75 ? `. ${p1}` : m
-        )
-
-        // randomly remove "that"
-        .replace(/\bthat\b/g, (m) => (Math.random() > 0.7 ? "" : m));
+        .replace(/\bHowever\b/g, "But")
+        .replace(/\bTherefore\b/g, "So")
+        .replace(/\bAdditionally\b/g, "Also")
+        .replace(/\bit is\b/g, "it's");
     }
 
-    finalOutput = slightlyMessUp(finalOutput);
+    finalOutput = addLightVariation(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
