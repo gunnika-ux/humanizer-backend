@@ -110,16 +110,28 @@ TEXT:
         );
     }
 
-    // 🔥 IMPROVED GRAMMAR FIX
+    // 🔥 FINAL GRAMMAR FIX (clean + safe)
     function fixGrammar(text) {
       return text
-        .replace(/\bwhich which\b/gi, "which")
+        // remove duplicate words
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
-        .replace(/,\s*which\s+we\s+are\s+seeing/gi, ". We are seeing")
+
+        // fix common broken patterns
+        .replace(/\bwhich which\b/gi, "which")
+        .replace(/\bwhich you get\b/gi, "which gives you")
+        .replace(/\bwhich you can\b/gi, "which allows you")
+
+        // fix awkward connectors
         .replace(/\bnow,\s*which\b/gi, "Now,")
         .replace(/\bwhich but\b/gi, "but")
+        .replace(/,\s*which\s+/gi, ". This ")
+        .replace(/\.\s*which\s+/gi, ". This ")
+
+        // normalize casual contractions
         .replace(/\bthere's\b/gi, "there is")
         .replace(/\byou've got\b/gi, "there are")
+
+        // clean spacing
         .replace(/\s{2,}/g, " ");
     }
 
