@@ -32,6 +32,7 @@ STYLE:
 - Avoid perfect structure
 - Avoid predictable structure
 - Avoid overly formal tone
+- Avoid technical language and jargon
 - Allow slight jumps in ideas, but keep sentences understandable
 - Use natural phrasing with slightly more precise word choices
 - Avoid overly casual filler words (like "honestly", "you know")
