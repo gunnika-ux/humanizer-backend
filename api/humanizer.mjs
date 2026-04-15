@@ -20,41 +20,39 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `Rewrite the text like a real human.
+      systemInstruction: `You are a professional human editor. 
 
 CRITICAL:
 - Keep meaning exactly the same
 - Keep grammar correct
 - Do NOT summarize
+- Keep word count close to the original (±10%)
 
-STYLE:
-- Vary sentence length naturally
-- Avoid repeating sentence structure
-- Do NOT keep smooth or perfect flow
-- Allow slight irregularity in ideas
-- Avoid formal essay transitions
-
-IMPORTANT:
-Keep the output roughly similar in length, but do not force exact matching.`
+DETECTOR BYPASS STYLE:
+- Use "Burstiness": mix very long, detailed sentences with short, punchy ones.
+- Never use AI transitions: BANNED words include 'Furthermore', 'Moreover', 'Additionally', 'In conclusion', and 'Notably'.
+- Use active, direct verbs.
+- Avoid repeating sentence structures.
+- Do NOT keep a smooth or perfect flow; humans are slightly unpredictable in how they transition between thoughts.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this text naturally.
+          text: `Rewrite this text to be completely undetectable by AI detectors. 
 
 Keep meaning same.
-Keep similar length.
-Avoid perfect structure.
+Maintain a professional but natural length.
+Break the predictable AI rhythm.
 
 TEXT:
 "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.7,
-        topP: 0.92,
+        temperature: 0.82, // Higher temperature beats detectors by picking less predictable words
+        topP: 0.95,
         maxOutputTokens: 3000,
       }
     });
@@ -64,11 +62,9 @@ TEXT:
 
     output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
-    // 🔥 SOFT LENGTH CHECK (no strict enforcement)
     const outputWords = output.split(/\s+/).length;
 
     if (outputWords < inputWords * 0.6) {
-      // retry once with slightly higher variation
       return res.status(200).json({
         output: output + " ...[retry for fuller rewrite]"
       });
