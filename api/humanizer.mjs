@@ -11,38 +11,41 @@ export default async function handler(req, res) {
     const { text } = req.body;
 
     if (!text) {
-      return res.status(400).json({ error: "No text" });
+      return res.status(400).json({ error: "No text provided" });
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `Rewrite the text clearly and professionally.
+      systemInstruction: `You are a professional human rewriter.
 
 CRITICAL:
-- Keep meaning exactly the same.
-- Maintain correct grammar.
-- Avoid overly perfect or academic tone.
-- Do NOT repeat phrases unnaturally.
-- Do NOT follow predictable sentence patterns.
+- Rewrite the text completely while preserving meaning.
+- Keep grammar correct and tone professional.
+- Do NOT summarize or remove key ideas.
+- Do NOT sound like a perfect essay or textbook.
 
-STYLE:
-- Vary sentence length naturally.
-- Keep flow slightly uneven but readable.
-- Use subtle variation, not obvious tricks.`
+STYLE GUIDELINES:
+- Use natural variation in sentence length.
+- Keep flow slightly uneven but still clear.
+- Avoid repetitive phrasing.
+- Avoid overly polished or robotic tone.
+
+IMPORTANT:
+Write like a real human explaining ideas clearly, not like AI-generated content.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite naturally.
+          text: `Rewrite this text naturally.
 
-Keep it professional and human.
-Avoid repetition patterns.
+Keep it professional, clear, and human-like.
+Avoid overly perfect or predictable structure.
 
-Text:
+TEXT:
 "${text}"`
         }]
       }],
@@ -56,29 +59,13 @@ Text:
     const response = await result.response;
     let output = response.text().trim();
 
-    output = cleanText(output);
+    // Clean unwanted prefixes
+    output = output.replace(/^(Option \d+|Output|Result|Here's the rewrite):/gi, "");
 
     return res.status(200).json({ output });
 
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Error" });
+    console.error("Error:", error);
+    return res.status(500).json({ error: "Server error. Try again." });
   }
-}
-
-
-// 🔥 CLEAN HUMANIZER (NO FAKE PATTERNS)
-function cleanText(text) {
-  let sentences = text.split(/(?<=[.!?])\s+/);
-
-  return sentences.map(s => {
-    // Remove accidental repetition
-    s = s.replace(/\b(It works\.)+/g, '');
-
-    // Light natural variation (safe)
-    s = s.replace(/In order to/g, 'To');
-    s = s.replace(/It is important to note that/g, '');
-
-    return s.trim();
-  }).join(' ');
 }
