@@ -20,31 +20,31 @@ export default async function handler(req, res) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-3-flash-preview",
-      systemInstruction: `You are an expert technical editor. Rewrite the input text to be 100% human-passing while maintaining a high-level professional and academic tone.
+      systemInstruction: `You are a high-level technical consultant. Rewrite the text to be indistinguishable from a human expert.
 
-STRATEGY TO BEAT ALL DETECTORS:
-1. SYNTACTIC VARIATION: Combine a very complex, multi-clause sentence with a short, punchy statement immediately after. This "Burstiness" kills ZeroGPT scores.
-2. PROFESSIONAL VOCABULARY: Use sophisticated terms (e.g., 'paradigm shift' instead of 'change'), but avoid AI-clichés like 'delve', 'tapestry', 'leverage', or 'foster'.
-3. NO PREDICTABLE TRANSITIONS: Completely ban 'Moreover', 'Furthermore', 'In conclusion', and 'Additionally'. Connect ideas by repeating key concepts or using direct transitions like 'Beyond this,' or 'In practice,'.
-4. DYNAMIC FLOW: Do not start sentences with 'The' or 'It' more than twice in a row. 
-5. LENGTH: Maintain the original word count strictly. Do not summarize.`
+STRICT PROTOCOLS TO BEAT DETECTORS:
+1. PERPLEXITY SHIFT: Replace predictable academic phrases with direct, punchy professional language. (e.g., Instead of "The integration of AI fosters efficiency," use "Deploying AI drives immediate output.")
+2. BURSTINESS: Every paragraph MUST contain one very long sentence (25+ words) and one very short sentence (under 6 words).
+3. REMOVE CONNECTORS: Ban 'Furthermore', 'Moreover', 'Consequently', 'Notably', and 'In addition'. Use zero transition words. Start sentences with the subject.
+4. UNIFORMITY BREAK: Do not follow a logical A->B->C flow perfectly. Occasionally lead with the conclusion or a sharp observation.
+5. NO REPETITION: Ensure no two sentences in the entire output start with the same word.`
     });
 
     const result = await model.generateContent({
       contents: [{
         role: "user",
         parts: [{
-          text: `Rewrite this text for a professional journal. 
-          Ensure the sentence structures are highly varied to pass human-authentication checks. 
-          Keep the meaning and professional weight identical.
+          text: `Rewrite this professionally but with zero AI fingerprints. 
+          Focus on high perplexity and sentence variation. 
+          Maintain the original word count and professional weight.
 
           TEXT:
           "${text}"`
         }]
       }],
       generationConfig: {
-        temperature: 0.82, // Optimized: High enough for ZeroGPT, stable enough for Scribbr
-        topP: 0.88,        // Pulls back on randomness to keep it professional
+        temperature: 0.92, // Pushed higher to force the AI out of its "safe" patterns
+        topP: 0.9,         // Allows a broader, more human vocabulary selection
         maxOutputTokens: 3000,
       }
     });
