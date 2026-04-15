@@ -26,7 +26,7 @@ CRITICAL:
 - Keep similar length
 
 STYLE:
-- Keep grammar correct
+- Keep grammar correct and avoid awkward or incorrect phrasing
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
 - Mix short and long sentences
 - Avoid perfect structure
