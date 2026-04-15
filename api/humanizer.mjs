@@ -31,6 +31,8 @@ STYLE:
 - Allow slight shifts in tone
 - Avoid perfectly smooth or academic flow
 - Use natural phrasing, not textbook wording
+- Vary sentence openings naturally
+- Avoid repeating patterns
 
 IMPORTANT:
 The text should feel naturally written, slightly imperfect, but still clear and readable.`
