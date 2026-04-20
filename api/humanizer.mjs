@@ -41,7 +41,7 @@ STYLE:
 - Use clear language, but include some specific and descriptive wording where appropriate
 - Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
-- Avoid overly casual filler words 
+- Prefer precise wording over casual fillers 
 - Avoid generic language
 - Use precise and specific wording
 - Avoid neutral tone
