@@ -42,6 +42,7 @@ STYLE:
 - Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
 - Prefer precise wording over casual fillers 
+- Avoid repetitive sentence patterns; combine related ideas instead of using separate sentences for emphasis
 - Avoid generic language
 - Use precise and specific wording
 - Avoid neutral tone
