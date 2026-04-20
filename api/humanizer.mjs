@@ -41,13 +41,13 @@ STYLE:
 - Use clear language, but include some specific and descriptive wording where appropriate
 - Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
-- Prefer precise wording over casual fillers 
+- Prefer precise wording over casual fillers
 - Avoid repetitive sentence patterns; combine related ideas instead of using separate sentences for emphasis
 - Avoid generic language
 - Use precise and specific wording
 - Avoid neutral tone
 - Occasionally add brief impact or consequence where it fits naturally
-- Use clear and precise wording; avoid exaggerated or overly casual expressions
+- Use clear and precise wording; avoid exaggerated or overly casual expressions 
 - Occasionally vary sentence openings
 - Do not maintain perfectly consistent reasoning flow
 
@@ -71,16 +71,16 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.90,
+          temperature: 0.90, // 🔥 faster + stable
           topP: 0.98,
-          maxOutputTokens: 3000,
+          maxOutputTokens: 1500, // 🔥 reduced for speed
         }
       });
 
-      return (await result.response).text().trim();
+      return result.response.text().trim();
     };
 
-    // ✅ SINGLE OUTPUT (FIXED — removed multi-output scoring)
+    // ✅ SINGLE OUTPUT
     let finalOutput = await generate();
 
     finalOutput = finalOutput.replace(
@@ -98,28 +98,15 @@ TEXT:
 
     function cleanText(text) {
       return text
-        // remove duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
-
-        // grammar improvements (safe only)
         .replace(/\bmany that\b/gi, "a lot of that")
         .replace(/\bthere's many\b/gi, "there is a lot of")
         .replace(/\bacross much every\b/gi, "across almost every")
-
-        // capitalization fix
         .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
-
-        // broken joins
         .replace(/\bThis\.\s*This\b/gi, "This")
-
-        // grammar fixes
         .replace(/\bsince of that\b/gi, "because of that")
-
-        // punctuation
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
-
-        // spacing
         .replace(/\s{2,}/g, " ");
     }
 
