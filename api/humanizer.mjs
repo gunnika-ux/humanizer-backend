@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview", // ✅ FIXED
+      model: "gemini-3-flash-preview",
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -54,7 +54,6 @@ The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
-    // ORIGINAL GENERATE
     const generate = async () => {
       const result = await model.generateContent({
         contents: [{
@@ -74,14 +73,25 @@ TEXT:
         generationConfig: {
           temperature: 0.89,
           topP: 0.98,
-          maxOutputTokens: 1500, // ✅ INCREASED
+          maxOutputTokens: 1200, // ✅ FIXED
         }
       });
 
-      return (await result.response).text().trim();
+      const response = await result.response;
+      const textOutput = response.text().trim();
+
+      // ✅ CUT DETECTION
+      if (
+        !textOutput.endsWith('.') &&
+        !textOutput.endsWith('!') &&
+        !textOutput.endsWith('?')
+      ) {
+        throw new Error("Incomplete response");
+      }
+
+      return textOutput;
     };
 
-    // RETRY WRAPPER
     const generateWithRetry = async (retries = 2) => {
       try {
         return await generate();
@@ -97,7 +107,6 @@ TEXT:
       }
     };
 
-    // SINGLE CALL
     let outputs = [];
 
     outputs.push(await generateWithRetry());
