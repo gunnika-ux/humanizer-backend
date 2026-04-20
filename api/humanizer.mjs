@@ -44,6 +44,8 @@ STYLE:
 - Avoid repetitive sentence patterns; combine related ideas instead of using separate sentences for emphasis
 - Avoid generic language
 - Avoid neutral tone
+- Include occasional specific or concrete detail and a brief implication or consequence so the writing feels grounded and not generic.
+- Vary sentence length naturally without forcing a pattern.
 - Occasionally add brief impact or consequence where it fits naturally
 - Use clear and precise wording; avoid exaggerated or overly casual expressions 
 - Occasionally vary sentence openings
