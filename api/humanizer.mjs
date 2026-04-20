@@ -44,12 +44,10 @@ STYLE:
 - Prefer precise wording over casual fillers
 - Avoid repetitive sentence patterns; combine related ideas instead of using separate sentences for emphasis
 - Avoid generic language
-- Use precise and specific wording
 - Avoid neutral tone
 - Occasionally add brief impact or consequence where it fits naturally
 - Use clear and precise wording; avoid exaggerated or overly casual expressions 
 - Occasionally vary sentence openings
-- Do not maintain perfectly consistent reasoning flow
 
 IMPORTANT:
 The text should NOT feel like a structured article.`
