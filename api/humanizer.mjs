@@ -86,13 +86,13 @@ TEXT:
       ""
     );
 
-    // ✅ LIGHTWEIGHT CLEAN (fast)
+    // ✅ LIGHTWEIGHT CLEAN
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // remove duplicate words
-        .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase()) // capitalization
-        .replace(/\.\./g, ".") // fix dots
-        .replace(/\s{2,}/g, " "); // spacing
+        .replace(/\b(\w+)\s+\1\b/gi, "$1")
+        .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
+        .replace(/\.\./g, ".")
+        .replace(/\s{2,}/g, " ");
     }
 
     finalOutput = cleanText(finalOutput);
@@ -103,5 +103,4 @@ TEXT:
     console.error(error);
     return res.status(500).json({ error: "Server error. Try again." });
   }
-}
 }
