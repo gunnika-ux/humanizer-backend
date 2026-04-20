@@ -70,8 +70,8 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.89,
-          topP: 0.99, // ✅ kept as requested
+          temperature: 0.90,
+          topP: 0.99, 
           maxOutputTokens: 1500,
         }
       });
