@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3-flash", // ✅ ONLY CHANGE
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -139,9 +139,6 @@ TEXT:
 
         // tone balance
         .replace(/\bpretty\b/gi, "")
-        // ❌ removed bad rule that caused errors:
-        // .replace(/\ba lot of\b/gi, "many")
-
         .replace(/\bhuge\b/gi, "significant")
         .replace(/\bmassive\b/gi, "substantial")
 
