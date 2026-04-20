@@ -45,6 +45,7 @@ STYLE:
 - Avoid repetitive sentence patterns; combine related ideas instead of using separate sentences for emphasis
 - Avoid generic language
 - Avoid neutral tone
+- Do not end paragraphs with summary or wrap-up sentences; let some ideas end without a concluding line.
 - Occasionally add brief impact or consequence where it fits naturally
 - Use clear and precise wording; avoid exaggerated or overly casual expressions 
 - Occasionally vary sentence openings
