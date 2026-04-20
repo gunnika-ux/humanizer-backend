@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash", // ✅ YOUR REQUEST
+      model: "gemini-2.5-flash",
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -54,9 +54,8 @@ The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
+    // ✅ ORIGINAL GENERATE
     const generate = async () => {
-      console.log("START GENERATE"); // debug
-
       const result = await model.generateContent({
         contents: [{
           role: "user",
@@ -82,11 +81,27 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    // ✅ FIXED: sequential instead of Promise.all
+    // ✅ 🔥 RETRY WRAPPER (MAIN FIX)
+    const generateWithRetry = async (retries = 2) => {
+      try {
+        return await generate();
+      } catch (err) {
+        console.warn("Retrying Gemini...", err.message);
+
+        if (retries > 0) {
+          await new Promise(r => setTimeout(r, 700));
+          return generateWithRetry(retries - 1);
+        }
+
+        throw err;
+      }
+    };
+
+    // ✅ SEQUENTIAL CALLS (STABLE)
     let outputs = [];
 
-    outputs.push(await generate());
-    outputs.push(await generate());
+    outputs.push(await generateWithRetry());
+    outputs.push(await generateWithRetry());
 
     function humanScore(text) {
       let score = 0;
