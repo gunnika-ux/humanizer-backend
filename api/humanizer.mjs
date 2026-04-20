@@ -68,8 +68,8 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.91, // 🔥 faster + stable
-          topP: 0.98,
+          temperature: 0.89, // 🔥 faster + stable
+          topP: 0.99,
           maxOutputTokens: 1500, // 🔥 reduced for speed
         }
       });
