@@ -22,9 +22,7 @@ export default async function handler(req, res) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview",
-      systemInstruction: `Rewrite the text like a real person explaining ideas.
+    const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
 - Keep the original meaning and key ideas, but allow natural rewording
@@ -51,10 +49,20 @@ STYLE:
 
 IMPORTANT:
 The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way.`
-    });
+It should feel like someone explaining things in a natural, slightly uneven way.`;
 
-    const generate = async () => {
+    // 🔥 MODEL ORDER (NO 2.5)
+    const models = [
+      "gemini-3-flash-preview",
+      "gemini-3.1-flash-lite"
+    ];
+
+    const generateFromModel = async (modelName) => {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction
+      });
+
       const result = await model.generateContent({
         contents: [{
           role: "user",
@@ -73,14 +81,14 @@ TEXT:
         generationConfig: {
           temperature: 0.89,
           topP: 0.98,
-          maxOutputTokens: 1200, // ✅ FIXED
+          maxOutputTokens: 1200,
         }
       });
 
       const response = await result.response;
       const textOutput = response.text().trim();
 
-      // ✅ CUT DETECTION
+      // ❗ CUT DETECTION
       if (
         !textOutput.endsWith('.') &&
         !textOutput.endsWith('!') &&
@@ -92,24 +100,25 @@ TEXT:
       return textOutput;
     };
 
-    const generateWithRetry = async (retries = 2) => {
-      try {
-        return await generate();
-      } catch (err) {
-        console.warn("Retrying Gemini...", err.message);
+    // 🔁 FALLBACK LOGIC
+    const generateWithFallback = async () => {
+      for (let i = 0; i < models.length; i++) {
+        try {
+          return await generateFromModel(models[i]);
+        } catch (err) {
+          console.warn(`Model ${models[i]} failed:`, err.message);
 
-        if (retries > 0) {
-          await new Promise(r => setTimeout(r, 700));
-          return generateWithRetry(retries - 1);
+          // small delay before next model
+          await new Promise(r => setTimeout(r, 500));
         }
-
-        throw err;
       }
+
+      throw new Error("All models failed");
     };
 
+    // SINGLE OUTPUT
     let outputs = [];
-
-    outputs.push(await generateWithRetry());
+    outputs.push(await generateWithFallback());
 
     function humanScore(text) {
       let score = 0;
