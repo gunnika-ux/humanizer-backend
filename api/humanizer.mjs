@@ -7,14 +7,14 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // 🔐 AUTH CHECK
+  // 🔐 AUTH CHECK (only addition)
   const auth = req.headers.authorization;
   if (auth !== process.env.SECRET_KEY) {
     return res.status(403).json({ error: "Unauthorized" });
   }
 
   try {
-    const { text, context } = req.body;
+    const { text } = req.body;
 
     if (!text) {
       return res.status(400).json({ error: "No text provided" });
@@ -34,23 +34,24 @@ CRITICAL:
 STYLE:
 - Keep grammar correct
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
+- Mix short and long sentences
 - Avoid perfect structure
 - Avoid predictable structure
 - Allow slight jumps in ideas, but keep sentences understandable
 - Use clear language, but include some specific and descriptive wording where appropriate
 - Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
-- Prefer precise wording over casual fillers
-- Avoid repetitive sentence patterns; combine related ideas instead of using separate sentences for emphasis
+- Avoid overly casual filler words (like "honestly", "you know")
 - Avoid generic language
-- Avoid neutral tone
-- Include occasional specific or concrete detail and a brief implication or consequence so the writing feels grounded and not generic.
-- Vary sentence length naturally without forcing a pattern.
-- Use clear and precise wording; avoid exaggerated or overly casual expressions 
-- Occasionally vary sentence openings
+- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
+- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
+- Occasionally vary sentence openings and avoid uniform phrasing patterns
+- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
+- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
 
 IMPORTANT:
-The text should NOT feel like a structured article.`
+The text should NOT feel like a structured article.
+It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
     const generate = async () => {
@@ -60,54 +61,109 @@ The text should NOT feel like a structured article.`
           parts: [{
             text: `Rewrite this text naturally.
 
-Keep the original meaning and key ideas.
+Keep the original meaning and key ideas, but allow natural rewording.
 Keep similar length.
-Avoid overly formal tone but keep grammar correct.
-
-${context ? `Continue smoothly from this previous context:\n"${context}"\n\n` : ""}
+Do NOT follow a perfect introduction → explanation → conclusion structure.
+Avoid overly casual filler words, but do not make it sound like a formal essay.
 
 TEXT:
 "${text}"`
           }]
         }],
         generationConfig: {
-          temperature: 0.9,
-          topP: 0.99, // ✅ unchanged
-          maxOutputTokens: 1500,
+          temperature: 0.89,
+          topP: 0.98,
+          maxOutputTokens: 3000,
         }
       });
 
-      if (!result || !result.response) {
-        throw new Error("Empty AI response");
-      }
-
-      return result.response.text().trim();
+      return (await result.response).text().trim();
     };
 
-    // ✅ SINGLE OUTPUT
-    let finalOutput = await generate();
+    let outputs = await Promise.all([
+      generate(),
+      generate(),
+      generate()
+    ]);
 
-    // remove unwanted prefixes
+    function humanScore(text) {
+      let score = 0;
+
+      if (text.match(/\./g)?.length > 5) score += 1;
+      if (/(this|these).{0,20}\1/i.test(text)) score += 1;
+      if (text.includes("But ") || text.includes("And ")) score += 1;
+      if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
+      if (text.split(". ").some(s => s.length < 40)) score += 1;
+
+      return score;
+    }
+
+    let finalOutput = outputs.sort((a, b) => humanScore(b) - humanScore(a))[0];
+
     finalOutput = finalOutput.replace(
       /^(Option \d+|Output|Result|Here's the rewrite):/gi,
       ""
     );
 
-    // ✅ LIGHT CLEAN (fast + safe)
+    function breakStructure(text) {
+      return text
+        .replace(/\n\n/g, (m) => (Math.random() > 0.6 ? " " : m))
+        .replace(/\. ([A-Z])/g, (m, p1) =>
+          Math.random() > 0.85 ? `. ${p1}` : m
+        );
+    }
+
     function cleanText(text) {
       return text
+        // duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
+
+        // 🔥 NEW grammar improvements
+        .replace(/\bmany that\b/gi, "a lot of that")
+        .replace(/\bmany that repetitive\b/gi, "a lot of that repetitive")
+        .replace(/\bthere's many\b/gi, "there is a lot of")
+        .replace(/\bthere’s many\b/gi, "there is a lot of")
+        .replace(/\bacross much every\b/gi, "across almost every")
+
+        // capitalization fix
         .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
+
+        // broken joins
+        .replace(/\bThis\.\s*This\b/gi, "This")
+        .replace(/\bThis and\b/gi, "This, and")
+
+        // grammar fixes
+        .replace(/\bcreates many transparency\b/gi, "creates greater transparency")
+        .replace(/\bsince of that\b/gi, "because of that")
+        .replace(/\bgo way up\b/gi, "increase significantly")
+
+        // tone balance
+        .replace(/\bpretty\b/gi, "")
+        // ❌ removed bad rule that caused errors:
+        // .replace(/\ba lot of\b/gi, "many")
+
+        .replace(/\bhuge\b/gi, "significant")
+        .replace(/\bmassive\b/gi, "substantial")
+
+        // contractions
+        .replace(/\bthere's\b/gi, "there is")
+        .replace(/\byou've got\b/gi, "there are")
+
+        // punctuation fixes
+        .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
+
+        // spacing
         .replace(/\s{2,}/g, " ");
     }
 
+    finalOutput = breakStructure(finalOutput);
     finalOutput = cleanText(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
 
   } catch (error) {
-    console.error("BACKEND ERROR:", error);
-    return res.status(500).json({ error: error.message || "Server error. Try again." });
+    console.error(error);
+    return res.status(500).json({ error: "Server error. Try again." });
   }
 }
