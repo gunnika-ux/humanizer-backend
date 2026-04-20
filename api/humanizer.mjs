@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash-preview", // ✅ FIXED (stable in your env)
+      model: "gemini-2.5-flash", // ✅ YOUR REQUEST
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -55,6 +55,8 @@ It should feel like someone explaining things in a natural, slightly uneven way.
     });
 
     const generate = async () => {
+      console.log("START GENERATE"); // debug
+
       const result = await model.generateContent({
         contents: [{
           role: "user",
@@ -80,11 +82,11 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    let outputs = await Promise.all([
-      generate(),
-      generate(),
-      generate()
-    ]);
+    // ✅ FIXED: sequential instead of Promise.all
+    let outputs = [];
+
+    outputs.push(await generate());
+    outputs.push(await generate());
 
     function humanScore(text) {
       let score = 0;
@@ -143,7 +145,7 @@ TEXT:
     return res.status(200).json({ output: finalOutput });
 
   } catch (error) {
-    console.error("FULL ERROR:", error); // ✅ DEBUG ENABLED
-    return res.status(500).json({ error: error.message }); // ✅ SHOW REAL ERROR
+    console.error("FULL ERROR:", error);
+    return res.status(500).json({ error: error.message });
   }
 }
