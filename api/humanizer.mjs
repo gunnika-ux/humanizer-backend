@@ -44,7 +44,7 @@ STYLE:
 - Avoid overly casual filler words (like "honestly", "you know")
 - Avoid generic language
 - Use precise and specific wording
-- Avoid neutral tone; use slight variation and emphasis
+- Avoid neutral tone
 - Occasionally vary sentence openings
 - Do not maintain perfectly consistent reasoning flow
 
