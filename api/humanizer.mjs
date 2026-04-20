@@ -54,7 +54,7 @@ The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`
     });
 
-    // ✅ ORIGINAL GENERATE
+    // ORIGINAL GENERATE
     const generate = async () => {
       const result = await model.generateContent({
         contents: [{
@@ -81,7 +81,7 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    // ✅ 🔥 RETRY WRAPPER (MAIN FIX)
+    // RETRY WRAPPER
     const generateWithRetry = async (retries = 2) => {
       try {
         return await generate();
@@ -97,10 +97,9 @@ TEXT:
       }
     };
 
-    // ✅ SEQUENTIAL CALLS (STABLE)
+    // ✅ ONLY CHANGE: SINGLE CALL
     let outputs = [];
 
-    outputs.push(await generateWithRetry());
     outputs.push(await generateWithRetry());
 
     function humanScore(text) {
