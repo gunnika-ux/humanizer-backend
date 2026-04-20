@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: ""gemini-3-flash-preview"",
+      model: "gemini-3-flash-preview", // ✅ FIXED
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -74,7 +74,7 @@ TEXT:
         generationConfig: {
           temperature: 0.89,
           topP: 0.98,
-          maxOutputTokens: 1200,
+          maxOutputTokens: 1500, // ✅ INCREASED
         }
       });
 
@@ -97,7 +97,7 @@ TEXT:
       }
     };
 
-    // ✅ ONLY CHANGE: SINGLE CALL
+    // SINGLE CALL
     let outputs = [];
 
     outputs.push(await generateWithRetry());
