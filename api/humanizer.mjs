@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // 🔐 AUTH CHECK (only addition)
+  // 🔐 AUTH CHECK
   const auth = req.headers.authorization;
   if (auth !== process.env.SECRET_KEY) {
     return res.status(403).json({ error: "Unauthorized" });
@@ -43,15 +43,13 @@ STYLE:
 - Avoid overly formal tone, but maintain clear and professional wording
 - Avoid overly casual filler words (like "honestly", "you know")
 - Avoid generic language
-- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
-- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
-- Occasionally vary sentence openings and avoid uniform phrasing patterns
-- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
-- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
+- Use precise and specific wording
+- Avoid neutral tone; use slight variation and emphasis
+- Occasionally vary sentence openings
+- Do not maintain perfectly consistent reasoning flow
 
 IMPORTANT:
-The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way.`
+The text should NOT feel like a structured article.`
     });
 
     const generate = async () => {
@@ -61,10 +59,9 @@ It should feel like someone explaining things in a natural, slightly uneven way.
           parts: [{
             text: `Rewrite this text naturally.
 
-Keep the original meaning and key ideas, but allow natural rewording.
+Keep the original meaning and key ideas.
 Keep similar length.
-Do NOT follow a perfect introduction → explanation → conclusion structure.
-Avoid overly casual filler words, but do not make it sound like a formal essay.
+Avoid overly formal tone but keep grammar correct.
 
 TEXT:
 "${text}"`
@@ -80,25 +77,8 @@ TEXT:
       return (await result.response).text().trim();
     };
 
-    let outputs = await Promise.all([
-      generate(),
-      generate(),
-      generate()
-    ]);
-
-    function humanScore(text) {
-      let score = 0;
-
-      if (text.match(/\./g)?.length > 5) score += 1;
-      if (/(this|these).{0,20}\1/i.test(text)) score += 1;
-      if (text.includes("But ") || text.includes("And ")) score += 1;
-      if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
-      if (text.split(". ").some(s => s.length < 40)) score += 1;
-
-      return score;
-    }
-
-    let finalOutput = outputs.sort((a, b) => humanScore(b) - humanScore(a))[0];
+    // ✅ SINGLE OUTPUT (FIXED — removed multi-output scoring)
+    let finalOutput = await generate();
 
     finalOutput = finalOutput.replace(
       /^(Option \d+|Output|Result|Here's the rewrite):/gi,
@@ -115,14 +95,12 @@ TEXT:
 
     function cleanText(text) {
       return text
-        // duplicates
+        // remove duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
 
-        // 🔥 NEW grammar improvements
+        // grammar improvements (safe only)
         .replace(/\bmany that\b/gi, "a lot of that")
-        .replace(/\bmany that repetitive\b/gi, "a lot of that repetitive")
         .replace(/\bthere's many\b/gi, "there is a lot of")
-        .replace(/\bthere’s many\b/gi, "there is a lot of")
         .replace(/\bacross much every\b/gi, "across almost every")
 
         // capitalization fix
@@ -130,26 +108,11 @@ TEXT:
 
         // broken joins
         .replace(/\bThis\.\s*This\b/gi, "This")
-        .replace(/\bThis and\b/gi, "This, and")
 
         // grammar fixes
-        .replace(/\bcreates many transparency\b/gi, "creates greater transparency")
         .replace(/\bsince of that\b/gi, "because of that")
-        .replace(/\bgo way up\b/gi, "increase significantly")
 
-        // tone balance
-        .replace(/\bpretty\b/gi, "")
-        // ❌ removed bad rule that caused errors:
-        // .replace(/\ba lot of\b/gi, "many")
-
-        .replace(/\bhuge\b/gi, "significant")
-        .replace(/\bmassive\b/gi, "substantial")
-
-        // contractions
-        .replace(/\bthere's\b/gi, "there is")
-        .replace(/\byou've got\b/gi, "there are")
-
-        // punctuation fixes
+        // punctuation
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
 
