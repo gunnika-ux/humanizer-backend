@@ -46,7 +46,8 @@ STYLE:
 - Occasionally vary sentence openings and avoid uniform phrasing patterns
 - Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
 - Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
-
+- Avoid repeating the same idea using different wording in nearby sentences
+- End naturally without adding a summary-style closing line
 IMPORTANT:
 The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`;
