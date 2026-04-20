@@ -45,6 +45,7 @@ STYLE:
 - Avoid generic language
 - Use precise and specific wording
 - Avoid neutral tone
+- Occasionally include brief explanation of impact or consequence where relevant
 - Occasionally vary sentence openings
 - Do not maintain perfectly consistent reasoning flow
 
