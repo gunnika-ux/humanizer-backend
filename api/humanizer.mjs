@@ -34,7 +34,7 @@ CRITICAL:
 STYLE:
 - Keep grammar correct
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
-- Mix short and long sentences
+- Mix short and long sentences naturally
 - Avoid perfect structure
 - Avoid predictable structure
 - Allow slight jumps in ideas, but keep sentences understandable
