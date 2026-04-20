@@ -68,9 +68,9 @@ TEXT:
           }]
         }],
         generationConfig: {
-          temperature: 0.89, // 🔥 faster + stable
-          topP: 0.99,
-          maxOutputTokens: 1500, // 🔥 reduced for speed
+          temperature: 0.89,
+          topP: 0.99, // ✅ kept as requested
+          maxOutputTokens: 1500,
         }
       });
 
@@ -80,34 +80,21 @@ TEXT:
     // ✅ SINGLE OUTPUT
     let finalOutput = await generate();
 
+    // remove unwanted prefixes
     finalOutput = finalOutput.replace(
       /^(Option \d+|Output|Result|Here's the rewrite):/gi,
       ""
     );
 
-    function breakStructure(text) {
-      return text
-        .replace(/\n\n/g, (m) => (Math.random() > 0.6 ? " " : m))
-        .replace(/\. ([A-Z])/g, (m, p1) =>
-          Math.random() > 0.85 ? `. ${p1}` : m
-        );
-    }
-
+    // ✅ LIGHTWEIGHT CLEAN (fast)
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1")
-        .replace(/\bmany that\b/gi, "a lot of that")
-        .replace(/\bthere's many\b/gi, "there is a lot of")
-        .replace(/\bacross much every\b/gi, "across almost every")
-        .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
-        .replace(/\bThis\.\s*This\b/gi, "This")
-        .replace(/\bsince of that\b/gi, "because of that")
-        .replace(/,\s*\./g, ".")
-        .replace(/\.\./g, ".")
-        .replace(/\s{2,}/g, " ");
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // remove duplicate words
+        .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase()) // capitalization
+        .replace(/\.\./g, ".") // fix dots
+        .replace(/\s{2,}/g, " "); // spacing
     }
 
-    finalOutput = breakStructure(finalOutput);
     finalOutput = cleanText(finalOutput);
 
     return res.status(200).json({ output: finalOutput });
@@ -116,4 +103,5 @@ TEXT:
     console.error(error);
     return res.status(500).json({ error: "Server error. Try again." });
   }
+}
 }
