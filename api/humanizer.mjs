@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // 🔐 AUTH CHECK (only addition)
+  // 🔐 AUTH CHECK
   const auth = req.headers.authorization;
   if (auth !== process.env.SECRET_KEY) {
     return res.status(403).json({ error: "Unauthorized" });
@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-3-flash", // ✅ ONLY CHANGE
+      model: "gemini-3-flash-preview", // ✅ FIXED (stable in your env)
       systemInstruction: `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -115,42 +115,25 @@ TEXT:
 
     function cleanText(text) {
       return text
-        // duplicates
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
-
-        // 🔥 NEW grammar improvements
         .replace(/\bmany that\b/gi, "a lot of that")
         .replace(/\bmany that repetitive\b/gi, "a lot of that repetitive")
         .replace(/\bthere's many\b/gi, "there is a lot of")
         .replace(/\bthere’s many\b/gi, "there is a lot of")
         .replace(/\bacross much every\b/gi, "across almost every")
-
-        // capitalization fix
         .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
-
-        // broken joins
         .replace(/\bThis\.\s*This\b/gi, "This")
         .replace(/\bThis and\b/gi, "This, and")
-
-        // grammar fixes
         .replace(/\bcreates many transparency\b/gi, "creates greater transparency")
         .replace(/\bsince of that\b/gi, "because of that")
         .replace(/\bgo way up\b/gi, "increase significantly")
-
-        // tone balance
         .replace(/\bpretty\b/gi, "")
         .replace(/\bhuge\b/gi, "significant")
         .replace(/\bmassive\b/gi, "substantial")
-
-        // contractions
         .replace(/\bthere's\b/gi, "there is")
         .replace(/\byou've got\b/gi, "there are")
-
-        // punctuation fixes
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
-
-        // spacing
         .replace(/\s{2,}/g, " ");
     }
 
@@ -160,7 +143,7 @@ TEXT:
     return res.status(200).json({ output: finalOutput });
 
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Server error. Try again." });
+    console.error("FULL ERROR:", error); // ✅ DEBUG ENABLED
+    return res.status(500).json({ error: error.message }); // ✅ SHOW REAL ERROR
   }
 }
