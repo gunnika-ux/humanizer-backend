@@ -46,7 +46,7 @@ STYLE:
 - Use precise and specific wording
 - Avoid neutral tone
 - Occasionally add brief impact or consequence where it fits naturally
-- Use clear and precise wording; avoid exaggerated or overly casual expressions (e.g., "huge", "massive", "weird", "stuff")
+- Use clear and precise wording; avoid exaggerated or overly casual expressions
 - Occasionally vary sentence openings
 - Do not maintain perfectly consistent reasoning flow
 
