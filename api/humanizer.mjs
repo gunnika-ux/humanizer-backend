@@ -45,7 +45,7 @@ STYLE:
 - Avoid generic language
 - Use precise and specific wording
 - Avoid neutral tone
-- Where relevant, briefly explain the impact or consequence of ideas to add depth, especially when describing benefits, challenges, or changes
+- Occasionally add brief impact or consequence where it fits naturally
 - Occasionally vary sentence openings
 - Do not maintain perfectly consistent reasoning flow
 
