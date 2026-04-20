@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { text } = req.body;
+    const { text, context } = req.body;
 
     if (!text) {
       return res.status(400).json({ error: "No text provided" });
@@ -64,16 +64,22 @@ Keep the original meaning and key ideas.
 Keep similar length.
 Avoid overly formal tone but keep grammar correct.
 
+${context ? `Continue smoothly from this previous context:\n"${context}"\n\n` : ""}
+
 TEXT:
 "${text}"`
           }]
         }],
         generationConfig: {
-          temperature: 0.90,
-          topP: 0.99, 
+          temperature: 0.9,
+          topP: 0.99, // ✅ unchanged
           maxOutputTokens: 1500,
         }
       });
+
+      if (!result || !result.response) {
+        throw new Error("Empty AI response");
+      }
 
       return result.response.text().trim();
     };
@@ -87,7 +93,7 @@ TEXT:
       ""
     );
 
-    // ✅ LIGHTWEIGHT CLEAN
+    // ✅ LIGHT CLEAN (fast + safe)
     function cleanText(text) {
       return text
         .replace(/\b(\w+)\s+\1\b/gi, "$1")
@@ -101,7 +107,7 @@ TEXT:
     return res.status(200).json({ output: finalOutput });
 
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Server error. Try again." });
+    console.error("BACKEND ERROR:", error);
+    return res.status(500).json({ error: error.message || "Server error. Try again." });
   }
 }
