@@ -7,12 +7,6 @@ export default async function handler(req, res) {
 
   if (req.method === "OPTIONS") return res.status(200).end();
 
-  // 🔐 AUTH CHECK
-  const auth = req.headers.authorization;
-  if (auth !== process.env.SECRET_KEY) {
-    return res.status(403).json({ error: "Unauthorized" });
-  }
-
   try {
     const { text } = req.body;
 
