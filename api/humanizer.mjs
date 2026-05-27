@@ -21,7 +21,8 @@ export default async function handler(req, res) {
 CRITICAL:
 - Keep the original meaning and key ideas, but allow natural rewording
 - Do NOT summarize
-- Keep similar length
+- Maintain approximately the same word count as the original text
+- Do not significantly expand ideas or add new explanation
 - Inject "Human" Punctuation: Use parentheses, and colons mid-thought to create non-linear structures
 
 STYLE:
