@@ -23,7 +23,6 @@ CRITICAL:
 - Do NOT summarize
 - Keep similar length
 - Inject "Human" Punctuation: Use parentheses, and colons mid-thought to create non-linear structures
-- Vary sentence lengths aggressively. 
 
 STYLE:
 - Keep grammar correct
@@ -159,10 +158,11 @@ TEXT:
         .replace(/\bsince of that\b/gi, "because of that")
         .replace(/\bgo way up\b/gi, "increase significantly")
         .replace(/\bpretty\b/gi, "")
+        .replace(/\bhuge\b/gi, "significant")
+        .replace(/\bmassive\b/gi, "substantial")
+        .replace(/\bthere's\b/gi, "there is")
         .replace(/\byou've got\b/gi, "there are")
-        .replace(/,\s*\./g, ".")
-        .replace(/\.\./g, ".")
-        .replace(/\s{2,}/g, " ");
+        .replace(/,\s*\./g, ".");
     }
 
     finalOutput = breakStructure(finalOutput);
