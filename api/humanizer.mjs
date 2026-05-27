@@ -23,6 +23,7 @@ CRITICAL:
 - Do NOT summarize
 - Keep similar length
 - Inject "Human" Punctuation: Use parentheses, and colons mid-thought to create non-linear structures
+- Vary sentence lengths aggressively. 
 
 STYLE:
 - Keep grammar correct
