@@ -23,7 +23,7 @@ CRITICAL:
 - Do NOT summarize
 - Maintain approximately the same word count as the original text
 - Do not significantly expand ideas or add new explanation
-- Inject "Human" Punctuation: Use parentheses, and colons mid-thought to create non-linear structures
+- Inject "Human" Punctuation: Use em-dashes (—), parentheses, and colons mid-thought to create non-linear structures
 
 STYLE:
 - Keep grammar correct
