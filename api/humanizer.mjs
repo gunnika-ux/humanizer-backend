@@ -157,9 +157,6 @@ TEXT:
         .replace(/\bcreates many transparency\b/gi, "creates greater transparency")
         .replace(/\bsince of that\b/gi, "because of that")
         .replace(/\bgo way up\b/gi, "increase significantly")
-        .replace(/\bpretty\b/gi, "")
-        .replace(/\bhuge\b/gi, "significant")
-        .replace(/\bmassive\b/gi, "substantial")
         .replace(/\bthere's\b/gi, "there is")
         .replace(/\byou've got\b/gi, "there are")
         .replace(/,\s*\./g, ".");
