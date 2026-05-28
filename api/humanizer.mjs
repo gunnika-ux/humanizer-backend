@@ -52,7 +52,7 @@ It should feel like someone explaining things in a natural, slightly uneven way.
     // 🔥 MODEL ORDER (NO 2.5)
     const models = [
       "gemini-3-flash-preview",
-      "gemini-3-flash-preview"
+      "gemini-3.5-flash"
     ];
 
     const generateFromModel = async (modelName) => {
