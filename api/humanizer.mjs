@@ -22,7 +22,7 @@ CRITICAL:
 - Keep the original meaning and key ideas, but allow natural rewording
 - Do NOT summarize
 - Keep similar length
-- Inject "Human" Punctuation: Use colons mid-thought to create non-linear structures naturally
+- Inject "Human" Punctuation: Use colons mid-thought to create non-linear structures 
 
 STYLE:
 - Keep grammar correct
