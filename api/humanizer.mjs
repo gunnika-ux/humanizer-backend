@@ -43,6 +43,8 @@ STYLE:
 - Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
 - Avoid repeating the same idea using different wording in nearby sentences
 - End naturally without adding a summary-style closing line
+- Do NOT use markdown formatting symbols like *, **, _, #, or backticks in the output.
+Return plain text only.
 IMPORTANT:
 The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`;
