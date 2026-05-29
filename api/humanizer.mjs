@@ -22,7 +22,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // FIXED: Removed the raw word "backticks" near special symbols to prevent JS engine confusion
     const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -43,7 +42,6 @@ STYLE:
 - Avoid overly formal tone, but maintain clear and professional wording
 - Avoid overly casual filler words (like "honestly", "you know")
 - Avoid generic language
-- Avoid Technical language and jargon
 - Use precise and specific wording, and include brief, meaningful detail where it improves clarity
 - Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
 - Occasionally vary sentence openings and avoid uniform phrasing patterns
@@ -54,6 +52,10 @@ STYLE:
 - Keep paragraphs natural rather than highly optimized
 - Avoid repeating the same idea using different wording in nearby sentences
 - End naturally without adding a summary-style closing line
+- Avoid pristine, mathematically balanced sentences; write with an irregular, organic rhythm.
+- Break up technical jargon by introducing it casually (e.g., instead of "The study utilized a quantitative methodology," use "The study looked at the numbers—using a quantitative approach").
+- Write with a raw, direct focus on the message rather than crafting an over-edited, clinically perfect piece of text.
+
 IMPORTANT:
 The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`;
@@ -66,6 +68,9 @@ It should feel like someone explaining things in a natural, slightly uneven way.
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
+        temperature: 0.88,
+        presence_penalty: 0.2,
+        frequency_penalty: 0.4,
         messages: [
           { role: "system", content: systemInstruction },
           { 
@@ -126,4 +131,4 @@ It should feel like someone explaining things in a natural, slightly uneven way.
       error: error.message || "Unknown error"
     });
   }
-} 
+}
