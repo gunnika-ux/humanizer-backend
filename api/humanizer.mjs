@@ -22,21 +22,21 @@ export default async function handler(req, res) {
       });
     }
 
-    // RE-ENGINEERED PROMPT: Controls word count bloat while keeping the low AI signature
-    const systemInstruction = `Rewrite the text like a professional casually breaking down data for a colleague over a direct chat message.
+    // PERFECTLY BALANCED PROMPT: Uses your 10-20 word buffer to break the 100% AI score
+    const systemInstruction = `Rewrite the text like a professional casually explaining data points to a colleague over a direct message thread.
 
-CRITICAL FACT & LENGTH CONTROL:
-- Keep the original core meaning, exact stats, data metrics, and technical terms completely intact.
-- STRICT LENGTH BUDGET: Keep the total word count close to the original text. Do not pad with unnecessary words, long explanations, or fluff. 
-- Instead of adding extra words to separate facts, use punctuation shifts (like parentheses or commas) to break up dense data blocks.
+CRITICAL FACT & BUDGET CONTROL:
+- Keep the original core meaning, exact statistics, numbers, dates, and technical names completely intact.
+- LENGTH RULES: Keep the text tight and close to the original length, but you are allowed a very slight buffer of an extra 10 to 20 words. 
+- Use this tiny word buffer exclusively to insert casual human phrasing and punctuation shifts around the heavy facts so they don't look bunched together.
 - Do NOT summarize.
 
-STYLE & ANTI-DETECTION RUNTIME:
-- Keep grammar accurate, but completely drop pristine, textbook-style symmetry.
-- Vary sentence structures aggressively: place a tiny 2-4 word sentence right before or after a longer clause.
-- Introduce natural, human structural variations: use regular commas, colons mid-thought, or natural parentheses (like this) for quick aside notes to stagger the text flow.
-- Avoid predictable academic patterns or slick corporate copy. Write with a direct, unedited, first-draft momentum.
-- Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
+STYLE & ANTI-DETECTION:
+- Keep grammar clean, but aggressively avoid over-polished, perfectly balanced textbook phrasing.
+- Intentionally vary sentence lengths: place a tiny statement (3-5 words) right next to a longer, detailed sentence.
+- Use conversational, non-linear phrasing structures. Introduce regular commas, brief parenthetical asides (like this), or a colon mid-thought to make the rhythm feel spontaneous.
+- Never use uniform sentence openings, repetitive transitional words, or textbook formulas.
+- Stop writing immediately once the message is delivered. Do not add a tidy wrap-up sentence or conclusion at the end.`;
 
     const models = [
       "gpt-5.4-mini",
@@ -52,7 +52,7 @@ STYLE & ANTI-DETECTION RUNTIME:
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Completely change the sentence structures and layout of this text. Keep the word count tight and close to the original text, but make the rhythm uneven, distinct, and human. Do not include labels or intros.
+            content: `Completely change the sentence structure, word sequence, and overall flow of this text. Keep the exact facts completely intact, but make the rhythm uneven, distinct, and human. Do not include labels or intro notes.
 
 TEXT:
 ${text}` 
@@ -89,20 +89,20 @@ ${text}`
       ""
     );
 
-    // CLEANUP SYSTEM: Vaporizes brackets and dash artifacts automatically
+    // CLEANUP SYSTEM: Vaporizes brackets, dashes, and duplicate spaces cleanly
     function cleanText(input) {
       if (!input) return "";
 
       return input
-        // 1. Clears any lingering robotic bracket leakages
-        .replace(/[\[\{\s]*which\s+matters[\s\]\}\.\,]*(-*\s*)*/gi, " ")
+        // 1. Clears any accidental bracket or parenthesis leakages of the "which matters" phrase
+        .replace(/[\[\(\{\s]*which\s+matters[\s\]\)\}\.\,]*(-*\s*)*/gi, " ")
         
-        // 2. Converts any accidental em-dashes or double-hyphens into clean, normal commas
+        // 2. Converts any accidental em-dashes, en-dashes, or double-hyphens into clean commas
         .replace(/\s*[—–——]\s*/g, ", ")
         .replace(/\s+-\s+/g, ", ")
         .replace(/-{2,}/g, ", ")
         
-        // 3. String normalization
+        // 3. General format normalization
         .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
         .replace(/,\s*,/g, ",")             // Clean double commas
         .replace(/,\s*\./g, ".")            // Clean trailing commas
