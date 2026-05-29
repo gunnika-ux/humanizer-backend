@@ -22,19 +22,18 @@ export default async function handler(req, res) {
       });
     }
 
-    // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
     const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague over chat.
 
 CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
-- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
+- Space the facts out. Pad data points with casual, analytical human transitions.
 - Do NOT summarize. Keep a similar overall length by expanding the phrasing around the facts.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
-- Introduce natural structural variations: use em-dashes, brackets for aside thoughts, or a colon mid-sentence to stagger the text flow.
+- Introduce natural structural variations: use commas, parenthetical asides, or a colon mid-sentence to stagger the text flow.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
@@ -47,7 +46,6 @@ STYLE & ANTI-DETECTION RUNTIME:
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
         temperature: 0.95,
         top_p: 0.95,
         messages: [
@@ -91,10 +89,13 @@ ${text}`
       ""
     );
 
+    // FIXED SANITIZATION: Cleans up the AI's weird formatting hacks automatically
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
-        .replace(/\s{2,}/g, " ")           // Clean double spacing
+        .replace(/\[\s*which\s+matters\s*\]/gi, "") // 1. Erases weird "[which matters]" text artifacts
+        .replace(/\s*—\s*/g, ", ")                  // 2. Swaps out ugly em-dashes for clean commas
+        .replace(/\b(\w+)\s+\1\b/gi, "$1")          // Clean duplicate words
+        .replace(/\s{2,}/g, " ")                    // Clean double spacing
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
         .replace(/\n{3,}/g, "\n\n")
