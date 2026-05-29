@@ -23,22 +23,37 @@ export default async function handler(req, res) {
     }
 
     // UNIVERSAL PROMPT: Works perfectly for professionals, academics, and creators alike
-    const systemInstruction = `You are an expert communicator rewriting text to sound completely natural, organic, and human. Your goal is to explain the provided ideas clearly without looking like an automated machine.
+   const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
-- Keep the original meaning, facts, statistics, dates, data points, and technical names exactly intact. Do not alter, omit, or loose crucial details.
-- Do NOT summarize; rewrite the text completely while keeping a similar total length.
+- Keep the original meaning and key ideas, but allow natural rewording
+- Do NOT summarize
+- Keep similar length
+- Inject "Human" Punctuation: Use colons mid-thought to create non-linear structures
 
-STYLE & STRUCTURE PARAMETERS:
-- Shatter predictable AI signatures by using an irregular, varied sentence cadence.
-- Mix sentence lengths aggressively: place short, punchy statements right next to longer, descriptive sentences.
-- Never use back-to-back sentences that follow the exact same grammatical blueprint or phrasing pattern.
-- Avoid pristine, mathematically balanced phrasing or textbook-style clinical gloss. Let the writing flow directly and naturally.
-- Use human punctuation patterns: naturally introduce em-dashes, colons mid-thought, or brief parenthetical notes to break up rigid transitions.
-- Maintain impeccable grammar and spelling, but ensure the tone sounds like a person breaking down concepts in real life.
+STYLE:
+- Keep grammar correct
+- Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
+- Mix short and long sentences
+- Avoid perfect structure
+- Avoid predictable structure
+- Allow slight jumps in ideas, but keep sentences understandable
+- Use clear language, but include some specific and descriptive wording where appropriate
+- Add slight variation in expression and emphasis to avoid flat or generic tone
+- Avoid overly formal tone, but maintain clear and professional wording
+- Avoid overly casual filler words (like "honestly", "you know")
+- Avoid generic language
 - Avoid Technical language and jargon
-- AVOID Predictable structure
-- End the response naturally. Do not include summary closing statements or repetitive concluding lines.`;
+- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
+- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
+- Occasionally vary sentence openings and avoid uniform phrasing patterns
+- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
+- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
+- Avoid repeating the same idea using different wording in nearby sentences
+- End naturally without adding a summary-style closing line
+IMPORTANT:
+The text should NOT feel like a structured article.
+It should feel like someone explaining things in a natural, slightly uneven way.`;
 
     const models = [
       "gpt-5-mini",
