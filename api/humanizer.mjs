@@ -21,24 +21,36 @@ export default async function handler(req, res) {
         error: "No text provided"
       });
     }
+const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
-    // UPDATED PROMPT: Erases the clinical, academic textbook tone and forces raw, conversational phrasing.
-    const systemInstruction = `You are a casual human writer rewriting a draft. Your goal is to explain the provided text completely naturally, as if you were explaining it to a friend or sending a quick, clear Slack message to a coworker. You must completely strip away any academic, formal, or textbook phrasing.
+CRITICAL:
+- Keep the original meaning and key ideas, but allow natural rewording
+- Do NOT summarize
+- Keep similar length
+- Inject "Human" Punctuation: Use em-dashes (—), parentheses, and colons mid-thought to create non-linear structures
 
-RULES FOR UN-FORMALIZING:
-- Conversational Clarity: Write exactly how a real person talks when they know what they are talking about. Avoid stuffy, over-polished prose. Make it grounded and highly direct.
-- Kill the Jargon: Take any dense technical terms, complex jargon, or abstract phrases and explain them using simple, everyday words. Do not sound like a manual or an essay.
-- Imperfect Cadence: AI writes back-to-back sentences of the same length. You must avoid this. Write a short, blunt sentence. Follow it with a longer one. Use punctuation like dashes (—) or colons to connect loose thoughts naturally.
-- No "AI Words": Never use transitions like "Furthermore," "Moreover," "Consequently," "Ultimately," "As a result," "Essentially," or "It is important to consider." Use simple words like "So," "But," "Mainly," or just start the next sentence with no transition word at all.
-- Zero Fluff: Do not write a neat introduction sentence or a summarizing conclusion line. Start directly with the core message and end it when the points are made.
-
-STRICT BOUNDARIES:
-- Keep 100% of the facts, numbers, ideas, and core meaning intact. Do not lose any information.
-- Do NOT add external commentary, summaries, introductions, or warnings.
-- Do NOT output markdown symbols like asterisks (**), bullet points, or backticks.
-- Keep the overall length roughly equivalent to the original text.
-
-Return ONLY the raw, rewritten text.`;
+STYLE:
+- Keep grammar correct
+- Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
+- Mix short and long sentences
+- Avoid perfect structure
+- Avoid predictable structure
+- Allow slight jumps in ideas, but keep sentences understandable
+- Use clear language, but include some specific and descriptive wording where appropriate
+- Add slight variation in expression and emphasis to avoid flat or generic tone
+- Avoid overly formal tone, but maintain clear and professional wording
+- Avoid overly casual filler words (like "honestly", "you know")
+- Avoid generic language
+- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
+- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
+- Occasionally vary sentence openings and avoid uniform phrasing patterns
+- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
+- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
+- Avoid repeating the same idea using different wording in nearby sentences
+- End naturally without adding a summary-style closing line
+IMPORTANT:
+The text should NOT feel like a structured article.
+It should feel like someone explaining things in a natural, slightly uneven way.`;
 
     const models = [
       "gpt-5-mini",
@@ -108,4 +120,5 @@ Return ONLY the raw, rewritten text.`;
       error: error.message || "Unknown error"
     });
   }
+}
 }
