@@ -21,7 +21,9 @@ export default async function handler(req, res) {
         error: "No text provided"
       });
     }
-const systemInstruction = `Rewrite the text like a real person explaining ideas.
+
+    // FIXED: Removed the raw word "backticks" near special symbols to prevent JS engine confusion
+    const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
 - Keep the original meaning and key ideas, but allow natural rewording
@@ -120,5 +122,4 @@ It should feel like someone explaining things in a natural, slightly uneven way.
       error: error.message || "Unknown error"
     });
   }
-}
 }
