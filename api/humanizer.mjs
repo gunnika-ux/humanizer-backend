@@ -22,27 +22,23 @@ export default async function handler(req, res) {
       });
     }
 
-    // THE ABSOLUTE SOLUTION: Forces the AI to ruin its own "perfect writing" patterns
-    const systemInstruction = `Rewrite the text like a real person casually explaining complex ideas to a colleague.
+    // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
+    const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague over chat.
 
-CRITICAL:
-- Keep the original meaning, exact facts, stats, numbers, names, and technical terms completely intact. Do not delete them.
-- Do NOT summarize.
-- Keep a similar overall length.
+CRITICAL FACT HANDLING:
+- Keep the original core meaning, exact stats, data metrics, and technical terms intact.
+- Do NOT stack facts back-to-back in a tight, dense line. 
+- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
+- Do NOT summarize. Keep a similar overall length by expanding the phrasing around the facts.
 
-STYLE & STRUCTURE:
-- Keep basic grammar correct, but aggressively avoid pristine, mathematically balanced sentence structures.
-- Shatter uniform rhythm: explicitly place an incredibly short, blunt phrase (3-5 words) right next to a long, winding explanation.
-- Intentionally break up academic terms by framing them loosely (e.g., instead of "The paper utilized a quantitative MANOVA framework," write "The study looked at the data using a MANOVA setup").
-- Inject human structural messiness: use em-dashes, parenthetical side notes, or mid-thought colons to force a non-linear flow.
-- Avoid clean paragraph transitions and flat, sterile delivery. The writing must feel spontaneous, direct, and slightly unpolished.
-- Never use repetitive transitional formulas or predictable sentence openings. 
-- End abruptly and naturally without any summary-style closing remarks.
+STYLE & ANTI-DETECTION RUNTIME:
+- Keep grammar accurate, but completely abandon pristine, textbook symmetry.
+- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
+- Introduce natural structural variations: use em-dashes, brackets for aside thoughts, or a colon mid-sentence to stagger the text flow.
+- Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
+- Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
+- Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
 
-IMPORTANT:
-The text must NOT look like a structured article or an edited textbook. It needs to read like a raw, direct, slightly uneven thought.`;
-
-    // FIXED: gpt-5.4-mini is now primary to leverage its superior instruction following
     const models = [
       "gpt-5.4-mini",
       "gpt-5-mini"
@@ -51,14 +47,14 @@ The text must NOT look like a structured article or an edited textbook. It needs
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // FIXED: Shifted parameters to give the engine word-choice freedom to break AI patterns
-        temperature: 0.92,
+        // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
+        temperature: 0.95,
         top_p: 0.95,
         messages: [
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Completely rewrite this text. Keep every single hard fact, dataset, and technical name, but fundamentally destroy the polished, predictable sentence paths. Make the phrasing rhythm uneven and deeply human. Do not include labels.
+            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
 
 TEXT:
 ${text}` 
@@ -97,8 +93,8 @@ ${text}`
 
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clear double words
-        .replace(/\s{2,}/g, " ")           // Clear double spacing
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
+        .replace(/\s{2,}/g, " ")           // Clean double spacing
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
         .replace(/\n{3,}/g, "\n\n")
