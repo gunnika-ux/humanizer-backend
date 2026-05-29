@@ -41,7 +41,6 @@ STYLE:
 - Use clear language, but include some specific and descriptive wording where appropriate
 - Add slight variation in expression and emphasis to avoid flat or generic tone
 - Avoid overly formal tone, but maintain clear and professional wording
-- Avoid overly casual filler words (like "honestly", "you know")
 - Avoid generic language
 - Avoid Technical language and jargon
 - Use precise and specific wording, and include brief, meaningful detail where it improves clarity
@@ -64,7 +63,7 @@ It should feel like someone explaining things in a natural, slightly uneven way.
       const response = await openai.chat.completions.create({
         model: modelName,
         // Locked into your exact requested parameters without penalties
-        temperature: 0.7,
+        temperature: 0.8,
         top_p: 0.8,
         messages: [
           { role: "system", content: systemInstruction },
