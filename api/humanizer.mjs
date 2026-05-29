@@ -22,49 +22,35 @@ export default async function handler(req, res) {
       });
     }
 
-    // UNIVERSAL PROMPT: Works perfectly for professionals, academics, and creators alike
-   const systemInstruction = `Rewrite the text like a real person explaining ideas.
+    // CLEANED UNIVERSAL PROMPT: Removes conflicting traps so the engine actually drops the AI score
+    const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
-- Keep the original meaning and key ideas, but allow natural rewording
-- Do NOT summarize
-- Keep similar length
-- Inject "Human" Punctuation: Use colons mid-thought to create non-linear structures
-- keep ai score low
-STYLE:
-- Keep grammar correct
-- Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
-- Mix short and long sentences
-- Avoid perfect structure
-- Avoid predictable structure
-- Allow slight jumps in ideas, but keep sentences understandable
-- Use clear language, but include some specific and descriptive wording where appropriate
-- Add slight variation in expression and emphasis to avoid flat or generic tone
-- Avoid overly formal tone, but maintain clear and professional wording
-- Avoid generic language
-- Avoid Technical language and jargon
-- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
-- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
-- Occasionally vary sentence openings and avoid uniform phrasing patterns
-- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
-- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
-- Avoid repeating the same idea using different wording in nearby sentences
-- End naturally without adding a summary-style closing line
-IMPORTANT:
-The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way.`;
+- Keep the original meaning, exact facts, stats, numbers, and proper nouns completely intact.
+- Do NOT summarize.
+- Keep a similar overall length.
 
+STYLE:
+- Keep grammar correct.
+- Break the AI signature by using an irregular, conversational cadence.
+- Mix sentence lengths aggressively: place an incredibly short sentence (3-6 words) right next to a long, explanatory one.
+- Never use back-to-back sentences that share the exact same grammatical structure or rhythm.
+- Avoid pristine, mathematically balanced phrasing or clean textbook-style flow. Let transitions feel slightly raw and direct.
+- Inject human punctuation patterns: naturally drop em-dashes, parenthetical asides, or mid-thought colons to shatter uniform sentence streams.
+- Ensure sentences are logically understandable, but allow the phrasing to feel spontaneous rather than heavily engineered or over-polished.
+- End naturally without adding a summary-style closing line.`;
+
+    // CHANGED: Prioritizing the more advanced 5.4 engine to handle complex articles gracefully
     const models = [
-      "gpt-5-mini",
-      "gpt-5.4-mini"
+      "gpt-5.4-mini",
+      "gpt-5-mini"
     ];
 
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // Locked into your exact requested parameters without penalties
-        temperature: 0.8,
-        top_p: 0.8,
+        // FIXED: Higher temperature and unrestricted top_p forces unpredictable, low-AI-score choices
+        temperature: 0.93,
         messages: [
           { role: "system", content: systemInstruction },
           { 
