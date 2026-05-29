@@ -22,7 +22,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // UPDATED PROMPT: Controls word bloat while crushing the AI detection signatures
     const systemInstruction = `Rewrite the text like a person directly explaining key points over a clean message.
 
 CRITICAL FACT & LENGTH CONTROL:
@@ -47,7 +46,6 @@ STYLE & ANTI-DETECTION RUNTIME:
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // Kept high to preserve the low AI score, but the new prompt constraints prevent length bloat
         temperature: 0.95,
         top_p: 0.95,
         messages: [
@@ -91,16 +89,25 @@ ${text}`
       ""
     );
 
-    // SANITIZATION FILTER: Removes weird brackets and em-dashes automatically
-    function cleanText(text) {
-      return text
-        .replace(/\[\s*which\s+matters\s*\]/gi, "") 
-        .replace(/\s*—\s*/g, ", ")                  
-        .replace(/\b(\w+)\s+\1\b/gi, "$1")          
-        .replace(/\s{2,}/g, " ")                    
-        .replace(/,\s*\./g, ".")
-        .replace(/\.\./g, ".")
-        .replace(/\n{3,}/g, "\n\n")
+    // BULLETPROOF CLEANUP SYSTEM: Vaporizes brackets, parentheticals, and dashes completely
+    function cleanText(input) {
+      if (!input) return "";
+
+      return input
+        // 1. Removes "[which matters]", "(which matters)", "which matters.", etc. with any punctuation
+        .replace(/[\[\(\{\s]*which\s+matters[\s\]\)\}\.\,]*(-*\s*)*/gi, " ")
+        
+        // 2. Catches all types of dashes (em-dashes, en-dashes, double hyphens, spaced hyphens) and converts them to clean commas
+        .replace(/\s*[—–——]\s*/g, ", ")
+        .replace(/\s+-\s+/g, ", ")
+        .replace(/-{2,}/g, ", ")
+        
+        // 3. Clean up generic string bugs
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Double word cleanup
+        .replace(/,\s*,/g, ",")             // Double comma cleanup
+        .replace(/,\s*\./g, ".")            // Trailing comma cleanup
+        .replace(/\.\./g, ".")              // Double periods cleanup
+        .replace(/\s{2,}/g, " ")            // Wipe out extra whitespace blocks
         .trim();
     }
 
