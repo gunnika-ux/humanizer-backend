@@ -22,25 +22,27 @@ export default async function handler(req, res) {
       });
     }
 
-    // CLEANED UNIVERSAL PROMPT: Removes conflicting traps so the engine actually drops the AI score
-    const systemInstruction = `Rewrite the text like a real person explaining ideas.
+    // THE ABSOLUTE SOLUTION: Forces the AI to ruin its own "perfect writing" patterns
+    const systemInstruction = `Rewrite the text like a real person casually explaining complex ideas to a colleague.
 
 CRITICAL:
-- Keep the original meaning, exact facts, stats, numbers, and proper nouns completely intact.
+- Keep the original meaning, exact facts, stats, numbers, names, and technical terms completely intact. Do not delete them.
 - Do NOT summarize.
 - Keep a similar overall length.
 
-STYLE:
-- Keep grammar correct.
-- Break the AI signature by using an irregular, conversational cadence.
-- Mix sentence lengths aggressively: place an incredibly short sentence (3-6 words) right next to a long, explanatory one.
-- Never use back-to-back sentences that share the exact same grammatical structure or rhythm.
-- Avoid pristine, mathematically balanced phrasing or clean textbook-style flow. Let transitions feel slightly raw and direct.
-- Inject human punctuation patterns: naturally drop em-dashes, parenthetical asides, or mid-thought colons to shatter uniform sentence streams.
-- Ensure sentences are logically understandable, but allow the phrasing to feel spontaneous rather than heavily engineered or over-polished.
-- End naturally without adding a summary-style closing line.`;
+STYLE & STRUCTURE:
+- Keep basic grammar correct, but aggressively avoid pristine, mathematically balanced sentence structures.
+- Shatter uniform rhythm: explicitly place an incredibly short, blunt phrase (3-5 words) right next to a long, winding explanation.
+- Intentionally break up academic terms by framing them loosely (e.g., instead of "The paper utilized a quantitative MANOVA framework," write "The study looked at the data using a MANOVA setup").
+- Inject human structural messiness: use em-dashes, parenthetical side notes, or mid-thought colons to force a non-linear flow.
+- Avoid clean paragraph transitions and flat, sterile delivery. The writing must feel spontaneous, direct, and slightly unpolished.
+- Never use repetitive transitional formulas or predictable sentence openings. 
+- End abruptly and naturally without any summary-style closing remarks.
 
-    // CHANGED: Prioritizing the more advanced 5.4 engine to handle complex articles gracefully
+IMPORTANT:
+The text must NOT look like a structured article or an edited textbook. It needs to read like a raw, direct, slightly uneven thought.`;
+
+    // FIXED: gpt-5.4-mini is now primary to leverage its superior instruction following
     const models = [
       "gpt-5.4-mini",
       "gpt-5-mini"
@@ -49,15 +51,16 @@ STYLE:
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // FIXED: Higher temperature and unrestricted top_p forces unpredictable, low-AI-score choices
-        temperature: 0.93,
+        // FIXED: Shifted parameters to give the engine word-choice freedom to break AI patterns
+        temperature: 0.92,
+        top_p: 0.95,
         messages: [
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Completely change the sentence structure, word sequence, and overall flow of this text. Keep the exact facts and core data completely intact, but make the rhythm deeply human, unpredictable, and uneven. Do not include introductory notes or labels.
+            content: `Completely rewrite this text. Keep every single hard fact, dataset, and technical name, but fundamentally destroy the polished, predictable sentence paths. Make the phrasing rhythm uneven and deeply human. Do not include labels.
 
-TEXT TO REWRITE:
+TEXT:
 ${text}` 
           }
         ]
@@ -87,7 +90,6 @@ ${text}`
 
     let finalOutput = await generateWithFallback();
 
-    // Strip out common AI prefix tags if they appear
     finalOutput = finalOutput.replace(
       /^(Option \d+|Output|Result|Here's the rewrite|Rewritten text):/gi,
       ""
@@ -95,8 +97,8 @@ ${text}`
 
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
-        .replace(/\s{2,}/g, " ")           // Clean double spacing
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clear double words
+        .replace(/\s{2,}/g, " ")           // Clear double spacing
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
         .replace(/\n{3,}/g, "\n\n")
