@@ -53,10 +53,10 @@ STYLE:
 - Avoid repeating the same idea using different wording in nearby sentences
 - End naturally without adding a summary-style closing line
 
-ADDITIONAL INSTRUCTIONS FOR ACADEMIC/TECHNICAL TEXTS:
-- Avoid the rigid academic passive voice (do not start with formulaic openings like "This peer-reviewed study examined" or "This article is relevant because"). Instead, frame it naturally as a person breaking down data.
-- Actively reorganize the order of how points are introduced so the sentence blueprints do not mirror a textbook or template format.
-- Make the tone less clinical: match the voice of an expert explaining data directly to a teammate in a clear, straightforward, and un-stuffy way.
+ADDITIONAL TEXT STRUCTURING RULES:
+- Break up the text rhythm by deliberately placing very short, punchy sentences (4-8 words) directly next to longer, detailed sentences.
+- Use simple, conversational connecting words (like "So", "But", "Mainly", "Though") instead of complex or formal transitional phrases to link technical ideas.
+- Change the starting point of the sentences completely so the grammatical sequence looks completely different from the original text block.
 
 IMPORTANT:
 The text should NOT feel like a structured article.
