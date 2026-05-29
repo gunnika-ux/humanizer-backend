@@ -22,7 +22,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // FIXED: Removed the raw word "backticks" near special symbols to prevent JS engine confusion
     const systemInstruction = `Rewrite the text like a real person explaining ideas.
 
 CRITICAL:
@@ -53,6 +52,12 @@ STYLE:
 - Keep paragraphs natural rather than highly optimized
 - Avoid repeating the same idea using different wording in nearby sentences
 - End naturally without adding a summary-style closing line
+
+ADDITIONAL INSTRUCTIONS FOR ACADEMIC/TECHNICAL TEXTS:
+- Avoid the rigid academic passive voice (do not start with formulaic openings like "This peer-reviewed study examined" or "This article is relevant because"). Instead, frame it naturally as a person breaking down data.
+- Actively reorganize the order of how points are introduced so the sentence blueprints do not mirror a textbook or template format.
+- Make the tone less clinical: match the voice of an expert explaining data directly to a teammate in a clear, straightforward, and un-stuffy way.
+
 IMPORTANT:
 The text should NOT feel like a structured article.
 It should feel like someone explaining things in a natural, slightly uneven way.`;
