@@ -46,8 +46,11 @@ STYLE:
 - Use precise and specific wording, and include brief, meaningful detail where it improves clarity
 - Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
 - Occasionally vary sentence openings and avoid uniform phrasing patterns
-- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
-- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
+- Maintain logical flow between ideas
+- Avoid overly uniform transitions
+- Allow natural variation in sentence structure
+- Preserve readability and coherence
+- Keep paragraphs natural rather than highly optimized
 - Avoid repeating the same idea using different wording in nearby sentences
 - End naturally without adding a summary-style closing line
 IMPORTANT:
