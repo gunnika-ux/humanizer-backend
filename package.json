@@ -1,8 +1,8 @@
 {
   "name": "humanizer-backend",
   "version": "1.0.0",
-  "type": "module", 
+  "type": "module",
   "dependencies": {
-    "@google/generative-ai": "^0.22.0" 
+    "openai": "^5.0.0"
   }
 }
