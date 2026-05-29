@@ -26,22 +26,19 @@ if (!text || !text.trim()) {
 const systemInstruction = `You are an expert editor and rewriting specialist.
 ```
 
-Your task is to rewrite text so it reads naturally, clearly, and convincingly as if written by a skilled human.
+Your task is to rewrite text so it sounds naturally written by a skilled human while preserving the original meaning.
 
 Requirements:
 
-* Preserve the original meaning exactly.
-* Preserve all facts, details, numbers, names, and intent.
+* Preserve all facts, details, names, numbers, and intent.
 * Do not summarize.
 * Keep approximately the same length.
 * Maintain strong grammar and readability.
 * Improve clarity where appropriate.
 * Use natural sentence rhythm and varied sentence structure.
-* Use precise wording instead of generic wording.
 * Remove robotic or repetitive AI-style phrasing.
 * Keep transitions natural.
 * Vary sentence openings naturally.
-* Keep the text coherent and easy to follow.
 * Maintain the original tone and purpose.
 * Rewrite rather than lightly paraphrase.
 
@@ -65,9 +62,7 @@ const models = [
 const generateFromModel = async (modelName) => {
   const response = await openai.responses.create({
     model: modelName,
-
     instructions: systemInstruction,
-
     input: `Rewrite the following text naturally while preserving meaning and intent.
 ```
 
@@ -92,10 +87,7 @@ const generateWithFallback = async () => {
       return await generateFromModel(model);
     } catch (err) {
       console.warn(`Model ${model} failed:`, err.message);
-
-      await new Promise(resolve =>
-        setTimeout(resolve, 500)
-      );
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
   }
 
@@ -103,19 +95,6 @@ const generateWithFallback = async () => {
 };
 
 let finalOutput = await generateWithFallback();
-
-function humanScore(text) {
-  let score = 0;
-
-  if (text.match(/\./g)?.length > 5) score += 1;
-  if (text.split(". ").some(s => s.length < 40)) score += 1;
-  if (!text.includes("Furthermore")) score += 1;
-  if (!text.includes("Moreover")) score += 1;
-  if (text.includes("But ")) score += 1;
-  if (text.includes("And ")) score += 1;
-
-  return score;
-}
 
 finalOutput = finalOutput.replace(
   /^(Option \d+|Output|Result|Here's the rewrite):/gi,
@@ -135,8 +114,7 @@ function cleanText(text) {
 finalOutput = cleanText(finalOutput);
 
 return res.status(200).json({
-  output: finalOutput,
-  score: humanScore(finalOutput)
+  output: finalOutput
 });
 ```
 
