@@ -64,8 +64,8 @@ It should feel like someone explaining things in a natural, slightly uneven way.
       const response = await openai.chat.completions.create({
         model: modelName,
         // Locked into your exact requested parameters without penalties
-        temperature: 1,
-        top_p: 0.95,
+        temperature: 1.1,
+        top_p: 0.99,
         messages: [
           { role: "system", content: systemInstruction },
           { 
