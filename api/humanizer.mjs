@@ -30,7 +30,7 @@ CRITICAL:
 - Do NOT summarize
 - Keep similar length
 - Inject "Human" Punctuation: Use colons mid-thought to create non-linear structures
-- Get low ai dectection score 
+- keep ai score low
 STYLE:
 - Keep grammar correct
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
