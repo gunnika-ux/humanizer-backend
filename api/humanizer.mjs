@@ -65,7 +65,7 @@ It should feel like someone explaining things in a natural, slightly uneven way.
         model: modelName,
         // Locked into your exact requested parameters without penalties
         temperature: 1.1,
-        top_p: 0.99,
+        top_p: 0.8,
         messages: [
           { role: "system", content: systemInstruction },
           { 
