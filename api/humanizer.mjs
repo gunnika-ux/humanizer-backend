@@ -57,6 +57,7 @@ ADDITIONAL TEXT STRUCTURING RULES:
 - Break up the text rhythm by deliberately placing very short, punchy sentences (4-8 words) directly next to longer, detailed sentences.
 - Use simple, conversational connecting words (like "So", "But", "Mainly", "Though") instead of complex or formal transitional phrases to link technical ideas.
 - Change the starting point of the sentences completely so the grammatical sequence looks completely different from the original text block.
+- Lean heavily into natural human phrasing: use common verbal contractions (like "it's", "they're", "don't", "wasn't") instead of spelling out full words, and frame academic data with conversational observational phrases (e.g., "Looking closely at the data," or "Here's what they found:").
 
 IMPORTANT:
 The text should NOT feel like a structured article.
