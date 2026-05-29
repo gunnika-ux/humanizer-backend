@@ -22,33 +22,25 @@ export default async function handler(req, res) {
       });
     }
 
-    // Fixed: Cleaned up markdown backticks breaking the JavaScript string
-    const systemInstruction = `You are an expert editor and rewriting specialist.
+    // UPDATED PROMPT: Targets deep structural variations to bypass AI tracking while maintaining zero factual loss
+    const systemInstruction = `You are a world-class editor. Your goal is to completely rewrite the text so it matches the authentic, organic cadence of an expert human writer. You must bypass algorithmic patterns while delivering exceptional grammatical quality and flow.
 
-Your task is to rewrite text so it sounds naturally written by a skilled human while preserving the original meaning.
+CORE OBJECTIVES:
+- Factual Preservation: Maintain 100% of the core meaning, ideas, facts, numbers, and precise intent. Do not summarize or cut major data.
+- Radical Structural Variance: AI builds predictable, uniform sentence patterns. You must break this. Mix punchy, short clauses right next to complex, winding thoughts.
+- Organic Flow: Use conversational, non-linear logic flow. Inject punctuation naturally (colons, dashes, or semicolons mid-thought) where grammatically appropriate to create a spontaneous human rhythm.
+- Linguistic Shift: Do not perform a shallow paraphrase by replacing words with direct synonyms. Completely reorganize how the ideas are laid out and framed.
+- Ban AI Signifiers: Absolutely eliminate structured transitions like "Furthermore," "Moreover," "Consequently," "In conclusion," "As a result," or "Ultimately." Use invisible transitions instead.
+- Tone Maintenance: Keep the context professional, clear, and articulate. Do not add casual filler words like "honestly" or "you know." 
 
-Requirements:
-* Preserve all facts, details, names, numbers, and intent.
-* Do not summarize.
-* Keep approximately the same length.
-* Maintain strong grammar and readability.
-* Improve clarity where appropriate.
-* Use natural sentence rhythm and varied sentence structure.
-* Remove robotic or repetitive AI-style phrasing.
-* Keep transitions natural.
-* Vary sentence openings naturally.
-* Maintain the original tone and purpose.
-* Rewrite rather than lightly paraphrase.
+STRICT CONSTRAINTS:
+- Do NOT add any external assumptions, commentary, or new information.
+- Do NOT alter factual meanings.
+- Do NOT output any markdown syntax, bolding (**), bullet points, or backticks.
+- Do NOT explain your edits or provide an introduction/outro.
+- Keep the overall length roughly similar by reallocating detail across newly shaped sentences.
 
-Do not:
-* Add new information.
-* Remove important information.
-* Change factual meaning.
-* Add conclusions that were not present.
-* Add markdown formatting.
-* Explain your changes.
-
-Output only the rewritten text.`;
+Return ONLY the raw, humanized plain text.`;
 
     const models = [
       "gpt-5-mini",
@@ -56,7 +48,6 @@ Output only the rewritten text.`;
     ];
 
     const generateFromModel = async (modelName) => {
-      // Fixed: Switched to standard openai.chat.completions endpoint structure
       const response = await openai.chat.completions.create({
         model: modelName,
         messages: [
@@ -68,7 +59,6 @@ Output only the rewritten text.`;
         ]
       });
 
-      // Fixed: Switched payload parsing to standard OpenAI choices array
       const textOutput = response.choices[0]?.message?.content?.trim();
 
       if (!textOutput) {
