@@ -30,7 +30,7 @@ CRITICAL:
 - Do NOT summarize
 - Keep similar length
 - Inject "Human" Punctuation: Use colons mid-thought to create non-linear structures
-
+- Get low ai dectection score 
 STYLE:
 - Keep grammar correct
 - Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
@@ -64,7 +64,7 @@ It should feel like someone explaining things in a natural, slightly uneven way.
       const response = await openai.chat.completions.create({
         model: modelName,
         // Locked into your exact requested parameters without penalties
-        temperature: 0.8,
+        temperature: 0.7,
         top_p: 0.8,
         messages: [
           { role: "system", content: systemInstruction },
