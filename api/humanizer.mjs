@@ -49,7 +49,7 @@ STYLE & STRUCTURE PARAMETERS:
       const response = await openai.chat.completions.create({
         model: modelName,
         // Locked into your exact requested parameters without penalties
-        temperature: 0.9,
+        temperature: 1,
         top_p: 0.95,
         messages: [
           { role: "system", content: systemInstruction },
