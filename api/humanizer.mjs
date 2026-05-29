@@ -22,8 +22,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // PERFECTLY BALANCED PROMPT: Uses your 10-20 word buffer to break the 100% AI score
-    const systemInstruction = `Rewrite the text like a professional casually explaining data points to a colleague over a direct message thread.
+    const systemInstruction = `Rewrite the text like a professional casually breaking down data points for a colleague over a direct message thread.
 
 CRITICAL FACT & BUDGET CONTROL:
 - Keep the original core meaning, exact statistics, numbers, dates, and technical names completely intact.
@@ -89,25 +88,47 @@ ${text}`
       ""
     );
 
-    // CLEANUP SYSTEM: Vaporizes brackets, dashes, and duplicate spaces cleanly
+    // ADVANCED POST-PROCESSING HUMANIZER: Manual vocabulary scrambling to force low AI scores
     function cleanText(input) {
       if (!input) return "";
 
-      return input
-        // 1. Clears any accidental bracket or parenthesis leakages of the "which matters" phrase
+      let normalized = input
+        // 1. Clear out potential bracket/parentheses layout bugs from the prompt processing
         .replace(/[\[\(\{\s]*which\s+matters[\s\]\)\}\.\,]*(-*\s*)*/gi, " ")
         
-        // 2. Converts any accidental em-dashes, en-dashes, or double-hyphens into clean commas
+        // 2. Convert structural em-dashes and long hyphens down to simple, clean human commas
         .replace(/\s*[—–——]\s*/g, ", ")
         .replace(/\s+-\s+/g, ", ")
-        .replace(/-{2,}/g, ", ")
-        
-        // 3. General format normalization
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
-        .replace(/,\s*,/g, ",")             // Clean double commas
-        .replace(/,\s*\./g, ".")            // Clean trailing commas
-        .replace(/\.\./g, ".")              // Clean double periods
-        .replace(/\s{2,}/g, " ")            // Clean double spacing
+        .replace(/-{2,}/g, ", ");
+
+      // 3. ARCHITECTURAL SWAPPER: Hard-coded regex replacement maps to instantly sabotage AI pattern detectors
+      const humanizerMap = [
+        { regex: /\bFurthermore\b/g, replace: "Also" },
+        { regex: /\bIn addition\b/gi, replace: "On top of that" },
+        { regex: /\bTherefore\b/g, replace: "So basically" },
+        { regex: /\bMoreover\b/g, replace: "Plus" },
+        { regex: /\bAdditionally\b/g, replace: "And also" },
+        { regex: /\bConsequently\b/g, replace: "As a result" },
+        { regex: /\bHowever\b/g, replace: "But" },
+        { regex: /\bThis study\b/gi, replace: "The project" },
+        { regex: /\bThe researchers utilized\b/gi, replace: "They used" },
+        { regex: /\bdemonstrated\b/gi, replace: "showed" },
+        { regex: /\bsignificant\b/gi, replace: "real" },
+        { regex: /\bconducted\b/gi, replace: "ran" }
+      ];
+
+      // Execute the manual text scrambling loops across the generated output string
+      humanizerMap.forEach(rule => {
+        normalized = normalized.replace(rule.regex, rule.replace);
+      });
+
+      // 4. Standard formatting normalization cleanup routines
+      return normalized
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Double words
+        .replace(/,\s*,/g, ",")             // Double commas
+        .replace(/,\s*\./g, ".")            // Trailing commas
+        .replace(/\.\./g, ".")              // Double periods
+        .replace(/\s{2,}/g, " ")            // Excess spaces
         .trim();
     }
 
