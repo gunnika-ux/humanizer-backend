@@ -22,21 +22,22 @@ export default async function handler(req, res) {
       });
     }
 
-    const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague over chat.
+    // UPDATED PROMPT: Controls word bloat while crushing the AI detection signatures
+    const systemInstruction = `Rewrite the text like a person directly explaining key points over a clean message.
 
-CRITICAL FACT HANDLING:
-- Keep the original core meaning, exact stats, data metrics, and technical terms intact.
-- Do NOT stack facts back-to-back in a tight, dense line. 
-- Space the facts out. Pad data points with casual, analytical human transitions.
-- Do NOT summarize. Keep a similar overall length by expanding the phrasing around the facts.
+CRITICAL FACT & LENGTH CONTROL:
+- Keep the original core meaning, exact stats, data metrics, and technical terms completely intact.
+- STRICT LENGTH MATCH: Your output must be roughly the same word count as the original text. Do NOT balloon the length. Do not add fluff or unnecessary filler words.
+- Space out the facts logically, but compress the commentary around them to stay within a strict word budget. No long, wandering introductions.
+- Do NOT summarize.
 
 STYLE & ANTI-DETECTION RUNTIME:
-- Keep grammar accurate, but completely abandon pristine, textbook symmetry.
-- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
-- Introduce natural structural variations: use commas, parenthetical asides, or a colon mid-sentence to stagger the text flow.
-- Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
-- Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
-- Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
+- Keep grammar clean and accurate, but drop pristine, textbook-style balance.
+- Vary sentence structures sharply: put an short statement (3-5 words) directly up against an explanatory clause.
+- Mix how data is written to appear human (e.g., alternate using numbers as digits and writing them out as words where natural).
+- Use regular commas, brief parenthetical notes, or a colon mid-thought to create an unpredictable, spontaneous writing flow.
+- Ensure the tone reads like a real person breaking down information directly without an over-polished corporate or academic gloss.
+- Stop immediately when the text concludes. Never append summary concluding remarks.`;
 
     const models = [
       "gpt-5.4-mini",
@@ -46,13 +47,14 @@ STYLE & ANTI-DETECTION RUNTIME:
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
+        // Kept high to preserve the low AI score, but the new prompt constraints prevent length bloat
         temperature: 0.95,
         top_p: 0.95,
         messages: [
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
+            content: `Completely change the sentence blueprints, word placement, and flow of this text. Match the input word count as closely as possible while making the rhythm uneven, distinct, and human. Do not add labels or intros.
 
 TEXT:
 ${text}` 
@@ -89,13 +91,13 @@ ${text}`
       ""
     );
 
-    // FIXED SANITIZATION: Cleans up the AI's weird formatting hacks automatically
+    // SANITIZATION FILTER: Removes weird brackets and em-dashes automatically
     function cleanText(text) {
       return text
-        .replace(/\[\s*which\s+matters\s*\]/gi, "") // 1. Erases weird "[which matters]" text artifacts
-        .replace(/\s*—\s*/g, ", ")                  // 2. Swaps out ugly em-dashes for clean commas
-        .replace(/\b(\w+)\s+\1\b/gi, "$1")          // Clean duplicate words
-        .replace(/\s{2,}/g, " ")                    // Clean double spacing
+        .replace(/\[\s*which\s+matters\s*\]/gi, "") 
+        .replace(/\s*—\s*/g, ", ")                  
+        .replace(/\b(\w+)\s+\1\b/gi, "$1")          
+        .replace(/\s{2,}/g, " ")                    
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
         .replace(/\n{3,}/g, "\n\n")
