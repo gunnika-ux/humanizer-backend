@@ -22,21 +22,22 @@ export default async function handler(req, res) {
       });
     }
 
-    // THE BALANCED BLUEPRINT: Spaces out facts to kill the 100% score, but caps total length growth
-    const systemInstruction = `Rewrite the text like an expert communicating ideas naturally and directly over a message thread.
+    // UPDATED SYSTEM PROMPT: Swaps out ugly brackets for clean, natural human parentheses
+    const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague over chat.
 
-CRITICAL FACT & STRUCTURE CONTROL:
-- Keep the original core meaning, exact statistics, numbers, dates, and technical names completely intact.
-- Do NOT bunch facts together in tight, heavy clusters. Spread them out across the sentences.
-- Allow the text to expand slightly to frame data points naturally, but do not add completely irrelevant filler words or repetitive thoughts.
-- Do NOT summarize the content.
+CRITICAL FACT HANDLING:
+- Keep the original core meaning, exact stats, data metrics, and technical terms intact.
+- Do NOT stack facts back-to-back in a tight, dense line. 
+- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
+- Do NOT summarize. Keep a similar overall length by expanding the phrasing around the facts.
 
-STYLE & ANTI-DETECTION:
-- Keep grammar clean and accurate, but deliberately avoid over-polished, perfectly symmetrical textbook phrasing.
-- Intentionally vary sentence lengths: place a very short statement (3-5 words) right next to a longer, detailed sentence.
-- Use conversational, non-linear phrasing structures. Drop in normal commas, brief descriptive parentheticals, or a colon mid-thought to make the rhythm feel spontaneous.
-- Never use uniform sentence openings or repetitive transitional phrases.
-- Stop writing immediately once the message is delivered. Do not add a tidy wrap-up sentence or conclusion at the end.`;
+STYLE & ANTI-DETECTION RUNTIME:
+- Keep grammar accurate, but completely abandon pristine, textbook symmetry.
+- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
+- Introduce natural structural variations: use regular commas, colons mid-sentence, or natural conversational parentheses (like this) for quick aside thoughts to stagger the text flow.
+- Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
+- Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
+- Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
 
     const models = [
       "gpt-5.4-mini",
@@ -46,14 +47,13 @@ STYLE & ANTI-DETECTION:
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // Kept high to maximize vocabulary variance and drop predictability scores
         temperature: 0.95,
         top_p: 0.95,
         messages: [
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Completely change the sentence structure, word sequence, and overall flow of this text. Keep the exact facts and core data completely intact, but make the rhythm deeply human, unpredictable, and uneven. Do not include labels or intro notes.
+            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
 
 TEXT:
 ${text}` 
@@ -90,25 +90,25 @@ ${text}`
       ""
     );
 
-    // BULLETPROOF CLEANUP SYSTEM: Vaporizes brackets, parentheticals, and formatting artifacts completely
+    // FIXED CLEANUP SYSTEM: Vaporizes formatting bugs without raising the AI score
     function cleanText(input) {
       if (!input) return "";
 
       return input
-        // 1. Erases "[which matters]", "(which matters)", or any floating variations with punctuation
-        .replace(/[\[\(\{\s]*which\s+matters[\s\]\)\}\.\,]*(-*\s*)*/gi, " ")
+        // 1. Clears any accidental robotic bracket leakages left behind
+        .replace(/[\[\{\s]*which\s+matters[\s\]\}\.\,]*(-*\s*)*/gi, " ")
         
-        // 2. Converts all variations of em-dashes, en-dashes, and double hyphens into clean commas
+        // 2. Automatically converts any ugly em-dashes or double-hyphens into clean, normal commas
         .replace(/\s*[—–——]\s*/g, ", ")
         .replace(/\s+-\s+/g, ", ")
         .replace(/-{2,}/g, ", ")
         
-        // 3. General string sanitization
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Double words
-        .replace(/,\s*,/g, ",")             // Double commas
-        .replace(/,\s*\./g, ".")            // Trailing commas
-        .replace(/\.\./g, ".")              // Double periods
-        .replace(/\s{2,}/g, " ")            // Excess whitespace
+        // 3. Structural standardizations
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
+        .replace(/,\s*,/g, ",")             // Clean double commas
+        .replace(/,\s*\./g, ".")            // Clean trailing commas
+        .replace(/\.\./g, ".")              // Clean double periods
+        .replace(/\s{2,}/g, " ")            // Clean double spacing
         .trim();
     }
 
