@@ -36,6 +36,7 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
 - Avoid overly formal tone.
+- Avoid Generic language.
 - Add little human burstiness.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
@@ -53,7 +54,7 @@ STYLE & ANTI-DETECTION RUNTIME:
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
         temperature: 0.82,
-        top_p: 0.75,
+        top_p: 0.81,
         messages: [
           { role: "system", content: systemInstruction },
           { 
