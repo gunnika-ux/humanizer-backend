@@ -33,7 +33,7 @@ CRITICAL FACT HANDLING:
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
-- keep the overall length close to the original text, naturally aiming not to increase the word count by more than roughly 15 to 20 words total.
+- keep the overall length close to the original text.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
@@ -49,7 +49,7 @@ STYLE & ANTI-DETECTION RUNTIME:
       const response = await openai.chat.completions.create({
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.92,
+        temperature: 0.89,
         top_p: 0.99,
         messages: [
           { role: "system", content: systemInstruction },
