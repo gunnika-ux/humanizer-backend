@@ -9,70 +9,55 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if (req.method === "OPTIONS") return res.status(200).end();
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
   try {
     const { text } = req.body;
 
-    if (!text) {
-      return res.status(400).json({ error: "No text provided" });
+    if (!text || !text.trim()) {
+      return res.status(400).json({
+        error: "No text provided"
+      });
     }
 
-    const systemInstruction = `Rewrite the text like a real person explaining ideas.
+    // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
+    const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague over chat.
 
-CRITICAL:
-- Keep the original meaning and key ideas, but allow natural rewording
-- Do NOT summarize
-- Keep similar length
-- Inject "Human" Punctuation: Use em-dashes (—), parentheses, and colons mid-thought to create non-linear structures
+CRITICAL FACT HANDLING:
+- Keep the original core meaning, exact stats, data metrics, and technical terms intact.
+- Do NOT stack facts back-to-back in a tight, dense line. 
+- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
+- Do NOT summarize. Keep a similar overall length by expanding the phrasing around the facts.
 
-STYLE:
-- Keep grammar correct
-- Ensure sentences are logically clear, while keeping the flow slightly uneven and natural
-- Mix short and long sentences
-- Avoid perfect structure
-- Avoid predictable structure
-- Allow slight jumps in ideas, but keep sentences understandable
-- Use clear language, but include some specific and descriptive wording where appropriate
-- Add slight variation in expression and emphasis to avoid flat or generic tone
-- Avoid overly formal tone, but maintain clear and professional wording
-- Avoid overly casual filler words (like "honestly", "you know")
-- Avoid generic language
-- Use precise and specific wording, and include brief, meaningful detail where it improves clarity
-- Avoid neutral tone; use slight variation and emphasis to keep the writing engaging and natural
-- Occasionally vary sentence openings and avoid uniform phrasing patterns
-- Do not maintain perfectly consistent reasoning flow; allow small shifts or slight repetition in ideas
-- Avoid clean paragraph-level flow; let sentences feel slightly disconnected across the paragraph
-- Avoid repeating the same idea using different wording in nearby sentences
-- End naturally without adding a summary-style closing line
-IMPORTANT:
-The text should NOT feel like a structured article.
-It should feel like someone explaining things in a natural, slightly uneven way.`;
+STYLE & ANTI-DETECTION RUNTIME:
+- Keep grammar accurate, but completely abandon pristine, textbook symmetry.
+- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
+- Introduce natural structural variations: use em-dashes, brackets for aside thoughts, or a colon mid-sentence to stagger the text flow.
+- Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
+- Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
+- Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
 
-    // 🔥 SET TO GPT MODELS: gpt-5-mini is primary, gpt-5.4-mini is secondary
     const models = [
-      "gpt-5-mini",
-      "gpt-5.4-mini"
+      "gpt-5.4-mini",
+      "gpt-5-mini"
     ];
 
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        temperature: 0.89,
-        top_p: 0.98,
+        // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
+        temperature: 0.95,
+        top_p: 0.95,
         messages: [
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Rewrite this text naturally.
-
-Keep the original meaning and key ideas, but allow natural rewording.
-Keep similar length.
-Do NOT follow a perfect introduction → explanation → conclusion structure.
-Avoid overly casual filler words, but do not make it sound like a formal essay.
+            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
 
 TEXT:
-"${text}"` 
+${text}` 
           }
         ]
       });
@@ -83,95 +68,49 @@ TEXT:
         throw new Error("Empty response");
       }
 
-      // ❗ CUT DETECTION
-      if (
-        !textOutput.endsWith('.') &&
-        !textOutput.endsWith('!') &&
-        !textOutput.endsWith('?')
-      ) {
-        throw new Error("Incomplete response");
-      }
-
       return textOutput;
     };
 
-    // 🔁 FALLBACK LOGIC
     const generateWithFallback = async () => {
-      for (let i = 0; i < models.length; i++) {
+      for (const model of models) {
         try {
-          return await generateFromModel(models[i]);
+          return await generateFromModel(model);
         } catch (err) {
-          console.warn(`Model ${models[i]} failed:`, err.message);
-          // small delay before next model
-          await new Promise(r => setTimeout(r, 500));
+          console.warn(`Model ${model} failed:`, err.message);
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
 
       throw new Error("All models failed");
     };
 
-    // SINGLE OUTPUT POOLING
-    let outputs = [];
-    outputs.push(await generateWithFallback());
-
-    function humanScore(text) {
-      let score = 0;
-
-      if (text.match(/\./g)?.length > 5) score += 1;
-      if (/(this|these).{0,20}\1/i.test(text)) score += 1;
-      if (text.includes("But ") || text.includes("And ")) score += 1;
-      if (!text.includes("Furthermore") && !text.includes("Moreover")) score += 1;
-      if (text.split(". ").some(s => s.length < 40)) score += 1;
-
-      return score;
-    }
-
-    let finalOutput = outputs.sort((a, b) => humanScore(b) - humanScore(a))[0];
+    let finalOutput = await generateWithFallback();
 
     finalOutput = finalOutput.replace(
-      /^(Option \d+|Output|Result|Here's the rewrite):/gi,
+      /^(Option \d+|Output|Result|Here's the rewrite|Rewritten text):/gi,
       ""
     );
 
-    function breakStructure(text) {
-      return text
-        .replace(/\n\n/g, (m) => (Math.random() > 0.6 ? " " : m))
-        .replace(/\. ([A-Z])/g, (m, p1) =>
-          Math.random() > 0.85 ? `. ${p1}` : m
-        );
-    }
-
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1")
-        .replace(/\bmany that\b/gi, "a lot of that")
-        .replace(/\bmany that repetitive\b/gi, "a lot of that repetitive")
-        .replace(/\bthere's many\b/gi, "there is a lot of")
-        .replace(/\bthere’s many\b/gi, "there is a lot of")
-        .replace(/\bacross much every\b/gi, "across almost every")
-        .replace(/(^|\.\s+)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase())
-        .replace(/\bThis\.\s*This\b/gi, "This")
-        .replace(/\bThis and\b/gi, "This, and")
-        .replace(/\bcreates many transparency\b/gi, "creates greater transparency")
-        .replace(/\bsince of that\b/gi, "because of that")
-        .replace(/\bgo way up\b/gi, "increase significantly")
-        .replace(/\bpretty\b/gi, "")
-        .replace(/\bhuge\b/gi, "significant")
-        .replace(/\bmassive\b/gi, "substantial")
-        .replace(/\bthere's\b/gi, "there is")
-        .replace(/\byou've got\b/gi, "there are")
+        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
+        .replace(/\s{2,}/g, " ")           // Clean double spacing
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
-        .replace(/\s{2,}/g, " ");
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
     }
 
-    finalOutput = breakStructure(finalOutput);
     finalOutput = cleanText(finalOutput);
 
-    return res.status(200).json({ output: finalOutput });
+    return res.status(200).json({
+      output: finalOutput
+    });
 
   } catch (error) {
     console.error("FULL ERROR:", error);
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({
+      error: error.message || "Unknown error"
+    });
   }
 }
