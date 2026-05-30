@@ -97,7 +97,6 @@ ${text}`
 
     function cleanText(text) {
       return text
-        .replace(/\b(\w+)\s+\1\b/gi, "$1") // Clean duplicate words
         .replace(/\s{2,}/g, " ")           // Clean double spacing
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
