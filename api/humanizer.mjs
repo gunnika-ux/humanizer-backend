@@ -34,7 +34,7 @@ CRITICAL FACT HANDLING:
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
-- Introduce natural structural variations .
+- Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
