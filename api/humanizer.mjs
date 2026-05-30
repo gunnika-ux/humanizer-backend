@@ -30,7 +30,7 @@ CRITICAL FACT HANDLING:
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Space the facts out across different clauses. Do NOT use long filler phrases or fluff transitions to do this. Instead, break dense rows of facts apart by ending a sentence early or using punctuation mid-thought.
 - Do NOT summarize. Ideally, keep the overall length close to the original text, naturally aiming not to increase the word count by more than roughly 20 to 30 words total.
-
+- Remove Predictable structure
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
