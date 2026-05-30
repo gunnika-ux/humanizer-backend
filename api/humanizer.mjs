@@ -40,15 +40,15 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
 
     const models = [
-      "gpt-5.4-mini",
-      "gpt-5-mini"
+      "gpt-5-mini",
+      "gpt-5.4-mini"
     ];
 
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.7,
+        temperature: 0.8,
         top_p: 0.99,
         messages: [
           { role: "system", content: systemInstruction },
