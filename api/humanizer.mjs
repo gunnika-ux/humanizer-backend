@@ -44,9 +44,10 @@ STYLE & ANTI-DETECTION RUNTIME:
     ];
 
     const generateFromModel = async (modelName) => {
-      // Temperature and top_p have been completely removed here to let the AI native defaults run
       const response = await openai.chat.completions.create({
         model: modelName,
+        // LOCKED IN: High randomness to aggressively break down machine-like phrasing
+        temperature: 1.50,
         messages: [
           { role: "system", content: systemInstruction },
           { 
