@@ -22,8 +22,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
-const systemInstruction = `Rewrite the text like a professional breaking down dense data for a colleague over chat, but maintain a polished academic tone—do not use casual commentary, slang, or text-speak fragments.
+// UPDATED TARGET LINE: Natural workspace chat. Not stiff/over-formal, but no internet slang/fragments.
+    const systemInstruction = `Rewrite the text like a professional breaking down dense data for a colleague over chat. Keep the explanation completely straightforward and clear—avoid stiff, overly formal textbook phrasing, but do not use casual internet slang or text-speak fragments.`;
 
 CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
