@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     }
 
     // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
-    const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague over chat.
+    const systemInstruction = `Rewrite the text as natural, fluent human writing while preserving all facts, meaning, and intent.
 
 CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
