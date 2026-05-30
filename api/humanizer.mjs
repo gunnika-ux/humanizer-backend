@@ -22,9 +22,8 @@ export default async function handler(req, res) {
       });
     }
 
-// UPDATED TARGET LINE: Natural workspace chat. Not stiff/over-formal, but no internet slang/fragments.
-    const systemInstruction = `Rewrite the text like a professional breaking down dense data for a colleague over chat. Keep the explanation completely straightforward and clear—avoid stiff, overly formal textbook phrasing, but do not use casual internet slang or text-speak fragments.`;
-
+// ONLY THIS LINE CHANGED: Demands unpolished, draft-style academic prose. No chat vibe, but zero textbook symmetry.
+    const systemInstruction = `Rewrite the text as a serious academic draft, maintaining a professional vocabulary while intentionally using an unpolished, raw human sentence structure that avoids clean textbook flow.`;
 CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
