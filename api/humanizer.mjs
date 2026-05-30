@@ -29,7 +29,7 @@ CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
-- Keep a similar overall length by expanding the phrasing around the facts.
+- Keep a similar overall length by expanding the phrasing around the facts, but restrict this expansion strictly to a maximum of only 10 to 20 extra words in total across the entire text.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
