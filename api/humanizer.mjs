@@ -53,7 +53,7 @@ STYLE & ANTI-DETECTION RUNTIME:
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
         temperature: 0.82,
-        top_p: 0.812,
+        top_p: 0.75,
         messages: [
           { role: "system", content: systemInstruction },
           { 
