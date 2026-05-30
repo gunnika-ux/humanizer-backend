@@ -30,9 +30,11 @@ CRITICAL FACT HANDLING:
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
 - Keep a similar overall length.
+
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
-- Remove perfect structure
+- Avoid predictable structure.
+- Avoid overly formal tone.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
