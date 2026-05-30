@@ -37,6 +37,7 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Avoid predictable structure.
 - Avoid overly formal tone.
 - Add human burstiness.
+- Avoid neutral tone.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
