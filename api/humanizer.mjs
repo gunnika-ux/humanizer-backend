@@ -29,7 +29,7 @@ CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Never stack abstract academic nouns back-to-back
-- Instead, break those clusters apart using active human verbs
+- Instead, break those clusters apart using active human verbs (e.g., write "the team tracked data using validated scales and backed it up with rigorous stats").
 - Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
 - Keep a similar overall length.
 
