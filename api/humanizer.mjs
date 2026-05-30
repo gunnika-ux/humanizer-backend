@@ -22,7 +22,8 @@ export default async function handler(req, res) {
       });
     }
 
-    const systemInstruction = `Rewrite the text using the dynamic sentence blueprints of a professional chat breakdown, but elevate the vocabulary to remain mature and smart—do not use casual slang or text-speak fragments.
+    // FIXED TARGET LINE: Tells the AI to write like an expert dictating thoughts out loud. Clean, professional vocabulary but zero textbook symmetry.
+    const systemInstruction = `Rewrite the text to mimic the natural, unedited phrasing of a professional dictating thoughts out loud. Use advanced vocabulary, but completely avoid stiff textbook symmetry and casual slang.`;
 
 CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
@@ -46,8 +47,9 @@ STYLE & ANTI-DETECTION RUNTIME:
     const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // LOCKED IN: High randomness to aggressively break down machine-like phrasing
-        temperature: 1.50,
+        // STABILIZED TEMPERATURE: 0.90 keeps the phrasing highly unpredictable without breaking grammar
+        temperature: 0.90,
+        top_p: 0.99,
         messages: [
           { role: "system", content: systemInstruction },
           { 
