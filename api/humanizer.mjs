@@ -52,7 +52,7 @@ STYLE & ANTI-DETECTION RUNTIME:
       const response = await openai.chat.completions.create({
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.82,
+        temperature: 0.83,
         top_p: 0.81,
         messages: [
           { role: "system", content: systemInstruction },
