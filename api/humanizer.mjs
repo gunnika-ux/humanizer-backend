@@ -22,18 +22,18 @@ export default async function handler(req, res) {
       });
     }
 
-// ONLY THIS LINE CHANGED: Demands unpolished, draft-style academic prose. No chat vibe, but zero textbook symmetry.
-    const systemInstruction = `Rewrite the text as a serious academic draft, maintaining a professional vocabulary while intentionally using an unpolished, raw human sentence structure that avoids clean textbook flow.`;
+    const systemInstruction = `Rewrite the text using the dynamic sentence blueprints of a professional chat breakdown, but elevate the vocabulary to remain mature and smart—do not use casual slang or text-speak fragments.
+
 CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
-- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
-- Keep a similar overall length.  
+- Space the facts out across different clauses. Do NOT use long filler phrases or fluff transitions to do this. Instead, break dense rows of facts apart by ending a sentence early or using punctuation mid-thought.
+- Do NOT summarize. Ideally, keep the overall length close to the original text, naturally aiming not to increase the word count by more than roughly 20 to 30 words total.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
-- Introduce natural structural variations.
+- Introduce natural structural variations: use a colon mid-sentence or a sudden period to stagger the text flow.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
@@ -44,16 +44,14 @@ STYLE & ANTI-DETECTION RUNTIME:
     ];
 
     const generateFromModel = async (modelName) => {
+      // Temperature and top_p have been completely removed here to let the AI native defaults run
       const response = await openai.chat.completions.create({
         model: modelName,
-        // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.30,
-        top_p: 0.90,
         messages: [
           { role: "system", content: systemInstruction },
           { 
             role: "user", 
-            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
+            content: `Completely reconstruct this text. Separate the dense clusters of facts by altering the sentence blueprints so they flow like an organic human train of thought. Try to keep the final output length comfortable, ideally adding no more than 20 to 30 extra words over the original size. Do not include labels.
 
 TEXT:
 ${text}` 
