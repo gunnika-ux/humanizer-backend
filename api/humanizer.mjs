@@ -22,86 +22,107 @@ export default async function handler(req, res) {
       });
     }
 
-    // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
-  const systemInstruction = `Rewrite the text like a professional breaking down dense data for a colleague.
-  
-  CRITICAL FACT HANDLING:
-- Keep the original core meaning, exact stats, data metrics, and technical terms intact.
-- Do NOT stack facts back-to-back in a tight, dense line. 
-- Never stack abstract academic nouns back-to-back
-- Space the facts out. Pad data points with analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
-- Keep a similar overall length.don't increase overall length more  than 30 words.
-- Maintain an academic tone but vary sentence lengths to ensure natural,human-like flow.
+    const systemInstruction = `
+You are a skilled editor.
 
-STYLE & ANTI-DETECTION RUNTIME:
-- Keep grammar accurate, but completely abandon pristine, textbook symmetry.
-- Avoid predictable structure.
-- Avoid overly formal tone.
-- Add human burstiness.
-- Add varitations.
-- Introduce natural structural variations.
-- Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
-- Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
-- Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
+Your task is to improve readability while preserving the original author's intent, reasoning, facts, and voice.
+
+Rules:
+
+- Preserve all facts, figures, dates, names, statistics, citations, and technical terms.
+- Keep the original meaning exactly.
+- Preserve wording whenever it already works well.
+- Rewrite only where clarity, flow, or readability genuinely improves.
+- Avoid repetitive sentence openings.
+- Allow natural variation in sentence length.
+- Avoid overly polished corporate language.
+- Avoid obvious synonym swapping.
+- Do not add new information.
+- Do not remove important information.
+- Do not summarize.
+- Do not insert conclusions that were not present.
+- Maintain approximately the same length.
+- Return only the edited text.
+`;
 
     const models = [
       "gpt-5-mini",
       "gpt-5.4-mini"
     ];
 
-    const generateFromModel = async (modelName) => {
+    async function generateFromModel(modelName) {
       const response = await openai.chat.completions.create({
         model: modelName,
-        // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.82,
-        top_p: 0.8,
+        temperature: 0.35,
+        top_p: 1,
         messages: [
-          { role: "system", content: systemInstruction },
-          { 
-            role: "user", 
-            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
+          {
+            role: "system",
+            content: systemInstruction
+          },
+          {
+            role: "user",
+            content: `
+Edit the following text for clarity and flow.
+
+Preserve the author's voice.
+Keep facts unchanged.
+Avoid unnecessary paraphrasing.
 
 TEXT:
-${text}` 
+
+${text}
+`
           }
         ]
       });
 
-      const textOutput = response.choices[0]?.message?.content?.trim();
+      const output =
+        response.choices?.[0]?.message?.content?.trim();
 
-      if (!textOutput) {
+      if (!output) {
         throw new Error("Empty response");
       }
 
-      return textOutput;
-    };
+      return output;
+    }
 
-    const generateWithFallback = async () => {
+    async function generateWithFallback() {
+      let lastError;
+
       for (const model of models) {
         try {
           return await generateFromModel(model);
         } catch (err) {
-          console.warn(`Model ${model} failed:`, err.message);
-          await new Promise(resolve => setTimeout(resolve, 500));
+          lastError = err;
+
+          console.warn(
+            `Model ${model} failed:`,
+            err.message
+          );
+
+          await new Promise(resolve =>
+            setTimeout(resolve, 500)
+          );
         }
       }
 
-      throw new Error("All models failed");
-    };
+      throw lastError || new Error("All models failed");
+    }
 
     let finalOutput = await generateWithFallback();
 
     finalOutput = finalOutput.replace(
-      /^(Option \d+|Output|Result|Here's the rewrite|Rewritten text):/gi,
+      /^(edited version|edited text|revision|output|result|rewrite)\s*:\s*/i,
       ""
     );
 
     function cleanText(text) {
       return text
-        .replace(/\s{2,}/g, " ")           // Clean double spacing
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
-        .replace(/\n{3,}/g, "\n\n")
         .trim();
     }
 
@@ -113,6 +134,7 @@ ${text}`
 
   } catch (error) {
     console.error("FULL ERROR:", error);
+
     return res.status(500).json({
       error: error.message || "Unknown error"
     });
