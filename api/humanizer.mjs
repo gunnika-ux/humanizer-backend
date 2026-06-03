@@ -16,32 +16,33 @@ export default async function handler(req, res) {
   try {
     const { text } = req.body;
 
-    if (!text || !text.trim()) {
+    if (!text?.trim()) {
       return res.status(400).json({
         error: "No text provided"
       });
     }
 
     const systemInstruction = `
-You are a skilled editor.
+You are an expert editor.
 
-Your task is to improve readability while preserving the original author's intent, reasoning, facts, and voice.
+Your job is to revise text so it reads naturally, clearly, and smoothly.
 
-Rules:
+Requirements:
 
-- Preserve all facts, figures, dates, names, statistics, citations, and technical terms.
-- Keep the original meaning exactly.
-- Preserve wording whenever it already works well.
-- Rewrite only where clarity, flow, or readability genuinely improves.
-- Avoid repetitive sentence openings.
-- Allow natural variation in sentence length.
-- Avoid overly polished corporate language.
-- Avoid obvious synonym swapping.
+- Preserve the original meaning.
+- Preserve all facts, figures, dates, names, statistics, citations, and technical terminology.
+- Keep the author's intent intact.
+- Improve flow and readability.
+- Reduce repetitive phrasing when it appears.
+- Allow sentence lengths to vary naturally.
+- Allow moderate restructuring when it improves clarity.
+- Avoid robotic transitions.
+- Avoid corporate or marketing-style language.
+- Avoid unnecessary synonym replacement.
 - Do not add new information.
 - Do not remove important information.
 - Do not summarize.
-- Do not insert conclusions that were not present.
-- Maintain approximately the same length.
+- Keep approximately the same length.
 - Return only the edited text.
 `;
 
@@ -53,8 +54,8 @@ Rules:
     async function generateFromModel(modelName) {
       const response = await openai.chat.completions.create({
         model: modelName,
-        temperature: 0.35,
-        top_p: 1,
+        temperature: 0.55,
+        top_p: 0.95,
         messages: [
           {
             role: "system",
@@ -63,11 +64,11 @@ Rules:
           {
             role: "user",
             content: `
-Edit the following text for clarity and flow.
+Revise the text below.
 
-Preserve the author's voice.
-Keep facts unchanged.
-Avoid unnecessary paraphrasing.
+Focus on readability, flow, and natural phrasing.
+
+Keep all factual content intact.
 
 TEXT:
 
@@ -117,16 +118,12 @@ ${text}
       ""
     );
 
-    function cleanText(text) {
-      return text
-        .replace(/[ \t]{2,}/g, " ")
-        .replace(/\n{3,}/g, "\n\n")
-        .replace(/,\s*\./g, ".")
-        .replace(/\.\./g, ".")
-        .trim();
-    }
-
-    finalOutput = cleanText(finalOutput);
+    finalOutput = finalOutput
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/,\s*\./g, ".")
+      .replace(/\.\./g, ".")
+      .trim();
 
     return res.status(200).json({
       output: finalOutput
