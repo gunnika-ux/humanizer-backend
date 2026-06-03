@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Never stack abstract academic nouns back-to-back
 - Space the facts out. Pad data points with analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
-- Keep a similar overall length.
+- Keep a similar overall length.don't increase overall length more  than 30 words.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
