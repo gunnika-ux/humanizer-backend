@@ -31,7 +31,7 @@ export default async function handler(req, res) {
 - Never stack abstract academic nouns back-to-back
 - Space the facts out. Pad data points with analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
 - Keep a similar overall length.don't increase overall length more  than 30 words.
-- Ensure academic tone.
+- Maintain an academic tone but vary sentence lengths to ensure natural,human-like flow.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
@@ -39,7 +39,6 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Avoid overly formal tone.
 - Add human burstiness.
 - Add varitations.
-- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
