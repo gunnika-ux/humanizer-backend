@@ -1,10 +1,10 @@
 import OpenAI from "openai";
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-export default async function handler(req: any, res: any) {
+export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -17,47 +17,53 @@ export default async function handler(req: any, res: any) {
     const { text } = req.body;
 
     if (!text || !text.trim()) {
-      return res.status(400).json({ error: "No text provided" });
+      return res.status(400).json({
+        error: "No text provided"
+      });
     }
 
-    const systemInstruction = `Rewrite the text as a professional explaining dense data to a colleague in a friendly, clear way.
-
-CORE RULES:
+    // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
+  const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague.
+  
+  CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
-- Do NOT stack facts back-to-back in a tight, dense line.
-- Never stack abstract academic nouns back-to-back.
-- Space facts out with natural analytical transitions (e.g., "If you look at 2024, the numbers actually jumped by about 45%").
-- Keep overall length similar; do not increase by more than 30 words.
-- Maintain an academic tone but vary sentence lengths for natural human flow.
+- Do NOT stack facts back-to-back in a tight, dense line. 
+- Never stack abstract academic nouns back-to-back
+- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
+- Keep a similar overall length.
 
-STYLE GUIDELINES:
-- Grammar must be accurate, but avoid pristine textbook symmetry.
-- Avoid predictable structure and overly formal tone.
-- Add natural variation: mix short sentences (<10 words) and long sentences (>25 words).
-- Occasionally use conversational markers like "actually," "basically," or "if you look at…".
-- Vary how data is written: mix "percent" with "%", and numbers as words vs digits.
-- Avoid slick corporate copy; it should read like a fresh, unedited first-draft thought.
+STYLE & ANTI-DETECTION RUNTIME:
+- Keep grammar accurate, but completely abandon pristine, textbook symmetry.
+- Avoid predictable structure.
+- Avoid overly formal tone.
+- Add human burstiness.
+- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
+- Introduce natural structural variations.
+- Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
+- Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
 
-    // Use currently available models
-    const models = ["gpt-4o-mini", "gpt-4.1-mini"];
+    const models = [
+      "gpt-5-mini",
+      "gpt-5.4-mini"
+    ];
 
-    const generateFromModel = async (modelName: string) => {
+    const generateFromModel = async (modelName) => {
       const response = await openai.chat.completions.create({
         model: modelName,
+        // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
         temperature: 0.82,
-        top_p: 0.85,
-        max_tokens: Math.ceil(text.split(" ").length * 1.4), // avoid truncation
+        top_p: 0.8,
         messages: [
           { role: "system", content: systemInstruction },
-          {
-            role: "user",
-            content: `Completely reconstruct this text. Separate dense clusters of facts so they flow like an organic human train of thought. Break polished, machine-like sentence structures. Do not include labels.
+          { 
+            role: "user", 
+            content: `Completely reconstruct this text. Separate the dense clusters of facts so they flow like an organic human train of thought. Break all polished, machine-like sentence structures. Do not include labels.
 
 TEXT:
-${text}`,
-          },
-        ],
+${text}` 
+          }
+        ]
       });
 
       const textOutput = response.choices[0]?.message?.content?.trim();
@@ -73,11 +79,12 @@ ${text}`,
       for (const model of models) {
         try {
           return await generateFromModel(model);
-        } catch (err: any) {
+        } catch (err) {
           console.warn(`Model ${model} failed:`, err.message);
-          await new Promise((resolve) => setTimeout(resolve, 500));
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
+
       throw new Error("All models failed");
     };
 
@@ -88,9 +95,9 @@ ${text}`,
       ""
     );
 
-    function cleanText(t: string) {
-      return t
-        .replace(/\s{2,}/g, " ")
+    function cleanText(text) {
+      return text
+        .replace(/\s{2,}/g, " ")           // Clean double spacing
         .replace(/,\s*\./g, ".")
         .replace(/\.\./g, ".")
         .replace(/\n{3,}/g, "\n\n")
@@ -99,9 +106,14 @@ ${text}`,
 
     finalOutput = cleanText(finalOutput);
 
-    return res.status(200).json({ output: finalOutput });
-  } catch (error: any) {
+    return res.status(200).json({
+      output: finalOutput
+    });
+
+  } catch (error) {
     console.error("FULL ERROR:", error);
-    return res.status(500).json({ error: error.message || "Unknown error" });
+    return res.status(500).json({
+      error: error.message || "Unknown error"
+    });
   }
 }
