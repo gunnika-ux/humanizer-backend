@@ -23,20 +23,20 @@ export default async function handler(req, res) {
     }
 
     // TARGETED PROMPT: Specifically designed to destroy "Excessive use of facts" flags
-  const systemInstruction = `Rewrite the text like a professional casually breaking down dense data for a colleague.
+  const systemInstruction = `Rewrite the text like a professional breaking down dense data for a colleague.
   
   CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Never stack abstract academic nouns back-to-back
-- Space the facts out. Pad data points with casual, analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
+- Space the facts out. Pad data points with analytical human transitions (e.g., instead of "A 45% increase occurred in 2024," use "If you look at 2024, the numbers actually jumped by about 45%").
 - Keep a similar overall length.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
 - Avoid overly formal tone.
-- Add human burstiness.
+- Add human little burstiness.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
