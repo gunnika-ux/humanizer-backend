@@ -28,7 +28,7 @@ export default async function handler(req, res) {
   CRITICAL FACT HANDLING:
 - Keep the original core meaning, exact stats, data metrics, and technical terms intact.
 - Do NOT stack facts back-to-back in a tight, dense line. 
-- Never stack abstract academic nouns back-to-back
+- Never stack abstract academic nouns back-to-back.
 - Space the facts out. Pad data points with analytical human transitions.
 - Keep a similar overall length.don't increase overall length more than 30 words.
 
