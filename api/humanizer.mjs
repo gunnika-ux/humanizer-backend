@@ -43,7 +43,6 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
-- Try to preserve all source brackets.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
 
     const models = [
