@@ -35,9 +35,12 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
+- Use dry writing style.
 - Use human punchuation.
 - Don't use overly formal tone.
-- Add human burstiness.
+- Add burstiness.
+- Avoid em dashes.
+- Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
 - Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
