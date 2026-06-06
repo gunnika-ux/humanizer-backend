@@ -43,8 +43,7 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Use human punchuation.
 - Do not use overly formal tone.
 - Add burstiness.
-- Use various length of sentences.
-- Do not use technicaland generic language.
+- Technical language and jargon
 - Avoid em dashes.
 - Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
