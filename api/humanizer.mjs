@@ -40,9 +40,9 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Do not convert parenthetical citations into narrative citations.
 - Use dry writing style.
 - Use human punchuation.
-- Don't use overly formal tone.
+- Do not use overly formal tone.
 - Add burstiness.
-- Avoid technicaland generic language.
+- Do not use technicaland generic language.
 - Avoid em dashes.
 - Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
