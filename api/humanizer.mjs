@@ -35,15 +35,15 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
-- Vary active passive voice naturally.
-- vary sentence length naturally.
+- Vary active passive voice
+- vary sentence length
 - Add human writing style.
 - Keep parenthetical citations unchanged.
 - Do not convert parenthetical citations into narrative citations.
-- Use dry writing style naturally.
+- Use dry writing style.
 - Use human punchuation.
 - Do not use overly formal tone.
-- Add burstiness naturally.
+- Add burstiness
 - Avoid em dashes.
 - Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
 - Introduce structural variations.
