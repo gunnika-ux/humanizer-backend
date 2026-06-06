@@ -40,8 +40,6 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Use dry writing style.
 - Use human punchuation.
 - Do not use overly formal tone.
-- Add Burstiness.
-- Add "human-like" perplexity.
 - Do not use technicaland generic language.
 - Avoid em dashes.
 - Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
