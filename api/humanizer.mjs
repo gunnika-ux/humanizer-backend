@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
-- Vary active passive.
+- Vary active passive voice.
 - Write as if a human wrote it.
 - Keep parenthetical citations unchanged.
 - Do not convert parenthetical citations into narrative citations.
@@ -61,7 +61,7 @@ STYLE & ANTI-DETECTION RUNTIME:
       const response = await openai.chat.completions.create({
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.82,
+        temperature: 0.84,
         top_p: 0.8,
         messages: [
           { role: "system", content: systemInstruction },
