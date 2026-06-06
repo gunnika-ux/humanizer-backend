@@ -35,7 +35,8 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
-- Keep citations exactly as they appear in the original text.
+- Keep parenthetical citations unchanged.
+- Do not convert parenthetical citations into narrative citations.
 - Vary active and passive voice naturally.
 - Use dry writing style.
 - Use human punchuation.
