@@ -38,6 +38,10 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Use human punchuation.
 - Use dry writing style.
 - vary active passive voice.
+- vary sentence length,
+- vary  sentence openings,
+- Reduce repetitive three-item lists,
+- Use specific details instead of generic benefits
 - Don't use overly formal tone.
 - Add human burstiness.
 - Avoid em dashes.
