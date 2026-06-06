@@ -35,6 +35,7 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
+- Add academic tone.
 - Use dry writing style.
 - Use human punchuation.
 - Don't use overly formal tone.
