@@ -35,7 +35,7 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
-- When a sentence contains (Author, Year), preserve the citation exactly as written and rewrite only the surrounding sentence.
+- Keep citations exactly as they appear in the original text.
 - Use dry writing style.
 - Use human punchuation.
 - Don't use overly formal tone.
