@@ -30,21 +30,20 @@ export default async function handler(req, res) {
 - Do NOT stack facts back-to-back in a tight, dense line. 
 - Never stack abstract academic nouns back-to-back.
 - Space the facts out. Pad data points with analytical human transitions.
-- Keep a similar overall length.don't increase overall length more than 30 words.
+- Keep a similar overall length. don't increase overall length more than 30 words.
 
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
+- Vary active passive voice naturally.
+- vary sentence length naturally.
 - Add human writing style.
-- Vary active passive voice.
-- Vary sentence length.
-- Do not use ai vocabulary.
 - Keep parenthetical citations unchanged.
 - Do not convert parenthetical citations into narrative citations.
-- Use dry writing style.
+- Use dry writing style naturally.
 - Use human punchuation.
 - Do not use overly formal tone.
-- Add burstiness.
+- Add burstiness naturally.
 - Avoid em dashes.
 - Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
 - Introduce structural variations.
