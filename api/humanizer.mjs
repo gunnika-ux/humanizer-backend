@@ -35,18 +35,13 @@ export default async function handler(req, res) {
 STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
-- Vary active passive voice
-- vary sentence length
-- Add human writing style.
-- Keep parenthetical citations unchanged.
-- Do not convert parenthetical citations into narrative citations.
-- Use dry writing style.
 - Use human punchuation.
-- Do not use overly formal tone.
-- Add burstiness
+- Use dry writing style.
+- Don't use overly formal tone.
+- Add human burstiness.
 - Avoid em dashes.
-- Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
-- Introduce structural variations.
+- Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
+- Introduce natural structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
@@ -60,7 +55,7 @@ STYLE & ANTI-DETECTION RUNTIME:
       const response = await openai.chat.completions.create({
         model: modelName,
         // High temperature forces the model to pick unpredictable phrasing paths around rigid facts
-        temperature: 0.84,
+        temperature: 0.82,
         top_p: 0.8,
         messages: [
           { role: "system", content: systemInstruction },
