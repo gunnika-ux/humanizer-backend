@@ -36,7 +36,6 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
 - Keep parenthetical citations unchanged.
-- Write in active voice.
 - Do not convert parenthetical citations into narrative citations.
 - Use dry writing style.
 - Use human punchuation.
@@ -46,7 +45,7 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Avoid em dashes.
 - Avoid opening with "Certainly," "Absolutely," "Of course," or similar AI-style transitions.
 - Attack sentence length uniformity: intentionally use a tiny 2-4 word sentence right before or after a long, descriptive phrase.
-- Introduce natural structural variations.
+- Introduce structural variations.
 - Vary how data is written to look human (e.g., mix writing out "percent" with "%", or numbers as words versus digits).
 - Avoid predictable, flat academic patterns or slick corporate copy. It must read like a fresh, unedited, first-draft thought.
 - Stop immediately when done. Never include a tidy wrap-up sentence at the end.`;
