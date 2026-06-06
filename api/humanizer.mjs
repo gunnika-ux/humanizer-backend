@@ -36,6 +36,8 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Keep grammar accurate, but completely abandon pristine, textbook symmetry.
 - Avoid predictable structure.
 - Use human punchuation.
+- Use dry writing style.
+- vary active passive voice.
 - Don't use overly formal tone.
 - Add human burstiness.
 - Avoid em dashes.
