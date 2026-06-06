@@ -37,7 +37,6 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Avoid predictable structure.
 - Keep parenthetical citations unchanged.
 - Do not convert parenthetical citations into narrative citations.
-- Vary active and passive voice naturally.
 - Use dry writing style.
 - Use human punchuation.
 - Don't use overly formal tone.
