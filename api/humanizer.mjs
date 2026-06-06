@@ -38,6 +38,7 @@ STYLE & ANTI-DETECTION RUNTIME:
 - Add human writing style.
 - Vary active passive voice.
 - Vary sentence length.
+- Use clear direct language.
 - Keep parenthetical citations unchanged.
 - Do not convert parenthetical citations into narrative citations.
 - Use dry writing style.
